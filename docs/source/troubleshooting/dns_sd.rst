@@ -15,7 +15,7 @@ Scanning Services
 
    ::
 
-      docker run -it --rm  --privileged \
+      docker run -it --rm \
        --network matter-bridge --ip 169.254.200.0 \
        --sysctl "net.ipv6.conf.all.disable_ipv6=0" \
        avahi/avahi-utils:latest avahi-browse -lr _meshcop._udp
@@ -27,7 +27,7 @@ Resolving IPv6 Hostnames
 
    ::
 
-      docker run -it --rm  --privileged \
+      docker run -it --rm \
        --network matter-bridge --ip 169.254.200.0 \
        --sysctl "net.ipv6.conf.all.disable_ipv6=0" \
        avahi/avahi-utils:latest avahi-resolve -6 --name otbr.local
@@ -43,7 +43,7 @@ Resolving IPv4 Hostnames
 
    ::
 
-      docker run -it --rm  --privileged \
+      docker run -it --rm \
        --network matter-bridge --ip 169.254.200.0 \
        --sysctl "net.ipv6.conf.all.disable_ipv6=0" \
        avahi/avahi-utils:latest avahi-resolve -4 --name otbr.local
