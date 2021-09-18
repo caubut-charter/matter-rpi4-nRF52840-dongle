@@ -95,7 +95,7 @@ Flashing the RCP
       export RCP_TTY=$(find /dev/serial/by-id -type l | grep <mac>)
       echo $RCP_TTY
 
-#. Install the RCP firmware package onto the dongle.
+#. Flash the RCP firmware package onto the dongle.
 
    ::
 

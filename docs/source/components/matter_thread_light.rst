@@ -97,7 +97,7 @@ Flashing the Device
       export LIGHT_TTY=$(find /dev/serial/by-id -type l | grep <mac>)
       echo $LIGHT_TTY
 
-#. Install the nRF52840 firmware package onto the dongle.
+#. Flash the nRF52840 firmware package onto the dongle.
 
    ::
 
