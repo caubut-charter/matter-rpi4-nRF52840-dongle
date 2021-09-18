@@ -75,10 +75,6 @@ If issues persist, check that the HCI is present in the container and run :code:
 BLE Connection Failures
 -----------------------
 
-.. note::
-
-   There is an `open ticket <https://github.com/project-chip/connectedhomeip/issues/9799>`_ for BLE connection failures.
-
 To make sure BLE connections work outside of :code:`chip-device-ctrl`, try :code:`bluetoothctl` from inside the container.
 
 ::

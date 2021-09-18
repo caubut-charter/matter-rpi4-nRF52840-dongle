@@ -117,11 +117,6 @@ Commissioning the Device
 
    .. tab:: chip-device-ctrl
 
-      .. warning::
-
-         This section is incomplete.  There is an `open ticket <https://github.com/project-chip/connectedhomeip/issues/9799>`_ for BLE connection failures.
-
-
       .. note::
 
          Building will occur in the :code:`build/chip-device-ctrl` directory.  Remove this directory first if a fresh build is desired.
