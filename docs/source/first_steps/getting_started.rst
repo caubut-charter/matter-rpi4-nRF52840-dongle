@@ -383,7 +383,7 @@ Preparing the Linux Desktop
 
    .. note::
 
-      The :code:`169.254.0.0/16` IPv4 link-local space won't be used for network traffic, but an IPv4 address is required by the docker network driver and every container connected directly to the host's broadcoast domain needs a unique IPv4 address as it is used in MAC address generation.
+      The :code:`169.254.0.0/16` IPv4 link-local space won't be used for network traffic, but an IPv4 address is required by the docker network driver and every container connected directly to the host's broadcast domain needs a unique IPv4 address as it is used in MAC address generation.
 
    ::
 
