@@ -42,9 +42,10 @@ Building the Device Image
 
    ::
 
-       # first time
+       # bootstrap if build/nrf-sdk is empty
        setup
-       # update
+
+       # update an existing build/nrf-sdk
        python3 scripts/setup/nrfconnect/update_ncs.py --update
 
 #. Build the lighting example for the nRF52840 dongle which creates a :code:`.hex` format image at :code:`build/zephyr/zephyr.hex`.
