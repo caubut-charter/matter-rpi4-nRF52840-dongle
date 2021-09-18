@@ -328,7 +328,7 @@ Preparing the RPi
             # update submodules for all the updated git refs
             git submodule update --init --recursive
 
-#. Build the :code:`otbr` image.
+#. Build the :code:`openthread/otbr` image.
 
    .. note::
 
@@ -339,7 +339,7 @@ Preparing the RPi
       (cd third_party/ot-br-posix \
        && docker build --build-arg INFRA_IF_NAME=eth1 -t openthread/otbr:latest -f etc/docker/Dockerfile .)
 
-#. Build the :code:`chip-device-ctrl` image.
+#. Build the :code:`matter/chip-device-ctrl` image.
 
    ::
 
@@ -471,25 +471,23 @@ Preparing the Build System
             (cd third_party/connectedhomeip/third_party/openthread/repo \
              && docker build -t openthread/environment:latest -f etc/docker/environment/Dockerfile .)
 
-#. Build the :code:`nrfutil` image.
+#. Build the :code:`openthread/ot-commissioner` image.
 
-   ::
+   .. warning:
 
-      docker build -t nordicsemi/nrfutil:latest etc/docker/nrfutil
-
-#. Build the :code:`avahi-utils` image.
-
-   ::
-
-      docker build -t avahi/avahi-utils:latest etc/docker/avahi-utils
-
-#. Build the :code:`ot-commissioner` image.
+      If building on the RPi, the :code:`openthread/environment` image must finish building first.
 
    ::
 
       docker build --build-arg TZ=$(cat /etc/timezone) -t openthread/ot-commissioner:latest etc/docker/ot-commissioner
 
-#. Pull or build the :code:`nrfconnect-chip` image.
+#. Build the :code:`nordicsemi/nrfutil` image.
+
+   ::
+
+      docker build -t nordicsemi/nrfutil:latest etc/docker/nrfutil
+
+#. Pull or build the :code:`nordicsemi/nrfconnect-chip` image.
 
    .. tabs::
 
@@ -523,6 +521,12 @@ Preparing the Build System
 
             # build the nrfconnect-chip image
             third_party/nrfconnect-chip-docker/nrfconnect-chip/build.sh --org nordicsemi
+
+#. Build the :code:`avahi/avahi-utils` image.
+
+   ::
+
+      docker build -t avahi/avahi-utils:latest etc/docker/avahi-utils
 
 References
 ----------
