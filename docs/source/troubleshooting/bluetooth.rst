@@ -40,35 +40,35 @@ In the container, the Bluetooth service is most likely not running.
 
 ::
 
-   rpi $ ps aux | grep bluetoothd
+   container$ ps aux | grep bluetoothd
 
 Make sure Bluetooth management is disabled on the RPi under :ref:`Preparing the RPi`.  A reboot is required after making this change.  The Bluetooth service should not be running on the host OS after the reboot.
 
 ::
 
-   container $ ps aux | grep bluetoothd
+   rpi$ ps aux | grep bluetoothd
 
 If this issue occurred after these steps have been taken, stop the container, restart the HCI from the host OS, and recreate the :code:`chip-device-ctrl` container.
 
 ::
 
    # make sure the interface is present
-   rpi $ sudo hciconfig hci0
+   rpi$ sudo hciconfig hci0
    # restart the interface
-   rpi $ sudo hciconfig hci0 reset
+   rpi$ sudo hciconfig hci0 reset
 
 Bluetooth management should now be running in the container.
 
 ::
 
-   container $ ps aux | grep bluetoothd
+   container$ ps aux | grep bluetoothd
 
 If issues persist, check that the HCI is present in the container and run :code:`bluetoothd` in debug mode to look for additional errors.
 
 ::
 
-   container $ sudo hciconfig hci0
-   container $ bluetoothd -d -n
+   container$ hciconfig hci0
+   container$ bluetoothd -d -n
 
 .. _BLE Connection Failures:
 
@@ -79,7 +79,7 @@ To make sure BLE connections work outside of :code:`chip-device-ctrl`, try :code
 
 ::
 
-   container $ bluetoothctl
+   container$ bluetoothctl
    [bluetooth]# scan on
    ...
    [NEW] Device <mac_address> MatterLight
@@ -99,9 +99,9 @@ If issues still persist, try stopping the container, disabling WiFi and/or setti
 ::
 
    # disable WiFi
-   rpi $ sudo rfkill block wifi
+   rpi$ sudo rfkill block wifi
    # set HCI to BLE only
-   rpi $ sudo btmgmt -i hci0 power off;sudo btmgmt -i hci0 bredr off;sudo btmgmt -i hci0 power on
+   rpi$ sudo btmgmt -i hci0 power off;sudo btmgmt -i hci0 bredr off;sudo btmgmt -i hci0 power on
 
 References
 ----------
