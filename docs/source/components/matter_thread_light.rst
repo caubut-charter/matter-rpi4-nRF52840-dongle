@@ -71,7 +71,7 @@ Flashing the Device
       docker run --rm \
        -v $PWD/build/lighting-app/nrfconnect/zephyr:/root \
        nordicsemi/nrfutil:latest pkg generate --hw-version 52 --sd-req=0x00 \
-       --application zephyr.hex --application-version 1 thread-matter-light.zip
+       --application zephyr.hex --application-version 1 matter-thread-light.zip
 
 #. Select an nRF52840 dongle for OTBR, note its MAC address, and plug it into an open USB port on the build system.
 
@@ -104,7 +104,7 @@ Flashing the Device
       docker run -it --rm \
        -v $PWD/build/lighting-app/nrfconnect/zephyr:/root \
        --device $(readlink -f $LIGHT_TTY):$(readlink -f $LIGHT_TTY) \
-       nordicsemi/nrfutil:latest dfu usb-serial -pkg thread-matter-light.zip -p $(readlink -f $LIGHT_TTY)
+       nordicsemi/nrfutil:latest dfu usb-serial -pkg matter-thread-light.zip -p $(readlink -f $LIGHT_TTY)
 
 Commissioning the Device
 ------------------------
