@@ -343,7 +343,18 @@ Preparing the RPi
 
    ::
 
-      docker build -t matter/chip-device-ctrl:latest etc/docker/chip-device-ctrl
+      docker build --build-arg CHIP_HASH=$(cd third_party/connectedhomeip && git rev-parse HEAD) \
+       -t matter/chip-device-ctrl:latest etc/docker/chip-device-ctrl
+
+#. Optionally, remove any build layers to recover disk space.
+
+   .. warning::
+
+      This will remove any build layers on the entire system, even for other users or other projects.
+
+   ::
+
+      docker image prune
 
 Preparing the Linux Desktop
 ---------------------------
@@ -479,7 +490,7 @@ Preparing the Build System
 
    ::
 
-      docker build --build-arg TZ=$(cat /etc/timezone) -t openthread/ot-commissioner:latest etc/docker/ot-commissioner
+      docker build -t openthread/ot-commissioner:latest etc/docker/ot-commissioner
 
 #. Build the :code:`nordicsemi/nrfutil` image.
 
@@ -527,6 +538,16 @@ Preparing the Build System
    ::
 
       docker build -t avahi/avahi-utils:latest etc/docker/avahi-utils
+
+#. Optionally, remove any build layers to recover disk space.
+
+   .. warning::
+
+      This will remove any build layers on the entire system, even for other users or other projects.
+
+   ::
+
+      docker image prune
 
 References
 ----------

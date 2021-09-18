@@ -117,22 +117,11 @@ Commissioning the Device
 
    .. tab:: chip-device-ctrl
 
-      .. note::
-
-         Building will occur in the :code:`build/chip-device-ctrl` directory.  Remove this directory first if a fresh build is desired.
+      #. From the RPi, run the :code:`chip-device-ctrl` container.
 
          ::
 
-            sudo rm -rf build/chip-device-ctrl
-
-      #. From the RPi, run the :code:`chip-device-ctrl` build environment.
-
-         ::
-
-            docker run -it --rm --net=host --privileged \
-             -v $PWD:/app \
-             -v $PWD/build/chip-device-ctrl:/app/third_party/connectedhomeip/out \
-             matter/chip-device-ctrl:latest /bin/bash
+            docker run -it --rm --net=host --privileged matter/chip-device-ctrl:latest /bin/bash
 
       #. In the container, make sure the Bluetooth service is running.  If it is not, see :ref:`Docker Container HCI Issues`.
 
@@ -140,24 +129,13 @@ Commissioning the Device
 
             ps aux | grep bluetoothd
 
-      #. Build and install :code:`chip-device-ctrl`.
-
-         .. note::
-
-            This step can be skipped if there was an existing build in the :code:`build/chip-device-ctrl` directory.
-
-         ::
-
-            scripts/build_python.sh -m platform
-
       #. Run :code:`chip-device-ctrl`.
 
          ::
 
-            source out/python_env/bin/activate
             out/python_env/bin/chip-device-ctrl --bluetooth-adapter=hci0
 
-      #. Reseat the dongle.  BLE advertisements are only enabled for 15 minutes after powering the dongle.
+      #. Reseat the dongle.  BLE advertisements are only enabled for 15 minutes after boot.
 
       #. Discovery the Matter Thread Light over BLE.
 
