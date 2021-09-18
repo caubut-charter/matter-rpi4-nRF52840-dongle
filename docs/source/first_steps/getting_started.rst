@@ -376,7 +376,7 @@ Preparing the Linux Desktop
    ::
 
       ping -c 1 matter-demo.local
-      export LAN_IF=$(arp -a | grep matter-demo | awk 'NF>1{print $NF}')
+      export LAN_IF=$(arp -a | grep $(avahi-resolve -4 --name matter-demo.local | awk '{print $2}') | awk 'NF>1{print $NF}')
       echo $LAN_IF
 
 #. Create a docker network attached to the host's broadcast domain.
