@@ -487,7 +487,7 @@ Preparing the Build System
 
    ::
 
-      docker build --build-arg TZ=$(cat /etc/timezone) -t openthread/ot-commissioner:latest /etc/docker/ot-commissioner
+      docker build --build-arg TZ=$(cat /etc/timezone) -t openthread/ot-commissioner:latest etc/docker/ot-commissioner
 
 #. Pull or build the :code:`nrfconnect-chip` image.
 
