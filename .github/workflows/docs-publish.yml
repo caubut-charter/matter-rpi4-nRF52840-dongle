@@ -28,6 +28,7 @@ jobs:
          git config --local user.name "GitHub Action"
          git checkout --orphan gh-pages
          git reset
+         git add .nojekyll
          git add docs/build/html/* -f
          git mv docs/build/html/* ./ -k
          git commit -m "docs: update hosted version"
