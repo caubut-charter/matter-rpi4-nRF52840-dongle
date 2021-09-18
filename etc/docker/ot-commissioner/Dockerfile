@@ -1,10 +1,5 @@
 FROM openthread/environment:latest AS builder
 
-ARG DEBIAN_FRONTEND noninteractive
-ARG TZ America/Denver
-ENV LC_ALL=C.UTF-8
-ENV LANG=C.UTF-8
-
 RUN set -x \
     && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
     && echo $TZ > /etc/timezone \
@@ -20,17 +15,9 @@ RUN set -x \
 
 FROM ubuntu:18.04
 
-ARG DEBIAN_FRONTEND noninteractive
-ARG TZ America/Denver
-ENV LC_ALL=C.UTF-8
-ENV LANG=C.UTF-8
-
 RUN set -x \
-    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
-    && echo $TZ > /etc/timezone \
     && apt-get update && apt-get upgrade -y \
-    && apt-get install -y locales \
-    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
+    && echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections \
     && apt-get install --no-install-recommends -fy libreadline7 \
     && apt-get -y clean && apt-get -y autoremove \
     && rm -rf /tmp/* /var/lib/apt/lists/* ~/.cache/*

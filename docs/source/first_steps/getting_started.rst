@@ -42,7 +42,7 @@ This guide covers multiple configurations for building and running the demo.  Th
      - `Raspberry Pi`_ 4B ("RPi" in this guide, RPi 4B used)
      - 3x `nRF52840 Dongle`_
      - External 5V AC RPi adapter (CanaKit 3.5A USB-C Used)
-     - 32Gb+ microSD card ("SD card" in this guide, 32Gb EVO+ Class 10 used)
+     - 64Gb+ microSD card ("SD card" in this guide, 64Gb EVO+ Class 10 used)
      - microSD card reader
      - Ethernet cable
 
@@ -52,8 +52,8 @@ This guide covers multiple configurations for building and running the demo.  Th
      - `Raspberry Pi`_ 4B ("RPi" in this guide)
      - 3x `nRF52840 Dongle`_
      - External 5V AC RPi adapter (CanaKit 3.5A USB-C Used)
-     - microSD card ("SD card" in this guide, 32Gb EVO+ Class 10 used)
-     - 32Gb+ microSD card reader
+     - microSD card ("SD card" in this guide, just to hold bootloader, 32Gb EVO+ Class 10 used)
+     - microSD card reader
      - Ethernet cable
      - powered USB 3.0 hub (Sabrent 5V/2.5A 4-port USB 3.0 hub used)
      - external USB SSD (Samsung T7 500GB SSD used)
@@ -343,7 +343,18 @@ Preparing the RPi
 
    ::
 
-      docker build -t matter/chip-device-ctrl:latest etc/docker/chip-device-ctrl
+      docker build --build-arg CHIP_HASH=$(cd third_party/connectedhomeip && git rev-parse HEAD) \
+       -t matter/chip-device-ctrl:latest etc/docker/chip-device-ctrl
+
+#. Optionally, remove any build layers to recover disk space.
+
+   .. warning::
+
+      This will remove any build layers on the entire system, even for other users or other projects.
+
+   ::
+
+      docker image prune
 
 Preparing the Linux Desktop
 ---------------------------
@@ -479,7 +490,7 @@ Preparing the Build System
 
    ::
 
-      docker build --build-arg TZ=$(cat /etc/timezone) -t openthread/ot-commissioner:latest etc/docker/ot-commissioner
+      docker build -t openthread/ot-commissioner:latest etc/docker/ot-commissioner
 
 #. Build the :code:`nordicsemi/nrfutil` image.
 
@@ -527,6 +538,16 @@ Preparing the Build System
    ::
 
       docker build -t avahi/avahi-utils:latest etc/docker/avahi-utils
+
+#. Optionally, remove any build layers to recover disk space.
+
+   .. warning::
+
+      This will remove any build layers on the entire system, even for other users or other projects.
+
+   ::
+
+      docker image prune
 
 References
 ----------
