@@ -28,6 +28,7 @@ jobs:
          git config --local user.name "GitHub Action"
          git checkout --orphan gh-pages
          git reset
+         touch .nojekyll
          git add .nojekyll
          git add docs/build/html/* -f
          git mv docs/build/html/* ./ -k
