@@ -473,7 +473,7 @@ Preparing the Build System
 
 #. Build the :code:`openthread/ot-commissioner` image.
 
-   .. warning:
+   .. warning::
 
       If building on the RPi, the :code:`openthread/environment` image must finish building first.
 

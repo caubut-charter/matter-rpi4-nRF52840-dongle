@@ -32,7 +32,7 @@ Resolving IPv6 Hostnames
        --sysctl "net.ipv6.conf.all.disable_ipv6=0" \
        avahi/avahi-utils:latest avahi-resolve -6 --name otbr.local
 
-Resolving IPv6 Hostnames
+Resolving IPv4 Hostnames
 ------------------------
 
    .. warning:: The chosen IPv4 address must be unique from other docker containers on the host's broadcast domain to ensure a unique MAC address is generated.
