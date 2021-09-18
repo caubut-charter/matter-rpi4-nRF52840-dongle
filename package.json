@@ -1,0 +1,33 @@
+{
+  "name": "matter-rpi4-nRF52840-dongle",
+  "version": "0.0.1",
+  "description": "This project is a walk-through of `building with Matter.",
+  "license": "CC0-1.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle.git"
+  },
+  "author": "Christopher Aubut <christopher.aubut@charter.com>",
+  "dependencies": {
+    "@commitlint/cli": "^13.1.0",
+    "@commitlint/config-conventional": "^13.1.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^7.0.2"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "devDependencies": {
+    "npm-check-updates": "^11.8.5"
+  }
+}

@@ -1,0 +1,38 @@
+name: DOCS-PUBLISH
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+      - uses: actions/cache@v2
+        id: cached-poetry-dependencies
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+      - run: poetry install --no-interaction --no-root
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      - run: poetry run make -C docs html
+      - run: |
+         git config --local user.email "action@github.com"
+         git config --local user.name "GitHub Action"
+         git checkout --orphan gh-pages
+         git reset
+         git add docs/build/html/* -f
+         git mv docs/build/html/* ./ -k
+         git commit -m "docs: update hosted version"
+      - uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          force: true
+          branch: gh-pages
