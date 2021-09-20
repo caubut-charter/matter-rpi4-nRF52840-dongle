@@ -9,8 +9,10 @@
 Matter Thread Light
 ===================
 
-Building the Device Image
--------------------------
+This section covers building a Matter Thread light accessory on an nRF52840 dongle and commissioning it onto the OTBR Thread network.
+
+Building the Accessory Image
+----------------------------
 
 #. From the build system, run the nRF Connect Matter build environment.
 
@@ -24,7 +26,7 @@ Building the Device Image
 
    .. note::
 
-      The nRF Connect SDK is cached in the :code:`build/nrf-sdk` directory so it can be reused for other projects.  Remove this directory first if a fresh build is desired.
+      The nRF Connect SDK is cached in the :code:`build/nrf-sdk` directory so it can be reused for other builds.  Remove this directory first if a fresh build is desired.
 
       ::
 
@@ -61,8 +63,9 @@ Building the Device Image
 
       exit
 
-Flashing the Device
--------------------
+
+Flashing the Accessory
+----------------------
 
 #. From the build system, generate the nRF52840 dongle firmware package.
 
@@ -82,7 +85,7 @@ Flashing the Device
    .. image:: ../_static/nRF52840_dongle_mac.png
       :align: center
 
-#. Press the reset button on the dongle to put it into DFU mode.  A red LED on the dongle will start blinking.  The push button is on the far side of the board from the USB connector.  Note that the button does not face up. It will have to push it from the outside in, towards the USB connector.
+#. Press the reset button on the dongle to put it into DFU mode.  A red LED on the dongle will start blinking.  The reset button is on the far side of the board from the USB connector.  Note that the button does not face up. It will have to push it from the outside in, towards the USB connector.
 
    .. image:: ../_static/nRF52840_dongle_press_reset.svg
       :align: center

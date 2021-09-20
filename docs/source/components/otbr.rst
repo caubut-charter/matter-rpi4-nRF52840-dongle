@@ -80,7 +80,7 @@ Flashing the RCP
    .. image:: ../_static/nRF52840_dongle_mac.png
       :align: center
 
-#. Press the reset button on the dongle to put it into DFU mode.  A red LED on the dongle will start blinking.  The push button is on the far side of the board from the USB connector.  Note that the button does not face up. It will have to push it from the outside in, towards the USB connector.
+#. Press the reset button on the dongle to put it into DFU mode.  A red LED on the dongle will start blinking.  The reset button is on the far side of the board from the USB connector.  Note that the button does not face up. It will have to push it from the outside in, towards the USB connector.
 
    .. image:: ../_static/nRF52840_dongle_press_reset.svg
       :align: center

@@ -1,11 +1,11 @@
 DNS-SD Troubleshooting
 ======================
 
-The :code:`avahi-utils` image allows checking of DNS-SD results from what docker containers will see on the :code:`matter-bridge` network.  This is useful from the RPi as DNS-SD records will leak from the :code:`docker0` interface with incorrect addresses if commands are run from the host.  The following examples assume the OTBR service is running and configured.
+The :code:`avahi-utils` image allows checking of DNS-SD results from what docker containers will see on the :code:`matter-bridge` network.  This is useful from the RPi as DNS-SD records will leak from the :code:`docker0` interface with incorrect addresses when commands are run from the host.  The following examples assume the OTBR service is running and configured.
 
 
-Scanning Services
------------------
+Scanning for Services
+---------------------
 
    .. warning:: The chosen IPv4 address must be unique from other docker containers on the host's broadcast domain to ensure a unique MAC address is generated.
 

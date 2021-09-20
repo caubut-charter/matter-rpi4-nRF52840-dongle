@@ -14,7 +14,7 @@ The following error may occur if multiple nRF52840 Dongles are connected to the 
 
    usb1.USBErrorNoDevice: LIBUSB_ERROR_NO_DEVICE
 
-If the build system is the RPi, the OTBR service will need be rebuilt and reconfigured.  Stop the image which automatically removes it and re-run :ref:`Setting Up OTBR` and :ref:`Verifying OTBR`.
+If the build system is the RPi, the OTBR service will need to be rebuilt and reconfigured.  Stop the image which automatically removes it and re-run :ref:`Setting Up OTBR` and :ref:`Verifying OTBR`.
 
 ::
 

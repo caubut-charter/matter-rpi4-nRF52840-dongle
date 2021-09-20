@@ -18,6 +18,7 @@ This project is a walk-through of `building with Matter`_!
    :maxdepth: 2
    :caption: First steps
 
+   first_steps/introduction
    first_steps/getting_started
 
 .. toctree::
@@ -42,9 +43,3 @@ This project is a walk-through of `building with Matter`_!
    contributing/conventional_commits
    contributing/documentation
    contributing/updating_dependencies
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`search`
