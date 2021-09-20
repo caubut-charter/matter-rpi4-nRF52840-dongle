@@ -42,13 +42,13 @@ In the container, the Bluetooth service is most likely not running.
 
    container$ ps aux | grep bluetoothd
 
-Make sure Bluetooth management is disabled on the RPi under :ref:`Preparing the RPi`.  A reboot is required after making this change.  The Bluetooth service should not be running on the host OS after the reboot.
+Make sure Bluetooth management is disabled on the RPi under :ref:`Preparing the RPi`.  A reboot is required after making this change.  The Bluetooth service should not be running on the host after the reboot.
 
 ::
 
    rpi$ ps aux | grep bluetoothd
 
-If this issue occurred after these steps have been taken, stop the container, restart the HCI from the host OS, and recreate the :code:`chip-device-ctrl` container.
+If this issue occurred after these steps have been taken, stop the container, restart the HCI from the host, and recreate the :code:`chip-device-ctrl` container.
 
 ::
 
@@ -57,7 +57,7 @@ If this issue occurred after these steps have been taken, stop the container, re
    # restart the interface
    rpi$ sudo hciconfig hci0 reset
 
-Bluetooth management should now be running in the container.
+In the container, Bluetooth management should now be running.
 
 ::
 
@@ -75,7 +75,7 @@ If issues persist, check that the HCI is present in the container and run :code:
 BLE Connection Failures
 -----------------------
 
-To make sure BLE connections work outside of :code:`chip-device-ctrl`, try :code:`bluetoothctl` from inside the container.
+In the container, make sure BLE connections work outside of :code:`chip-device-ctrl` by testing with :code:`bluetoothctl`.
 
 ::
 

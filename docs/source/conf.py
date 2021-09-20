@@ -62,3 +62,10 @@ highlight_language = 'bash'
 
 def setup(app):
     app.add_css_file('my_theme.css')
+
+html_context = {
+  'display_github': True,
+  'github_user': 'caubut-charter',
+  'github_repo': 'matter-rpi4-nRF52840-dongle',
+  'github_version': 'main/docs/source/',
+}

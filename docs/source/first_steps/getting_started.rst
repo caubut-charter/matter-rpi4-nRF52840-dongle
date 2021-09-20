@@ -10,15 +10,6 @@
 Getting Started
 ===============
 
-Project Components
-------------------
-
-- :doc:`../components/otbr`
-- :doc:`../components/matter_thread_light` (WIP)
-- Matter Ethernet Light (TODO)
-- Matter LAN Controller (TODO)
-- Matter Cloud Controller (TODO)
-
 Project Requirements
 --------------------
 
@@ -64,7 +55,7 @@ This guide covers multiple configurations for building and running the demo.  Th
 
 .. note::
 
-   The Linux Desktop/Desktop PC and RPi will must be connected to the same LAN.
+   The Linux Desktop/Desktop PC and RPi must be connected to the same LAN.
 
 .. warning::
 
@@ -239,12 +230,6 @@ Preparing the RPi
       # overwrite the hostname and verify
       echo matter-demo | sudo tee /etc/hostname
       cat /etc/hostname
-
-#. Set the RPi to the desired timezone.
-
-   ::
-
-      sudo timedatectl set-timezone America/Denver
 
 #. Update the system.
 
