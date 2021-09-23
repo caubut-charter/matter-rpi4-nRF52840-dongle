@@ -73,10 +73,6 @@ Flashing the RCP
 
 #. Select an nRF52840 dongle for OTBR, note its MAC address, and plug it into an open USB port on the build system.
 
-   .. note::
-
-      If the dongle was already plugged in, reseat the device.  Flashing sometimes stalls at 0% if not reseated.
-
    .. image:: ../_static/nRF52840_dongle_mac.png
       :align: center
 
@@ -85,7 +81,7 @@ Flashing the RCP
    .. image:: ../_static/nRF52840_dongle_press_reset.svg
       :align: center
 
-   Source: https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_nrf52840_dongle%2FUG%2Fnrf52840_Dongle%2Fhw_button_led.html
+   Source: https://docs.zephyrproject.org/latest/boards/arm/nrf52840dongle_nrf52840/doc/index.html#programming-and-debugging
 
 #. Capture the absolute path to the static symlink of this dongle by matching the MAC address (all caps no delimiters) with the following command.
 

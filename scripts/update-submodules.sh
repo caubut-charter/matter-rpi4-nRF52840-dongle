@@ -12,4 +12,4 @@ git submodule foreach --recursive git reset --hard
  && git checkout main && git pull && git submodule update --init --recursive)
 
 (cd third_party/nrfconnect-chip-docker \
- && git checkout main && git pull && git submodule update --init --recursive)
+ && git checkout master && git pull && git submodule update --init --recursive)

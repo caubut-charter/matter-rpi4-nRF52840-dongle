@@ -9,8 +9,7 @@ RUN set -x \
     && apt-get --no-install-recommends install -y git gcc g++ python pkg-config libssl-dev libdbus-1-dev libglib2.0-dev libavahi-client-dev ninja-build python3-venv python3-dev python3-pip unzip libgirepository1.0-dev libcairo2-dev bluez \
     && git clone https://github.com/project-chip/connectedhomeip.git . \
     && git checkout $CHIP_HASH \
-    && scripts/build_python.sh -m platform \
-    && apt-get -y remove git gcc g++ python pkg-config libssl-dev libdbus-1-dev libglib2.0-dev libavahi-client-dev ninja-build python3-venv python3-dev python3-pip unzip libgirepository1.0-dev libcairo2-dev bluez
+    && scripts/build_python.sh -m platform
 
 FROM ubuntu:20.10
 
