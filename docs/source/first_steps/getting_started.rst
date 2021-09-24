@@ -489,9 +489,7 @@ Preparing the Build System
 
             # nrfconnect-toolchain Dockerfile patch
             sed -i \
-             -e '/NRF_TOOLS_URL/d' \
-             -e '/JLink/d' \
-             -e '/nRF-Command-Line-Tools/d' \
+             -e '44,52d' \
              -e 's/\(libpython3-dev\) \\/\1 make \\/' \
              -e 's/gcc-arm-none-eabi-9-2019-q4-major/gcc-arm-none-eabi-9-2020-q2-update/' \
              third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile
@@ -507,7 +505,8 @@ Preparing the Build System
              third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile
 
             # build the nrfconnect-chip image
-            third_party/nrfconnect-chip-docker/nrfconnect-chip/build.sh --org nordicsemi
+            DOCKER_BUILD_ARGS="--build-arg CHIP_REVISION=$(cd third_party/connectedhomeip && git rev-parse HEAD)" \
+             third_party/nrfconnect-chip-docker/nrfconnect-chip/build.sh --org nordicsemi
 
 #. Build the :code:`avahi/avahi-utils` image.
 
