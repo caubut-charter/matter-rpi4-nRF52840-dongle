@@ -157,6 +157,10 @@ Commissioning the Device
 
 #. Using the output above, connect to the Matter Thread Light over BLE.  The pin code should be hard coded to :code:`20202021`.  The LED should show a *Rapid Even Flashing (100 ms on/100 ms off)*.  See :ref:`BLE Connection Failures` for troubleshooting if the connection fails.
 
+   .. warning::
+
+      This step is currently failing.  Watching https://github.com/project-chip/connectedhomeip/issues/9948 to see if it resolves.
+
    ::
 
       # example: connect -ble 3840 20202021 123456
