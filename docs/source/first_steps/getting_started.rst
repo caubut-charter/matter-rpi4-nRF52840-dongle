@@ -493,6 +493,7 @@ Preparing the Build System
              -e '/JLink/d' \
              -e '/nRF-Command-Line-Tools/d' \
              -e 's/\(libpython3-dev\) \\/\1 make \\/' \
+             -e 's/gcc-arm-none-eabi-9-2019-q4-major/gcc-arm-none-eabi-9-2020-q2-update/' \
              third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile
 
             # build the nrfconnect-toolchain image

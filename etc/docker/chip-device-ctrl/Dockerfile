@@ -1,4 +1,4 @@
-FROM ubuntu:20.10 AS builder
+FROM ubuntu:21.04 AS builder
 
 ARG CHIP_HASH=master
 
