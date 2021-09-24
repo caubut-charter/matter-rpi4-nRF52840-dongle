@@ -2,6 +2,7 @@ FROM ubuntu:21.04
 
 RUN set -x \
     && apt-get update && apt-get upgrade -y \
+    && echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections \
     && apt-get install --no-install-recommends -y ca-certificates git build-essential cmake ninja-build libudev-dev libusb-1.0-0 swig python3 python3-pip libpython3-dev \
     && python3 -m pip install --upgrade pip \
     # clone Nordic's version of vcpkg
@@ -26,12 +27,16 @@ RUN set -x \
     # build nrf-ble-driver-py
     && CMAKE_PREFIX_PATH=$PWD/../vcpkg/installed/$(uname -m)-linux/share/nrf-ble-driver python3 setup.py bdist_wheel --build-type Release \
     # install nrf-ble-driver-py
-    && python3 -m pip install dist/*) \
-    # install known working version of nrfutil
-    && python3 -m pip install -U nrfutil==6.1.0 \
+    && python3 -m pip install --ignore-requires-python dist/*) \
+    # install known working version of nrfutil \
+    && git clone https://github.com/NordicSemiconductor/pc-nrfutil.git /pc-nrfutil \
+    && (cd /pc-nrfutil \
+    && git checkout v6.1 \
+    && python3 -m pip install --ignore-requires-python .) \
     # clean up
     && rm -rf /vcpkg \
     && rm -rf /pc-ble-driver-py \
+    && rm -rf /pc-nrfutil \
     && apt-get -y remove ca-certificates git build-essential cmake ninja-build libudev-dev swig python3-pip libpython3-dev \
     && apt-get -y clean && apt-get -y autoremove \
     && rm -rf /tmp/* /var/lib/apt/lists/* ~/.cache/*
