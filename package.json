@@ -1,7 +1,7 @@
 {
   "name": "matter-rpi4-nRF52840-dongle",
   "version": "0.0.1",
-  "description": "This project is a walk-through of `building with Matter.",
+  "description": "This project is a walk-through of building with Matter.",
   "license": "CC0-1.0",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

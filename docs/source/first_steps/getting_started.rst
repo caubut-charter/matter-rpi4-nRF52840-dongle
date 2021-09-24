@@ -453,16 +453,6 @@ Preparing the Build System
             sed -i '/python3 -m pip install -U cmake/i \    && python3 -m pip install --upgrade pip \\' \
              third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile
 
-            # **NEW 9/15/2021 Dockerfile patch**
-            # developer.arm.com updated their certificate and the intermediate certifcate
-            # is missing from the ca-certificates package
-            sed -i \
-            -e '/cd openthread/i \    && apt-get install -y wget \\' \
-            -e '/cd openthread/i \    && wget https:\/\/secure.globalsign.com\/cacert\/gsrsaovsslca2018.crt -P \/tmp \\' \
-            -e '/cd openthread/i \    && openssl x509 -inform der -in \/tmp\/gsrsaovsslca2018.crt -out \/tmp\/gsrsaovsslca2018.pem \\' \
-            -e '/cd openthread/i \    && mv /tmp/gsrsaovsslca2018.pem "\/etc\/ssl\/certs\/$(openssl x509 -noout -subject_hash -in \/tmp\/gsrsaovsslca2018.pem).0" \\' \
-             third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile
-
             # build the image
             (cd third_party/connectedhomeip/third_party/openthread/repo \
              && docker build -t openthread/environment:latest -f etc/docker/environment/Dockerfile .)
@@ -499,14 +489,13 @@ Preparing the Build System
 
             # nrfconnect-toolchain Dockerfile patch
             sed -i \
-             -e '/NRF_TOOLS_URL/d' \
-             -e '/JLink/d' \
-             -e '/nRF-Command-Line-Tools/d' \
+             -e '44,52d' \
              -e 's/\(libpython3-dev\) \\/\1 make \\/' \
+             -e 's/gcc-arm-none-eabi-9-2019-q4-major/gcc-arm-none-eabi-9-2020-q2-update/' \
              third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile
 
             # build the nrfconnect-toolchain image
-            DOCKER_BUILD_ARGS='--build-arg TOOLCHAIN_URL=https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/9-2020q2/gcc-arm-none-eabi-9-2020-q2-update-aarch64-linux.tar.bz2' \
+            DOCKER_BUILD_ARGS="--build-arg TOOLCHAIN_URL=https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2020q2/gcc-arm-none-eabi-9-2020-q2-update-$(uname -m)-linux.tar.bz2" \
              third_party/nrfconnect-chip-docker/nrfconnect-toolchain/build.sh --org nordicsemi
 
             # nrfconnect-chip Dockerfile patch
@@ -516,7 +505,8 @@ Preparing the Build System
              third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile
 
             # build the nrfconnect-chip image
-            third_party/nrfconnect-chip-docker/nrfconnect-chip/build.sh --org nordicsemi
+            DOCKER_BUILD_ARGS="--build-arg CHIP_REVISION=$(cd third_party/connectedhomeip && git rev-parse HEAD)" \
+             third_party/nrfconnect-chip-docker/nrfconnect-chip/build.sh --org nordicsemi
 
 #. Build the :code:`avahi/avahi-utils` image.
 
