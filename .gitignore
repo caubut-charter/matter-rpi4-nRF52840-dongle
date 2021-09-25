@@ -1,4 +1,6 @@
 .husky
+third_party
+
 
 ##
 # https://github.com/github/gitignore/blob/master/Global/Vim.gitignore
