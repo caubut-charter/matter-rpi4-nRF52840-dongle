@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+declare -A ENV
+REPOS=()
+declare -A URL
+declare -A BRANCH
+declare -A COMMIT
+
+(
+  cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+  cd ..
+  while IFS== read -r key value; do
+    if [[ $key == '' || $value = '' || $key =~ ^[[:space:]]*#.*$ ]]; then
+      continue
+    fi
+    ENV[$key]=$value
+  done < ".env"
+  for key in "${!ENV[@]}"; do
+    REPOS+=(${key%_*})
+    declare -n array="${key##*_}"
+    array[${key%_*}]=${ENV[$key]}
+    unset -n array
+  done
+  REPOS=($(printf "%s\n" "${REPOS[@]}" | uniq))
+  mkdir -p third_party
+  (
+    cd third_party
+    for key in ${REPOS[@]}; do
+      (
+        DIR=$(TMP=${URL[$key]##*/};echo ${TMP%.*})
+        if [[ ! -d $PATH ]]; then mkdir -p $DIR; fi
+        cd $DIR
+        if [[ $(git rev-parse --git-dir 2> /dev/null) != '.git' ]]; then
+          git clone -j8 ${URL[$key]} .
+        fi
+        git fetch
+        git reset --hard
+        if [[ -z ${COMMIT[$key]} ]]; then
+          git checkout origin/${BRANCH[$key]}
+        else
+          git checkout ${COMMIT[$key]}
+        fi
+        git submodule update --init --recursive
+      )
+    done
+  )
+)
