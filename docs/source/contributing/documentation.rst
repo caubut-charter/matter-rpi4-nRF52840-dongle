@@ -10,8 +10,17 @@ Documentation for this project is built using Sphinx_ which requires `Python>=3.
 Environment Setup
 -----------------
 
+The envrionment setup is tailored to Ubuntu Linux systems.  See the host system's documentation for running on other system types.
+
 ::
 
+   # update system package sources
+   apt-get update
+   # install make for building the documentation
+   sudo apt-get install make
+   # (optional) install certbot for Let's Encrypts
+   sudo apt-get install certbot
+   # install python package dependencies
    poetry install
 
 Generating the Documentation
@@ -54,7 +63,7 @@ Starting the Web Server
 
          sudo cp -rL /etc/letsencrypt/live/${MATTER_EXAMPLE_DOCS_FQDN} certs
 
-         docker run -it --name=matter-example-docs \
+         docker run -it --rm --name=matter-example-docs \
           -v $PWD/docs/build/html:/etc/nginx/html:ro \
           -v $PWD/nginx.conf:/etc/nginx/conf.d/nginx.conf \
           -v $PWD/certs:/etc/nginx/certs \
@@ -70,7 +79,7 @@ Incremental updates can be built using the same command as generating the docume
 
    poetry run make -C docs html
 
-Cleaning the build directory will break the docker volume and requires restarting the web server container.
+Cleaning the build directory will break the docker volume and requires restarting the web server container.  This step is neccessary to rebuild the table of contents on every page when adding or removing new pages.  Incremental updates only rebuild pages that changed.
 
 ::
 

@@ -291,27 +291,50 @@ Preparing the RPi
 
          ::
 
-            git clone --recursive -j4 https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle.git
+            # clone the repository
+            git clone https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle.git
             cd matter-rpi4-nRF52840-dongle
+
+            # setup third-party dependencies
+            ./scripts/setup
 
       .. group-tab:: Update
 
          .. warning::
 
-            Make sure any changes to main are saved in another branch or they will be lost.
+            Changes to the current branch will be reset.  If desired, stash or save in another branch or they will be lost.
 
          ::
 
-            # change branch to main
-            git checkout main
-            # make local main the same as remote main (for the commit we are on locally)
-            git reset --hard origin/main
-            # do the same for every submodule (reverts any patches, build artifacts, etc.)
-            git submodule foreach --recursive git reset --hard
-            # update local main to match upstream's main (updates submodule git refs but not the files)
-            git pull
-            # update submodules for all the updated git refs
-            git submodule update --init --recursive
+            # fetch changes from the upstream repository
+            git fetch
+            # reset any changes
+            git reset --hard
+            # update local main to origin main
+            git checkout -B main origin/main
+            # update third-party dependencies
+            ./scripts/setup
+
+#. Optionally, update third-party dependencies.  Third-party dependencies are defined in :code:`.third_party` and are fixed to specific commits (like git submodules) last tested with this guide.  Due to the frequent activity in each third-party repository, the setup script can also be used to update a third-party dependency to the latest version, the latest version of a specific branch, or a specific commit.  Below are some examples.
+
+   ::
+
+      # update all third-party dependencies to their latest version
+      ./scripts/setup -u
+
+      # update all third-party dependencies to match .third_party,
+      # except switch to the latest commit in the stable 'test_event_6' branch
+      # of the connectedhomeip project
+      MATTER_BRANCH=test_event_6 scripts/setup
+
+      # update all third-party dependencies to their latest version,
+      # except switch to the latest commit in the stable 'test_event_6' branch
+      # of the connectedhomeip project
+      MATTER_BRANCH=test_event_6 scripts/setup -u
+
+      # update all third-party dependencies to match .third_party,
+      # except switch to a specific commit of the connectedhomeip project
+      MATTER_COMMIT=<hash> scripts/setup
 
 #. Build the :code:`openthread/otbr` image.
 
@@ -324,18 +347,19 @@ Preparing the RPi
       (cd third_party/ot-br-posix \
        && docker build --build-arg INFRA_IF_NAME=eth1 -t openthread/otbr:latest -f etc/docker/Dockerfile .)
 
-#. Build the :code:`matter/chip-device-ctrl` image.
+#. Build the required docker images.
 
    ::
 
-      docker build --build-arg CHIP_HASH=$(cd third_party/connectedhomeip && git rev-parse HEAD) \
-       -t matter/chip-device-ctrl:latest etc/docker/chip-device-ctrl
+      ./scripts/docker-build \
+       --openthread/otbr \
+       --matter/environment
 
 #. Optionally, remove any build layers to recover disk space.
 
    .. warning::
 
-      This will remove any build layers on the entire system, even for other users or other projects.
+      This will remove any build layers and untagged images not attached to a container on the entire system, even for other users or projects.
 
    ::
 
@@ -401,28 +425,50 @@ Preparing the Linux Desktop
 
          ::
 
-            git clone --recursive -j8 https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle.git
+            # clone the repository
+            git clone https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle.git
             cd matter-rpi4-nRF52840-dongle
+
+            # setup third-party dependencies
+            ./scripts/setup
 
       .. group-tab:: Update
 
          .. warning::
 
-            Make sure any changes to main are saved in another branch or they will be lost.
+            Changes to the current branch will be reset.  If desired, stash or save in another branch or they will be lost.
 
          ::
 
-            # change branch to main
-            git checkout main
-            # make local main the same as remote main (for the commit we are on locally)
-            git reset --hard origin/main
-            # do the same for every submodule (reverts any patches, build artifacts, etc.)
-            git submodule foreach --recursive git reset --hard
-            # update local main to match upstream's main (updates submodule git refs but not the files)
-            git pull
-            # update submodules for all the updated git refs
-            git submodule update --init --recursive
+            # fetch changes from the upstream repository
+            git fetch
+            # reset any changes
+            git reset --hard
+            # update local main to origin main
+            git checkout -B main origin/main
+            # update third-party dependencies
+            ./scripts/setup
 
+#. Optionally, update third-party dependencies.  Third-party dependencies are defined in :code:`.third_party` and are fixed to specific commits (like git submodules) last tested with this guide.  Due to the frequent activity in each third-party repository, the setup script can also be used to update a third-party dependency to the latest version, the latest version of a specific branch, or a specific commit.  Below are some examples.
+
+   ::
+
+      # update all third-party dependencies to their latest version
+      ./scripts/setup -u
+
+      # update all third-party dependencies to match .third_party,
+      # except switch to the latest commit in the stable 'test_event_6' branch
+      # of the connectedhomeip project
+      MATTER_BRANCH=test_event_6 scripts/setup
+
+      # update all third-party dependencies to their latest version,
+      # except switch to the latest commit in the stable 'test_event_6' branch
+      # of the connectedhomeip project
+      MATTER_BRANCH=test_event_6 scripts/setup -u
+
+      # update all third-party dependencies to match .third_party,
+      # except switch to a specific commit of the connectedhomeip project
+      MATTER_COMMIT=<hash> scripts/setup
 
 Preparing the Build System
 --------------------------
@@ -431,94 +477,22 @@ Preparing the Build System
 
    For an **RPi + Linux Desktop** configuration, the "build system" will be the Linux Desktop.  For an **RPi Only** or **RPi + SSD** configuration, the "build system" will be the RPi.
 
-#. Pull or build the :code:`openthread/environment` image.
-
-   .. tabs::
-
-      .. group-tab:: RPi + Linux Desktop
-
-         ::
-
-            docker pull openthread/environment:latest
-
-      .. group-tab:: RPi Only / RPi + SSD
-
-         .. note::
-
-            This patch updates :code:`pip` so the binary wheel of :code:`cmake` can be pulled on some architectures (i.e. ARM64).  The dependencies to build from source are not present on the base image nor are they installed as part of the :code:`Dockerfile`.
-
-         ::
-
-            # Dockerfile patch
-            sed -i '/python3 -m pip install -U cmake/i \    && python3 -m pip install --upgrade pip \\' \
-             third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile
-
-            # build the image
-            (cd third_party/connectedhomeip/third_party/openthread/repo \
-             && docker build -t openthread/environment:latest -f etc/docker/environment/Dockerfile .)
-
-#. Build the :code:`openthread/ot-commissioner` image.
-
-   .. warning::
-
-      If building on the RPi, the :code:`openthread/environment` image must finish building first.
+#. Build the required docker images.
 
    ::
 
-      docker build -t openthread/ot-commissioner:latest etc/docker/ot-commissioner
-
-#. Build the :code:`nordicsemi/nrfutil` image.
-
-   ::
-
-      docker build -t nordicsemi/nrfutil:latest etc/docker/nrfutil
-
-#. Pull or build the :code:`nordicsemi/nrfconnect-chip` image.
-
-   .. tabs::
-
-      .. group-tab:: RPi + Linux Desktop
-
-         ::
-
-            docker pull nordicsemi/nrfconnect-chip:latest
-
-      .. group-tab:: RPi Only / RPi + SSD
-
-         ::
-
-            # nrfconnect-toolchain Dockerfile patch
-            sed -i \
-             -e '44,52d' \
-             -e 's/\(libpython3-dev\) \\/\1 make \\/' \
-             -e 's/gcc-arm-none-eabi-9-2019-q4-major/gcc-arm-none-eabi-9-2020-q2-update/' \
-             third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile
-
-            # build the nrfconnect-toolchain image
-            DOCKER_BUILD_ARGS="--build-arg TOOLCHAIN_URL=https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2020q2/gcc-arm-none-eabi-9-2020-q2-update-$(uname -m)-linux.tar.bz2" \
-             third_party/nrfconnect-chip-docker/nrfconnect-toolchain/build.sh --org nordicsemi
-
-            # nrfconnect-chip Dockerfile patch
-            sed -i \
-             -e 's/amd64/arm64/' \
-             -e 's/g++-multilib //' \
-             third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile
-
-            # build the nrfconnect-chip image
-            DOCKER_BUILD_ARGS="--build-arg CHIP_REVISION=$(cd third_party/connectedhomeip && git rev-parse HEAD)" \
-             third_party/nrfconnect-chip-docker/nrfconnect-chip/build.sh --org nordicsemi
-
-#. Build the :code:`avahi/avahi-utils` image.
-
-   ::
-
-      docker build -t avahi/avahi-utils:latest etc/docker/avahi-utils
+      ./scripts/docker-build \
+       --avahi/avahi-utils \
+       --openthread/environment \
+       --openthread/ot-commissioner \
+       --nordicsemi/nrfconnect-chip \
+       --nordicsemi/nrfutil
 
 #. Optionally, remove any build layers to recover disk space.
 
    .. warning::
 
-      This will remove any build layers on the entire system, even for other users or other projects.
+      This will remove any build layers and untagged images not attached to a container on the entire system, even for other users or projects.
 
    ::
 

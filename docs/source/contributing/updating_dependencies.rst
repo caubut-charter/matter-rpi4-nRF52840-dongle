@@ -10,47 +10,52 @@ All updates should be done from upstream's main.
 
 .. warning::
 
-   Make sure any changes to main are saved in another branch or they will be lost.
+   Changes to the current branch will be reset.  If desired, stash or save in another branch or they will be lost.
 
 ::
 
-   # change branch to main
-   git checkout main
-   # make local main the same as remote main (for the commit we are on locally)
-   git reset --hard origin/main
-   # update local main to match upstream's main
-   git pull
+   # fetch changes from the upstream repository
+   git fetch
+   # reset any changes
+   git reset --hard
+   # update local main to origin main
+   git checkout -B main origin/main
 
-Git Submodules
---------------
+Third-Party Git Repositories
+----------------------------
 
 #. Create a new branch.
 
    ::
 
       # remove last update branch
-      git branch -d chore/update-dependencies
+      git branch -d chore/update-third-party-dependencies
 
       # create new update branch
-      git checkout -b chore/update-dependencies
+      git checkout -b chore/update-third-party-dependencies
 
-#. Update each submodule from their upstream.
+#. Update all third-party dependnecies to their latest version.
 
    ::
 
-      scripts/update-submodules.sh
+      MATTER_BRANCH=master \
+       NRFCONNECT_CHIP_DOCKER_BRANCH=master \
+       OT_BR_POSIX_BRANCH=main \
+       OT_COMMISSIONER_BRANCH=main \
+       OT_NRF528XX_BRANCH=main \
+       scripts/setup -u
 
 #. Commit the changes.
 
    ::
 
-      git commit -am 'chore: update submodule dependencies'
+      git commit -am 'chore: update third-party dependencies'
 
 #. Push the changes upstream.
 
    ::
 
-      git push origin chore/update-submodule-dependencies
+      git push origin chore/update-third-party-dependencies
 
 #. Make a `pull request`_.
 
@@ -160,12 +165,27 @@ Documentation
 
 #. Restart the web-server.
 
-   ::
+   .. tabs::
 
-      docker run -it --rm --name=matter-example-docs \
-       -v $PWD/docs/build/html:/usr/share/nginx/html:ro \
-       -p 8888:80 \
-       -d nginx:alpine
+      .. tab:: HTTP
+
+         ::
+
+            docker run -it --rm --name=matter-example-docs \
+             -v $PWD/docs/build/html:/usr/share/nginx/html:ro \
+             -p 8888:80 \
+             -d nginx:alpine
+
+      .. tab:: HTTPS (Let's Encrypt)
+
+         ::
+
+            docker run -it --rm --name=matter-example-docs \
+             -v $PWD/docs/build/html:/etc/nginx/html:ro \
+             -v $PWD/nginx.conf:/etc/nginx/conf.d/nginx.conf \
+             -v $PWD/certs:/etc/nginx/certs \
+             -p 8888:443 \
+             -d nginx:alpine
 
 #. Commit the changes.
 
