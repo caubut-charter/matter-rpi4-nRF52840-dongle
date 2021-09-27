@@ -14,7 +14,7 @@ declare -A COMMIT
       continue
     fi
     ENV[$key]=$value
-  done < ".env"
+  done < ".third_party"
   for key in "${!ENV[@]}"; do
     REPOS+=(${key%_*})
     declare -n array="${key##*_}"
@@ -29,6 +29,7 @@ declare -A COMMIT
       (
         DIR=$(TMP=${URL[$key]##*/};echo ${TMP%.*})
         if [[ ! -d $PATH ]]; then mkdir -p $DIR; fi
+        set -x
         cd $DIR
         if [[ $(git rev-parse --git-dir 2> /dev/null) != '.git' ]]; then
           git clone -j8 ${URL[$key]} .
