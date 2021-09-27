@@ -1,5 +1,7 @@
-.husky
-third_party
+nginx.conf
+.husky/
+third_party/
+certs/
 
 
 ##
