@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 ARCH=$(uname -m)
+BOLD=`tput bold`
+RED=`tput setaf 1`
+RESET=`tput sgr0`
 
 if [[ $ARCH != "x86_64" && $ARCH != "aarch64" ]]; then
   echo "Unsupported architecture: $ARCH"
@@ -20,15 +23,48 @@ while [ $# -gt 0 ] ; do
   shift
 done
 
+
+declare -A HASHES=(
+	['third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile']=""
+	['third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile']=""
+	['third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile']=""
+)
+
+declare -A HASH_CHECKS=(
+	['third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile']=$(third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile)
+	['third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile']=$(NORDICSEMI_NRFCONNECT_CHIP)
+	['third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile']=$(NORDICSEMI_NRFCONNECT_CHIP)
+)
+
 (
   cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
   cd ..
+
+	if [[
+		($OPENTHREAD_ENVIRONMENT || $OPENTHREAD_OT_COMMISSIONER) && \
+		'' != "$(md5sum third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile)"
+	]]; then
+		echo -e "${bold}${red}HASH_ERROR: third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile\n"
+	  echo "Unable to patch file, hash mismatch."
+    echo "Manually validate the patch and update the hash to proceed.${reset}"
+		exit 1;
+	fi;
+
+	if [[
+		($OPENTHREAD_ENVIRONMENT || $OPENTHREAD_OT_COMMISSIONER) && \
+		'' != "$(md5sum third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile)"
+	]]; then
+		echo -e "${bold}${red}HASH_ERROR: third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile\n"
+	  echo "Unable to patch file, hash mismatch."
+    echo "Manually validate the patch and update the hash to proceed.${reset}"
+		exit 1;
+	fi;
 
   if [[ $AVAHI_AVAHI_UTILS ]]; then
     (set -x && docker build -t avahi/avahi-utils:latest etc/docker/avahi/avahi-utils)
   fi
 
-  if [[ $OPENTHREAD_ENVIRONMENT || $OPENTHREAD_OT_COMMISSIONER ]]; then
+  if [[ $NORDICSEMI_NRFCONNECT_CHIP ]]; then
     (cd third_party/connectedhomeip/third_party/openthread/repo && git reset --hard)
     if [[ $ARCH = "aarch64" ]]; then
       sed -i '/python3 -m pip install -U cmake/i \    && python3 -m pip install --upgrade pip \\' \
