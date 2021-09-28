@@ -1,8 +1,7 @@
 FROM openthread/environment:latest AS builder
 
 RUN set -x \
-    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
-    && echo $TZ > /etc/timezone \
+    && echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections \
     && git clone https://github.com/openthread/ot-commissioner \
     && (cd ot-commissioner \
     && ./script/bootstrap.sh \

@@ -1,6 +1,6 @@
 MATTER_URL=https://github.com/project-chip/connectedhomeip.git
 MATTER_BRANCH=master
-MATTER_COMMIT=242a1973f
+MATTER_COMMIT=a3af3acce
 
 NRFCONNECT_CHIP_DOCKER_URL=https://github.com/NordicPlayground/nrfconnect-chip-docker.git
 NRFCONNECT_CHIP_DOCKER_BRANCH=master

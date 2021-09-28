@@ -1,10 +1,12 @@
-#!/usr/bin/env bash
+#!/usr/bin/env -S bash -euET -o pipefail -O inherit_errexit
 
-declare -A ENV
+declare -A THIRD_PARTY
 REPOS=()
 declare -A URL
 declare -A BRANCH
 declare -A COMMIT
+
+UPDATE=false
 
 while [ $# -gt 0 ] ; do
   case $1 in
@@ -16,18 +18,18 @@ done
 (
   cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
   cd ..
-  while IFS== read -r key value; do
-    if [[ $key == '' || $value = '' || $key =~ ^[[:space:]]*#.*$ ]]; then
+  while IFS== read -r KEY VALUE; do
+    if [[ $KEY == '' || $VALUE = '' || $KEY =~ ^[[:space:]]*#.*$ ]]; then
       continue
     fi
-    ENV[$key]=$value
+    THIRD_PARTY[$KEY]=$VALUE
   done < ".third_party"
-  for key in "${!ENV[@]}"; do
-    REPOS+=(${key%_*})
-    declare -n array=${key##*_}
-    declare -n value=$key
-    array[${key%_*}]=${value:-${ENV[$key]}}
-    unset -n array
+  for KEY in "${!THIRD_PARTY[@]}"; do
+    REPOS+=(${KEY%_*})
+    declare -n ARRAY=${KEY##*_}
+    declare -n VALUE=$KEY
+    ARRAY[${KEY%_*}]=${VALUE:-${THIRD_PARTY[$KEY]}}
+    unset -n ARRAY
   done
   REPOS=($(printf "%s\n" "${REPOS[@]}" | sort -u))
   THIRD_PARTY=$(mktemp)
@@ -45,7 +47,7 @@ done
           (set -x && git fetch)
           (set -x && git reset --hard)
           (set -x && git submodule foreach --recursive git reset --hard)
-          if [[ $UPDATE || -z ${COMMIT[$REPO]} ]]; then
+          if [[ $UPDATE = true || -z ${COMMIT[$REPO]} ]]; then
             (set -x && git checkout -B ${BRANCH[$REPO]} origin/${BRANCH[$REPO]})
           else
             (set -x && git checkout ${COMMIT[$REPO]})

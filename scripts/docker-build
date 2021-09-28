@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env -S bash -euET -o pipefail -O inherit_errexit
 
 ARCH=$(uname -m)
 BOLD=`tput bold`
@@ -10,12 +10,20 @@ if [[ $ARCH != "x86_64" && $ARCH != "aarch64" ]]; then
   exit 1;
 fi
 
+AVAHI_AVAHI_UTILS=false
+MATTER_ENVIRONMENT=false
+OPENTHREAD_ENVIRONMENT=false
+OPENTHREAD_OT_COMMISSIONER=false
+OPENTHREAD_OTBR=false
+NORDICSEMI_NRFCONNECT_CHIP=false
+NORDICSEMI_NRFUTIL=false
+
 while [ $# -gt 0 ] ; do
   case $1 in
     --avahi/avahi-utils) AVAHI_AVAHI_UTILS=true ;;
     --matter/environment) MATTER_ENVIRONMENT=true ;;
     --openthread/environment) OPENTHREAD_ENVIRONMENT=true ;;
-    --openthread/ot-commissioner) OPENTHREAD_OT_COMMISSIONER=true ;;
+    --openthread/ot-commissioner) OPENTHREAD_OT_COMMISSIONER=true; OPENTHREAD_ENVIRONMENT=true ;;
     --openthread/otbr) OPENTHREAD_OTBR=true ;;
     --nordicsemi/nrfconnect-chip) NORDICSEMI_NRFCONNECT_CHIP=true ;;
     --nordicsemi/nrfutil) NORDICSEMI_NRFUTIL=true ;;
@@ -23,72 +31,69 @@ while [ $# -gt 0 ] ; do
   shift
 done
 
-
 declare -A HASHES=(
-	['third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile']=""
-	['third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile']=""
-	['third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile']=""
+	['third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile']="14ca28d53cfbbf8c99d33fd31d3c7511"
+	['third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile']="0dceb02b0e528798bc54209547baefb5"
+	['third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile']="4878612ae4cebb9d69deabe46cc234d9"
 )
 
 declare -A HASH_CHECKS=(
-	['third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile']=$(third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile)
-	['third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile']=$(NORDICSEMI_NRFCONNECT_CHIP)
-	['third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile']=$(NORDICSEMI_NRFCONNECT_CHIP)
+  ['third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile']=$OPENTHREAD_ENVIRONMENT
+	['third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile']=$NORDICSEMI_NRFCONNECT_CHIP
+	['third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile']=$NORDICSEMI_NRFCONNECT_CHIP
 )
+
+check_hash () {
+  MD5=($(md5sum $1))
+  if [[ -v "HASHES[$1]" && -v "HASH_CHECKS[$1]" && ${HASH_CHECKS[$1]} && $MD5 != ${HASHES[$1]} ]]; then
+    echo -e "${BOLD}${RED}HASH_ERROR: $1\n"
+    echo "Unable to patch file, hash mismatch."
+    echo -e "Manually validate the patch and update the hash to proceed.\n"
+    echo "COMPUTED: $MD5"
+    echo "EXPECTED: ${HASHES[$1]}${RESET}"
+    exit 1;
+  fi
+}
 
 (
   cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
   cd ..
 
-	if [[
-		($OPENTHREAD_ENVIRONMENT || $OPENTHREAD_OT_COMMISSIONER) && \
-		'' != "$(md5sum third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile)"
-	]]; then
-		echo -e "${bold}${red}HASH_ERROR: third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile\n"
-	  echo "Unable to patch file, hash mismatch."
-    echo "Manually validate the patch and update the hash to proceed.${reset}"
-		exit 1;
-	fi;
-
-	if [[
-		($OPENTHREAD_ENVIRONMENT || $OPENTHREAD_OT_COMMISSIONER) && \
-		'' != "$(md5sum third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile)"
-	]]; then
-		echo -e "${bold}${red}HASH_ERROR: third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile\n"
-	  echo "Unable to patch file, hash mismatch."
-    echo "Manually validate the patch and update the hash to proceed.${reset}"
-		exit 1;
-	fi;
-
-  if [[ $AVAHI_AVAHI_UTILS ]]; then
+  if [[ $AVAHI_AVAHI_UTILS = true ]]; then
     (set -x && docker build -t avahi/avahi-utils:latest etc/docker/avahi/avahi-utils)
   fi
 
-  if [[ $NORDICSEMI_NRFCONNECT_CHIP ]]; then
+  if [[ $OPENTHREAD_ENVIRONMENT = true || $OPENTHREAD_OT_COMMISSIONER = true ]]; then
     (cd third_party/connectedhomeip/third_party/openthread/repo && git reset --hard)
+    check_hash "third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile"
+
     if [[ $ARCH = "aarch64" ]]; then
-      sed -i '/python3 -m pip install -U cmake/i \    && python3 -m pip install --upgrade pip \\' \
+      sed -i \
+        -e '21,$d' \
+        -e '/python3 -m pip install -U cmake/i \    && python3 -m pip install --upgrade pip \\' \
         third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile
     fi;
     (cd third_party/connectedhomeip/third_party/openthread/repo \
       && set -x && docker build -t openthread/environment:latest -f etc/docker/environment/Dockerfile .)
   fi
 
-  if [[ $OPENTHREAD_OT_COMMISSIONER ]]; then
+  if [[ $OPENTHREAD_OT_COMMISSIONER = true ]]; then
     (set -x && docker build -t openthread/ot-commissioner:latest etc/docker/openthread/ot-commissioner)
   fi
 
-  if [[ $OPENTHREAD_OTBR ]]; then
+  if [[ $OPENTHREAD_OTBR = true ]]; then
     (cd third_party/ot-br-posix \
        && set -x && docker build --build-arg INFRA_IF_NAME=eth1 -t openthread/otbr:latest -f etc/docker/Dockerfile .)
   fi
 
-  if [[ $MATTER_ENVIRONMENT ]]; then
+  if [[ $MATTER_ENVIRONMENT = true ]]; then
     (set -x && docker build -t matter/environment:latest etc/docker/matter/environment)
   fi
 
-  if [[ $NORDICSEMI_NRFCONNECT_CHIP ]]; then
+  if [[ $NORDICSEMI_NRFCONNECT_CHIP = true ]]; then
     (cd third_party/nrfconnect-chip-docker && git reset --hard)
+    check_hash "third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile"
+    check_hash "third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile"
 
     sed -i \
       -e '44,52d' \
@@ -113,7 +118,7 @@ declare -A HASH_CHECKS=(
     (set -x && third_party/nrfconnect-chip-docker/nrfconnect-chip/build.sh --org nordicsemi)
   fi
 
-  if [[ $NORDICSEMI_NRFUTIL ]]; then
+  if [[ $NORDICSEMI_NRFUTIL = true ]]; then
     (set -x && docker build -t nordicsemi/nrfutil:latest etc/docker/nordicsemi/nrfutil)
   fi
 )
