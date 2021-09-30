@@ -1,9 +1,11 @@
 #!/usr/bin/env -S bash -euET -o pipefail -O inherit_errexit
 
 ARCH=$(uname -m)
-BOLD=`tput bold`
-RED=`tput setaf 1`
-RESET=`tput sgr0`
+
+[[ -z ${TERM} ]] && TPUTTERM=' -T xterm-256color' || TPUTTERM=''
+BOLD=`tput${TPUTTERM} bold`
+RED=`tput${TPUTTERM} setaf 1`
+RESET=`tput${TPUTTERM} sgr0`
 
 if [[ $ARCH != "x86_64" && $ARCH != "aarch64" ]]; then
   echo "Unsupported architecture: $ARCH"
