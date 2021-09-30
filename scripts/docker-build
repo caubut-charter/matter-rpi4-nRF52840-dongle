@@ -2,11 +2,6 @@
 
 ARCH=$(uname -m)
 
-[[ -z ${TERM} ]] && TPUTTERM=' -T xterm-256color' || TPUTTERM=''
-BOLD=`tput${TPUTTERM} bold`
-RED=`tput${TPUTTERM} setaf 1`
-RESET=`tput${TPUTTERM} sgr0`
-
 if [[ $ARCH != "x86_64" && $ARCH != "aarch64" ]]; then
   echo "Unsupported architecture: $ARCH"
   exit 1;
@@ -54,11 +49,11 @@ declare -A HASH_CHECKS=(
 check_hash () {
   MD5=($(md5sum $1))
   if [[ -v "HASHES[$1]" && -v "HASH_CHECKS[$1]" && ${HASH_CHECKS[$1]} && $MD5 != ${HASHES[$1]} ]]; then
-    echo -e "${BOLD}${RED}HASH_ERROR: $1\n"
+    echo -e "HASH_ERROR: $1\n"
     echo "Unable to patch file, hash mismatch."
     echo -e "Manually validate the patch and update the hash to proceed.\n"
     echo "COMPUTED: $MD5"
-    echo "EXPECTED: ${HASHES[$1]}${RESET}"
+    echo "EXPECTED: ${HASHES[$1]}"
     exit 1;
   fi
 }
