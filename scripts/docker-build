@@ -10,23 +10,29 @@ if [[ $ARCH != "x86_64" && $ARCH != "aarch64" ]]; then
   exit 1;
 fi
 
-AVAHI_AVAHI_UTILS=false
+AVAHI_UTILS=false
 MATTER_ENVIRONMENT=false
 OPENTHREAD_ENVIRONMENT=false
-OPENTHREAD_OT_COMMISSIONER=false
-OPENTHREAD_OTBR=false
-NORDICSEMI_NRFCONNECT_CHIP=false
-NORDICSEMI_NRFUTIL=false
+OT_COMMISSIONER=false
+OTBR=false
+NRFCONNECT_CHIP=false
+NRFUTIL=false
+
+ORG=${ORG:-}
+if [[ ! -z $ORG ]]; then ORG="$ORG/"; fi
+DOCKER_BUILD=${DOCKER_BUILD:-docker build}
+VERSION=${VERSION:-latest}
 
 while [ $# -gt 0 ] ; do
   case $1 in
-    --avahi/avahi-utils) AVAHI_AVAHI_UTILS=true ;;
-    --matter/environment) MATTER_ENVIRONMENT=true ;;
-    --openthread/environment) OPENTHREAD_ENVIRONMENT=true ;;
-    --openthread/ot-commissioner) OPENTHREAD_OT_COMMISSIONER=true; OPENTHREAD_ENVIRONMENT=true ;;
-    --openthread/otbr) OPENTHREAD_OTBR=true ;;
-    --nordicsemi/nrfconnect-chip) NORDICSEMI_NRFCONNECT_CHIP=true ;;
-    --nordicsemi/nrfutil) NORDICSEMI_NRFUTIL=true ;;
+    --avahi-utils) AVAHI_UTILS=true ;;
+    --matter-environment) MATTER_ENVIRONMENT=true ;;
+    --openthread-environment) OPENTHREAD_ENVIRONMENT=true ;;
+    --ot-commissioner) OT_COMMISSIONER=true; OPENTHREAD_ENVIRONMENT=true ;;
+    --otbr) OTBR=true ;;
+    --nrfconnect-chip) NRFCONNECT_CHIP=true ;;
+    --nrfutil) NRFUTIL=true ;;
+    --all) AVAHI_UTILS=true; MATTER_ENVIRONMENT=true; OPENTHREAD_ENVIRONMENT=true; OT_COMMISSIONER=true; OTBR=true; NRFCONNECT_CHIP=true; NRFUTIL=true ;;
   esac
   shift
 done
@@ -39,8 +45,8 @@ declare -A HASHES=(
 
 declare -A HASH_CHECKS=(
   ['third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile']=$OPENTHREAD_ENVIRONMENT
-	['third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile']=$NORDICSEMI_NRFCONNECT_CHIP
-	['third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile']=$NORDICSEMI_NRFCONNECT_CHIP
+	['third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile']=$NRFCONNECT_CHIP
+	['third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile']=$NRFCONNECT_CHIP
 )
 
 check_hash () {
@@ -59,11 +65,11 @@ check_hash () {
   cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
   cd ..
 
-  if [[ $AVAHI_AVAHI_UTILS = true ]]; then
-    (set -x && docker build -t avahi/avahi-utils:latest etc/docker/avahi/avahi-utils)
+  if [[ $AVAHI_UTILS = true ]]; then
+    (set -x && $DOCKER_BUILD -t ${ORG}avahi-utils:$VERSION etc/docker/avahi/avahi-utils)
   fi
 
-  if [[ $OPENTHREAD_ENVIRONMENT = true || $OPENTHREAD_OT_COMMISSIONER = true ]]; then
+  if [[ $OPENTHREAD_ENVIRONMENT = true || $OT_COMMISSIONER = true ]]; then
     (cd third_party/connectedhomeip/third_party/openthread/repo && git reset --hard)
     check_hash "third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile"
 
@@ -74,23 +80,24 @@ check_hash () {
         third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile
     fi;
     (cd third_party/connectedhomeip/third_party/openthread/repo \
-      && set -x && docker build -t openthread/environment:latest -f etc/docker/environment/Dockerfile .)
+      && set -x && $DOCKER_BUILD -t ${ORG}openthread-environment:$VERSION -f etc/docker/environment/Dockerfile .)
   fi
 
-  if [[ $OPENTHREAD_OT_COMMISSIONER = true ]]; then
-    (set -x && docker build -t openthread/ot-commissioner:latest etc/docker/openthread/ot-commissioner)
+  if [[ $OT_COMMISSIONER = true ]]; then
+    (set -x && $DOCKER_BUILD --build-arg "BASE=${ORG}openthread-environment:$VERSION" \
+     -t ${ORG}ot-commissioner:$VERSION etc/docker/openthread/ot-commissioner)
   fi
 
-  if [[ $OPENTHREAD_OTBR = true ]]; then
+  if [[ $OTBR = true ]]; then
     (cd third_party/ot-br-posix \
-       && set -x && docker build --build-arg INFRA_IF_NAME=eth1 -t openthread/otbr:latest -f etc/docker/Dockerfile .)
+       && set -x && $DOCKER_BUILD --build-arg INFRA_IF_NAME=eth1 -t ${ORG}otbr:$VERSION -f etc/docker/Dockerfile .)
   fi
 
   if [[ $MATTER_ENVIRONMENT = true ]]; then
-    (set -x && docker build -t matter/environment:latest etc/docker/matter/environment)
+    (set -x && $DOCKER_BUILD -t ${ORG}matter-environment:$VERSION etc/docker/matter/environment)
   fi
 
-  if [[ $NORDICSEMI_NRFCONNECT_CHIP = true ]]; then
+  if [[ $NRFCONNECT_CHIP = true ]]; then
     (cd third_party/nrfconnect-chip-docker && git reset --hard)
     check_hash "third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile"
     check_hash "third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile"
@@ -106,8 +113,10 @@ check_hash () {
         -e 's/\(libpython3-dev\) \\/\1 make \\/' \
         third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile
     fi;
-    (set -x && DOCKER_BUILD_ARGS="--build-arg TOOLCHAIN_URL=https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2020q2/gcc-arm-none-eabi-9-2020-q2-update-${ARCH}-linux.tar.bz2" \
-      third_party/nrfconnect-chip-docker/nrfconnect-toolchain/build.sh --org nordicsemi)
+    (cd third_party/nrfconnect-chip-docker/nrfconnect-toolchain \
+     && set -x && $DOCKER_BUILD \
+      --build-arg TOOLCHAIN_URL=https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2020q2/gcc-arm-none-eabi-9-2020-q2-update-${ARCH}-linux.tar.bz2 \
+      -t ${ORG}nrfconnect-toolchain:$VERSION .)
 
     if [[ $ARCH = "aarch64" ]]; then
       sed -i \
@@ -115,10 +124,12 @@ check_hash () {
         -e 's/g++-multilib //' \
         third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile
     fi;
-    (set -x && third_party/nrfconnect-chip-docker/nrfconnect-chip/build.sh --org nordicsemi)
+    (cd third_party/nrfconnect-chip-docker/nrfconnect-chip \
+     && set -x && $DOCKER_BUILD \
+      --build-arg "BASE=${ORG}nrfconnect-toolchain:$VERSION" -t ${ORG}nrfconnect-chip:$VERSION .)
   fi
 
-  if [[ $NORDICSEMI_NRFUTIL = true ]]; then
-    (set -x && docker build -t nordicsemi/nrfutil:latest etc/docker/nordicsemi/nrfutil)
+  if [[ $NRFUTIL = true ]]; then
+    (set -x && $DOCKER_BUILD -t ${ORG}nrfutil:$VERSION etc/docker/nordicsemi/nrfutil)
   fi
 )

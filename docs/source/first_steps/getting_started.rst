@@ -352,8 +352,8 @@ Preparing the RPi
    ::
 
       ./scripts/docker-build \
-       --openthread/otbr \
-       --matter/environment
+       --matter/environment \
+       --openthread/otbr
 
 #. Optionally, remove any build layers to recover disk space.
 

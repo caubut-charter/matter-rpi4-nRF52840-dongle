@@ -1,0 +1,28 @@
+name: DOCKER
+
+on:
+  push:
+    branches: [ chore/submodule-cleanup ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: crazy-max/ghaction-docker-buildx@v1
+        id: buildx
+        with:
+          version: latest
+      - run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      - run: ./scripts/setup -u
+      - run: |
+          DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --pull -push" \
+            ORG=caubutcharter \
+            VERSION=nightly \
+              ./scripts/docker-build --all
+      - run: MATTER_BRANCH=test_event_6 scripts/setup -u
+      - run: |
+          DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --pull -push" \
+            ORG=caubutcharter \
+            VERSION=test-event \
+              ./scripts/docker-build --nrfconnect-chip --matter-environment

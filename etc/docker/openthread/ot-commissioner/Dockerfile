@@ -1,4 +1,5 @@
-FROM openthread/environment:latest AS builder
+ARG BASE
+FROM ${BASE} AS builder
 
 RUN set -x \
     && echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections \
