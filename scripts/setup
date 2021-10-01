@@ -7,10 +7,12 @@ declare -A BRANCH
 declare -A COMMIT
 
 UPDATE=false
+ONLY=''
 
 while [ $# -gt 0 ] ; do
   case $1 in
     -u | --update) UPDATE=true ;;
+    -o | --only) ONLY=$2 ;;
   esac
   shift
 done
@@ -35,32 +37,37 @@ done
   THIRD_PARTY=$(mktemp)
   (set -x && mkdir -p third_party)
   for REPO in ${REPOS[@]}; do
-    (
-      cd third_party
-        (
-          DIR=$(TMP=${URL[$REPO]##*/};echo ${TMP%.*})
-          if [[ ! -d $PATH ]]; then (set -x && mkdir -p $DIR); fi
-          cd $DIR
-          if [[ $(git rev-parse --git-dir 2> /dev/null) != '.git' ]]; then
-            (set -x && git clone -j8 ${URL[$REPO]} .)
-          fi
-          (set -x && git fetch)
-          (set -x && git reset --hard)
-          (set -x && git submodule foreach --recursive git reset --hard)
-          if [[ $UPDATE = true || -z ${COMMIT[$REPO]} ]]; then
-            (set -x && git checkout -B ${BRANCH[$REPO]} origin/${BRANCH[$REPO]})
-          else
-            (set -x && git checkout ${COMMIT[$REPO]})
-          fi
-          (set -x && git submodule update --init --recursive)
-          echo "${REPO}_URL=${URL[$REPO]}" >> $THIRD_PARTY
-          echo "${REPO}_BRANCH=${BRANCH[$REPO]}" >> $THIRD_PARTY
-          echo "${REPO}_COMMIT=$(git rev-parse --short HEAD)" >> $THIRD_PARTY
-          if [[ ${REPOS[-1]} != $REPO ]]; then
-            echo "" >> $THIRD_PARTY
-          fi
-        )
-    )
+    echo "${REPO}_URL=${URL[$REPO]}" >> $THIRD_PARTY
+    echo "${REPO}_BRANCH=${BRANCH[$REPO]}" >> $THIRD_PARTY
+    if [[ ! $REPO =~ $ONLY ]]; then
+      echo "+skipping $REPO"
+      echo "${REPO}_COMMIT=${COMMIT[$REPO]}" >> $THIRD_PARTY
+    else
+      (
+        cd third_party
+          (
+            DIR=$(TMP=${URL[$REPO]##*/};echo ${TMP%.*})
+            if [[ ! -d $PATH ]]; then (set -x && mkdir -p $DIR); fi
+            cd $DIR
+            if [[ $(git rev-parse --git-dir 2> /dev/null) != '.git' ]]; then
+              (set -x && git clone -j8 ${URL[$REPO]} .)
+            fi
+            (set -x && git fetch)
+            (set -x && git reset --hard)
+            (set -x && git submodule foreach --recursive git reset --hard)
+            if [[ $UPDATE = true || -z ${COMMIT[$REPO]} ]]; then
+              (set -x && git checkout -B ${BRANCH[$REPO]} origin/${BRANCH[$REPO]})
+            else
+              (set -x && git checkout ${COMMIT[$REPO]})
+            fi
+            (set -x && git submodule update --init --recursive)
+            echo "${REPO}_COMMIT=$(git rev-parse --short HEAD)" >> $THIRD_PARTY
+          )
+      )
+    fi
+    if [[ ${REPOS[-1]} != $REPO ]]; then
+      echo '' >> $THIRD_PARTY
+    fi
   done
   set -x
   cat $THIRD_PARTY > .third_party
