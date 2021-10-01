@@ -20,8 +20,8 @@ jobs:
         with:
           path: .venv
           key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
-      - run: poetry install --no-interaction --no-root
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      - if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
       - run: poetry run make -C docs html
       - run: |
          git config --local user.email "action@github.com"

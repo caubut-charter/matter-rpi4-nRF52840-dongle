@@ -1,9 +1,15 @@
-ARG BASE
-FROM ${BASE} AS builder
+FROM ubuntu:18.04 AS builder
+
+COPY . /ot-commissioner
 
 RUN set -x \
+    && apt-get update && apt-get upgrade -y \
     && echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections \
-    && git clone https://github.com/openthread/ot-commissioner \
+    && apt-get --no-install-recommends install -fy \
+        git \
+        python3 \
+        python3-pip \
+        sudo \
     && (cd ot-commissioner \
     && ./script/bootstrap.sh \
     && mkdir build \
