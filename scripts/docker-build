@@ -1,11 +1,16 @@
 #!/usr/bin/env -S bash -euET -o pipefail -O inherit_errexit
 
-ARCH=$(uname -m)
-
-if [[ $ARCH != "x86_64" && $ARCH != "aarch64" ]]; then
+ARCH=(uname -a)
+if [[ $ARCH != "x86_64" ]]; then
+  TARGETARCH='amd64'
+elif [[ $ARCH != "aarch64" ]]; then
+  TARGETARCH='arm64'
+else
   echo "Unsupported architecture: $ARCH"
   exit 1;
 fi
+
+DOCKER_BUILDKIT=${DOCKER_BUILDKIT-}
 
 AVAHI_UTILS=false
 MATTER_ENVIRONMENT=false
@@ -70,12 +75,11 @@ check_hash () {
     (cd third_party/connectedhomeip/third_party/openthread/repo && git reset --hard)
     check_hash "third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile"
 
-    if [[ $ARCH = "aarch64" ]]; then
-      sed -i \
-        -e '21,$d' \
-        -e '/python3 -m pip install -U cmake/i \    && python3 -m pip install --upgrade pip \\' \
-        third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile
-    fi;
+    sed -i \
+      -e '21,$d' \
+      -e '/python3 -m pip install -U cmake/i \    && python3 -m pip install --upgrade pip \\' \
+      third_party/connectedhomeip/third_party/openthread/repo/etc/docker/environment/Dockerfile
+
     (cd third_party/connectedhomeip/third_party/openthread/repo \
       && set -x && $DOCKER_BUILD -t ${ORG}openthread-environment:$VERSION -f etc/docker/environment/Dockerfile .)
   fi
@@ -101,28 +105,24 @@ check_hash () {
 
     sed -i \
       -e '44,52d' \
-      -e "s/x86_64/${ARCH}/" \
-      -e '/NRF_TOOLS_URL/d' \
+      -e 's/\${TOOLCHAIN_URL}/https:\/\/developer.arm.com\/-\/media\/Files\/downloads\/gnu-rm\/9-2020q2\/gcc-arm-none-eabi-9-2020-q2-update-$(uname -m)-linux.tar.bz2/' \
+      -e 's/\(libpython3-dev\) \\/\1 make \\/' \
       -e 's/gcc-arm-none-eabi-9-2019-q4-major/gcc-arm-none-eabi-9-2020-q2-update/' \
       third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile
-    if [[ $ARCH = "aarch64" ]]; then
-      sed -i \
-        -e 's/\(libpython3-dev\) \\/\1 make \\/' \
-        third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile
-    fi;
-    (cd third_party/nrfconnect-chip-docker/nrfconnect-toolchain \
-     && set -x && $DOCKER_BUILD \
-      --build-arg TOOLCHAIN_URL=https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2020q2/gcc-arm-none-eabi-9-2020-q2-update-${ARCH}-linux.tar.bz2 \
-      -t ${ORG}nrfconnect-toolchain:$VERSION .)
 
-    if [[ $ARCH = "aarch64" ]]; then
-      sed -i \
-        -e 's/amd64/arm64/' \
-        -e 's/g++-multilib //' \
-        third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile
-    fi;
+    (cd third_party/nrfconnect-chip-docker/nrfconnect-toolchain \
+     && set -x && $DOCKER_BUILD -t ${ORG}nrfconnect-toolchain:$VERSION .)
+
+    [[ -z "$DOCKER_BUILDKIT" ]] && FLAGS="--build-arg TARGETARCH=$TARGETARCH" || FLAGS=''
+
+    sed -i \
+      -e '/^ARG NCS_REVISION/i \ARG TARGETARCH' \
+      -e 's/amd64/$TARGETARCH/' \
+      -e 's/g++-multilib //' \
+      third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile
+
     (cd third_party/nrfconnect-chip-docker/nrfconnect-chip \
-     && set -x && $DOCKER_BUILD \
+     && set -x && $DOCKER_BUILD $FLAGS \
       --build-arg "BASE=${ORG}nrfconnect-toolchain:$VERSION" -t ${ORG}nrfconnect-chip:$VERSION .)
   fi
 

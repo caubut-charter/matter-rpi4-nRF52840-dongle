@@ -25,4 +25,4 @@ jobs:
           DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --pull --push" \
             ORG=caubutcharter \
             VERSION=nightly \
-              ./scripts/docker-build --all
+              DOCKER_BUILDKIT=1 ./scripts/docker-build --all
