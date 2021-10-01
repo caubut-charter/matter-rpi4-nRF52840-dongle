@@ -31,7 +31,7 @@ while [ $# -gt 0 ] ; do
     --matter-environment) MATTER_ENVIRONMENT=true ;;
     --otbr) OTBR=true ;;
     --ot-commissioner) OT_COMMISSIONER=true ;;
-    --ot-nrf-environment) OT_NRF_ENVIRONMENT=true ;;
+    --ot-nrf528xx-environment) OT_NRF528XX_ENVIRONMENT=true ;;
     --nrfconnect-chip) NRFCONNECT_CHIP=true ;;
     --nrfutil) NRFUTIL=true ;;
     --all) AVAHI_UTILS=true; MATTER_ENVIRONMENT=true; OTBR=true; OT_COMMISSIONER=true; OT_NRF528XX_ENVIRONMENT=true; NRFCONNECT_CHIP=true; NRFUTIL=true ;;
