@@ -2,8 +2,8 @@ name: NRFUTIL
 
 on:
   push:
-    branches: [ chore/submodule-cleanup ]
-    # paths: [ etc/docker/nordicsemi/nrfutil/** ]
+    # branches: [ chore/submodule-cleanup ]
+    branches: [ main ]
 
 jobs:
   publish:

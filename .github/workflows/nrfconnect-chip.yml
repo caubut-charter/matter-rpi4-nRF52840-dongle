@@ -2,7 +2,8 @@ name: NRFCONNECT-CHIP
 
 on:
   push:
-    branches: [ chore/submodule-cleanup ]
+    # branches: [ chore/submodule-cleanup ]
+    branches: [ main ]
 
 jobs:
   publish:
@@ -15,9 +16,7 @@ jobs:
         with:
           version: latest
       - run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-      - run: echo "THIRD_PARTY_HASH=${{ hashFiles('.thirdParty') }}" >> $GITHUB_ENV
       - run: ./scripts/setup -u -o NRFCONNECT_CHIP_DOCKER
-      # - if: ${{ env.THIRD_PARTY_HASH != hashFiles('.thirdParty') }}
       - run: |
           DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
             ORG="${{ secrets.DOCKER_USERNAME }}" \

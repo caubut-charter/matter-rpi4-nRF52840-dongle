@@ -91,7 +91,7 @@ check_hash () {
       third_party/ot-nrf528xx/openthread/etc/docker/environment/Dockerfile
 
     (cd third_party/ot-nrf528xx/openthread \
-      && set -x && $DOCKER_BUILD -t ${ORG}ot-nrf528xx-enviornment:$VERSION -f etc/docker/environment/Dockerfile .)
+      && set -x && $DOCKER_BUILD -t ${ORG}ot-nrf528xx-environment:$VERSION -f etc/docker/environment/Dockerfile .)
   fi
 
   if [[ $MATTER_ENVIRONMENT = true ]]; then

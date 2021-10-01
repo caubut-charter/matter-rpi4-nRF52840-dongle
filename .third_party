@@ -8,7 +8,7 @@ NRFCONNECT_CHIP_DOCKER_COMMIT=63ecc45
 
 OT_BR_POSIX_URL=https://github.com/openthread/ot-br-posix.git
 OT_BR_POSIX_BRANCH=main
-OT_BR_POSIX_COMMIT=cd1399bc3
+OT_BR_POSIX_COMMIT=ec5009cfd
 
 OT_COMMISSIONER_URL=https://github.com/openthread/ot-commissioner.git
 OT_COMMISSIONER_BRANCH=main

@@ -5,7 +5,7 @@ on:
     branches: [ chore/submodule-cleanup ]
 
 jobs:
-  publish:
+  dockerhub-publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -14,12 +14,27 @@ jobs:
         id: buildx
         with:
           version: latest
-      - run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-      - run: echo "THIRD_PARTY_HASH=${{ hashFiles('.thirdParty') }}" >> $GITHUB_ENV
+      - uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - run: ./scripts/setup -u -o OT_NRF528XX
-      # - if: ${{ env.THIRD_PARTY_HASH != hashFiles('.thirdParty') }}
       - run: |
-          DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
-            ORG="${{ secrets.DOCKER_USERNAME }}" \
+          DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push' \
+            ORG=${{ secrets.DOCKERHUB_USERNAME }} \
             VERSION=latest \
             DOCKER_BUILDKIT=1 ./scripts/docker-build --ot-nrf528xx-environment
+
+  build:
+    needs: [dockerhub-publish]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./scripts/setup -u -o OT_NRF528XX
+      - run: |
+          docker run --rm \
+           -v $PWD/third_party/ot-nrf528xx:/ot-nrf528xx \
+           -v $PWD/build/ot-nrf528xx:/ot-nrf528xx/build \
+           -w /ot-nrf528xx \
+           ${{ secrets.DOCKERHUB_USERNAME }}/ot-nrf528xx-environment:latest /bin/bash -c \
+          './script/bootstrap && script/build nrf52840 USB_trans -DOT_BOOTLOADER=USB -DOT_THREAD_VERSION=1.2 && arm-none-eabi-objcopy -O ihex build/bin/ot-rcp build/bin/ot-rcp.hex'

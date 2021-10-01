@@ -2,8 +2,8 @@ name: AVAHI-UTILS
 
 on:
   push:
-    branches: [ chore/submodule-cleanup ]
-    # paths: [ etc/docker/avahi/avahi-utils/** ]
+    # branches: [ chore/submodule-cleanup ]
+    branches: [ main ]
 
 jobs:
   publish:

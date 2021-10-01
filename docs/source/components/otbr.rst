@@ -28,10 +28,10 @@ Building the RCP Image
    ::
 
       docker run -it --rm \
-       -v $PWD/third_party/ot-nrf528xx:/root/ot-nrf528xx \
-       -v $PWD/build/ot-nrf528xx:/root/ot-nrf528xx/build \
-       -w /root/ot-nrf528xx \
-       openthread/environment:latest
+       -v $PWD/third_party/ot-nrf528xx:/ot-nrf528xx \
+       -v $PWD/build/ot-nrf528xx:/ot-nrf528xx/build \
+       -w /ot-nrf528xx \
+       caubutcharter/ot-nrf528xx-environment:latest
 
 #. Install OpenThread dependencies.
 

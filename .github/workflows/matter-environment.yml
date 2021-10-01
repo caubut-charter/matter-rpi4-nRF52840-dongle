@@ -2,8 +2,8 @@ name: MATTER-ENVIRONMENT
 
 on:
   push:
-    branches: [ chore/submodule-cleanup ]
-    # paths: [ etc/docker/matter/environment/** ]
+    # branches: [ chore/submodule-cleanup ]
+    branches: [ main ]
 
 jobs:
   pubish:
