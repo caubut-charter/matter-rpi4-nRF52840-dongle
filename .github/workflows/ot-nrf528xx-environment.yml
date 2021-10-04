@@ -47,13 +47,13 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/ot-nrf528xx/bin/ot-rcp.hex
-          asset_name: ot-rcp
+          asset_name: ot-rcp.hex
           tag: nightly
           overwrite: true
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/ot-nrf528xx/bin/ot-rcp.zip
-          asset_name: ot-rcp
+          asset_name: ot-rcp.zip
           tag: nightly
           overwrite: true
