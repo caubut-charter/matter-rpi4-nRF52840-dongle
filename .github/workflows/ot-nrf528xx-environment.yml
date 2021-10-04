@@ -45,16 +45,41 @@ jobs:
            -v $PWD/build/ot-nrf528xx/bin:/root \
             ${{ secrets.DOCKERHUB_USERNAME }}/nrfutil:latest pkg generate --hw-version 52 --sd-req=0x00 \
              --application ot-rcp.hex --application-version 1 ot-rcp.zip
+      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+          delete_release: true
+          tag_name: nightly
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
+          body: ${{ steps.date.outputs.date }}
           file: build/ot-nrf528xx/bin/ot-rcp.hex
           tag: nightly
           overwrite: true
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          body: "${{ steps.date.outputs.date }}"
           file: build/ot-nrf528xx/bin/ot-rcp.zip
           tag: nightly
           overwrite: true
+      - uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          body: ${{ steps.date.outputs.date }}
+          file: build/ot-nrf528xx/bin/ot-rcp.hex
+          tag: nightly-${{ steps.date.outputs.date }}
+          overwrite: true
+      - uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/ot-nrf528xx/bin/ot-rcp.zip
+          tag: nightly-${{ steps.date.outputs.date }}
+          overwrite: true
+      - uses: dev-drprasad/delete-older-releases@v0.2.0
+        with:
+          keep_latest: 15 # two weeks + latest
+          delete_tag_pattern: nightly
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
