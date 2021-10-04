@@ -30,6 +30,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        id: date
       - run: ./scripts/setup -u -o OT_NRF528XX
       - run: |
           docker run --rm \
@@ -52,6 +54,7 @@ jobs:
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
+          body: "${{ steps.date.outputs.date }}"
           file: build/ot-nrf528xx/bin/ot-rcp.zip
           tag: nightly
           overwrite: true
