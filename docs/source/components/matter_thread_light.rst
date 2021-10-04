@@ -36,10 +36,11 @@ Building the Accessory Image
    ::
 
       docker run -it --rm \
-       -v $PWD/build/nrf-sdk:/var/ncs \
+       -e CHIP_REVISION=$(cd third_party/connectedhomeip && git rev-parse --short HEAD) \
        -v $PWD/third_party/connectedhomeip:/var/chip \
+       -v $PWD/build/nrf-sdk:/var/ncs \
        -v $PWD/build/lighting-app/nrfconnect:/var/chip/examples/lighting-app/nrfconnect/build \
-       nordicsemi/nrfconnect-chip:latest
+       caubutcharter/nrfconnect-chip:latest
 
 #. Install nRF Connect and Matter dependencies.
 
