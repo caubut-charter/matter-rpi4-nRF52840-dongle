@@ -152,8 +152,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      - run: echo "::set-output name=date::$(date -u +'%Y-%m-%d')"
         id: date
+      - run: mkdir build
       - run: ./scripts/setup -u -o 'OT_NRF528XX|MATTER'
       - run: |
           docker run --rm \
@@ -192,7 +193,7 @@ jobs:
            ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly -c \
           'scripts/build_python.sh -m platform'
       - run: (cd build && tar -cJf chip-device-ctrl_x86_64.tar.xz --owner=0 --group=0 chip-device-ctrl)
-      - run: rm -rf build/chip-device-ctrl
+      - run: sudo rm -rf build/chip-device-ctrl
       - run: docker pull --platform aarch64 ${{ secrets.DOCERHUB_USERNAME }}/chip-environment:nightly
       - run: |
           docker run --rm --entrypoint /bin/bash \
