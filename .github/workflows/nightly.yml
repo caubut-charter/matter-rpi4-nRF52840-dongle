@@ -228,6 +228,7 @@ jobs:
            -v $PWD/build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr:/root \
            ${{ secrets.DOCKERHUB_USERNAME }}/nrfutil:nightly pkg generate --hw-version 52 --sd-req=0x00 \
            --application zephyr.hex --application-version 1 nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip
+      - run: docker pull --platform x86_64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly
       - run: |
           docker run --rm --entrypoint /bin/bash \
            -v $PWD/third_party/connectedhomeip:/connectedhomeip \
