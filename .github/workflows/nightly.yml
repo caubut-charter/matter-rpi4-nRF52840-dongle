@@ -154,8 +154,9 @@ jobs:
       - uses: actions/checkout@v2
       - run: echo "::set-output name=date::$(date -u +'%Y-%m-%d')"
         id: date
-      - run: mkdir build
       - run: ./scripts/setup -u -o 'OT_NRF528XX|MATTER'
+
+
       - run: |
           docker run --rm \
            -v $PWD/third_party/ot-nrf528xx:/ot-nrf528xx \
@@ -170,6 +171,8 @@ jobs:
            -v $PWD/build/ot-nrf528xx/bin:/root \
            ${{ secrets.DOCKERHUB_USERNAME }}/nrfutil:nightly pkg generate --hw-version 52 --sd-req=0x00 \
            --application nrf52840-dongle-ot-rcp.hex --application-version 1 ot-rcp.zip
+
+
       - run: |
           docker run --rm \
            -e CHIP_REVISION=$(cd third_party/connectedhomeip && git rev-parse --short HEAD) \
@@ -185,14 +188,14 @@ jobs:
           docker run --rm \
            -v $PWD/build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr:/root \
            ${{ secrets.DOCKERHUB_USERNAME }}/nrfutil:nightly pkg generate --hw-version 52 --sd-req=0x00 \
-           --application zephyr.hex --application-version 1 nrf52840-dongle-thread-lighting-app.zip
+           --application zephyr.hex --application-version 1 nrf52840-dongle-thread-lighting-app-LATEST.zip
       - run: |
           docker run --rm --entrypoint /bin/bash \
            -v $PWD/third_party/connectedhomeip:/connectedhomeip \
            -v $PWD/build/chip-device-ctrl:/connectedhomeip/out \
            ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly -c \
           'scripts/build_python.sh -m platform'
-      - run: (cd build && tar -cJf chip-device-ctrl_x86_64.tar.xz --owner=0 --group=0 chip-device-ctrl)
+      - run: (cd build && sudo tar -cJf chip-device-ctrl_x86_64-LATEST.tar.xz --owner=0 --group=0 chip-device-ctrl)
       - run: sudo rm -rf build/chip-device-ctrl
       - run: docker pull --platform aarch64 ${{ secrets.DOCERHUB_USERNAME }}/chip-environment:nightly
       - run: |
@@ -201,7 +204,56 @@ jobs:
            -v $PWD/build/chip-device-ctrl:/connectedhomeip/out \
            ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly -c \
           'scripts/build_python.sh -m platform'
-      - run: (cd build && tar -cJf chip-device-ctrl_aarch64.tar.xz --owner=0 --group=0 chip-device-ctrl
+      - run: (cd build && sudo tar -cJf chip-device-ctrl_aarch64-LATEST.tar.xz --owner=0 --group=0 chip-device-ctrl
+
+        #########################
+
+
+      - run: sudo rm -rf build/nrf52840-dongle-thread-lighting-app/nrfconnect build/chip-device-ctrl
+      - run: MATTER_BRANCH=test_event_6 ./scripts/setup -u -o 'MATTER'
+      - run: |
+          docker run --rm \
+           -e CHIP_REVISION=$(cd third_party/connectedhomeip && git rev-parse --short HEAD) \
+           -v $PWD/third_party/connectedhomeip:/var/chip \
+           -v $PWD/build/nrf-sdk:/var/ncs \
+           -v $PWD/build/nrf52840-dongle-thread-lighting-app/nrfconnect:/var/chip/examples/lighting-app/nrfconnect/build \
+           ${{ secrets.DOCKERHUB_USERNAME }}/nrfconnect-chip:nightly \
+          'setup -y '\
+          '&& python3 scripts/setup/nrfconnect/update_ncs.py --update '\
+          '&& cd examples/lighting-app/nrfconnect '\
+          '&& west build -b nrf52840dongle_nrf52840'
+      - run: |
+          docker run --rm \
+           -v $PWD/build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr:/root \
+           ${{ secrets.DOCKERHUB_USERNAME }}/nrfutil:nightly pkg generate --hw-version 52 --sd-req=0x00 \
+           --application zephyr.hex --application-version 1 nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip
+      - run: |
+          docker run --rm --entrypoint /bin/bash \
+           -v $PWD/third_party/connectedhomeip:/connectedhomeip \
+           -v $PWD/build/chip-device-ctrl:/connectedhomeip/out \
+           ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly -c \
+          'scripts/build_python.sh -m platform'
+      - run: (cd build && sudo tar -cJf chip-device-ctrl_x86_64-TEST_EVENT_6.tar.xz --owner=0 --group=0 chip-device-ctrl)
+      - run: sudo rm -rf build/chip-device-ctrl
+      - run: docker pull --platform aarch64 ${{ secrets.DOCERHUB_USERNAME }}/chip-environment:nightly
+      - run: |
+          docker run --rm --entrypoint /bin/bash \
+           -v $PWD/third_party/connectedhomeip:/connectedhomeip \
+           -v $PWD/build/chip-device-ctrl:/connectedhomeip/out \
+           ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly -c \
+          'scripts/build_python.sh -m platform'
+      - run: (cd build && sudo tar -cJf chip-device-ctrl_aarch64-TEST_EVENT_6.tar.xz --owner=0 --group=0 chip-device-ctrl
+
+
+
+
+
+
+        #########################
+
+
+
+
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -209,24 +261,46 @@ jobs:
           file: build/ot-nrf528xx/bin/nrf52840-dongle-ot-rcp.zip
           tag: nightly-${{ steps.date.outputs.date }}
           overwrite: true
+
+
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: /build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr/nrf52840-dongle-thread-lighting-app.zip
+          file: /build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr/nrf52840-dongle-thread-lighting-app-LATEST.zip
           tag: nightly-${{ steps.date.outputs.date }}
           overwrite: true
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: /build/chip-device-x86_64.tar.xz
+          file: /build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr/nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip
           tag: nightly-${{ steps.date.outputs.date }}
           overwrite: true
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: /build/chip-device-ctrl_aarch64.tar.xz
+          file: /build/chip-device-ctrl_x86_64-TEST_EVENT_6.tar.xz
           tag: nightly-${{ steps.date.outputs.date }}
           overwrite: true
+      - uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: /build/chip-device-ctrl_x86_64-LATEST.tar.xz
+          tag: nightly-${{ steps.date.outputs.date }}
+          overwrite: true
+      - uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: /build/chip-device-ctrl_aarch64-LATEST.tar.xz
+          tag: nightly-${{ steps.date.outputs.date }}
+          overwrite: true
+      - uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: /build/chip-device-ctrl_aarch64-TEST_EVENT_6.tar.xz
+          tag: nightly-${{ steps.date.outputs.date }}
+          overwrite: true
+
+
       - uses: dev-drprasad/delete-tag-and-release@v0.2.0
         with:
           delete_release: true
@@ -240,24 +314,46 @@ jobs:
           file: build/ot-nrf528xx/bin/nrf52840-dongle-ot-rcp.zip
           tag: nightly
           overwrite: true
+
+
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: /build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr/nrf52840-dongle-thread-lighting-app.zip
+          file: /build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr/nrf52840-dongle-thread-lighting-app-LATEST.zip
           tag: nightly
           overwrite: true
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: /build/chip-device-x86_64.tar.xz
+          file: /build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr/nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip
           tag: nightly
           overwrite: true
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: /build/chip-device-ctrl_aarch64.tar.xz
+          file: /build/chip-device-ctrl_x86_64-LATEST.tar.xz
           tag: nightly
           overwrite: true
+      - uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: /build/chip-device-ctrl_x86_64-TEST_EVENT_6.tar.xz
+          tag: nightly
+          overwrite: true
+      - uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: /build/chip-device-ctrl_aarch64-LATEST.tar.xz
+          tag: nightly
+          overwrite: true
+      - uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: /build/chip-device-ctrl_aarch64-TEST_EVENT_6.tar.xz
+          tag: nightly
+          overwrite: true
+
+
       - uses: dev-drprasad/delete-older-releases@v0.2.0
         with:
           keep_latest: 15 # two weeks + latest nightly
