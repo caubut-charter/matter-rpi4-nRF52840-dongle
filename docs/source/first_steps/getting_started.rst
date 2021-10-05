@@ -13,7 +13,7 @@ Getting Started
 Project Requirements
 --------------------
 
-This guide covers multiple configurations for building and running the demo.  The **RPi + Linux Desktop** configuration features the fastest build and execution times.  If a Linux Desktop is not available, the **RPi Only** or **RPi + SSD** configurations may be used with the latter having slightly faster build times over using just an SD card in the RPi.
+This guide covers multiple recommended configurations for building and running the demo.  The **RPi + Linux Desktop** configuration features the fastest build and execution times.  If a Linux Desktop is not available, the **RPi Only** or **RPi + SSD** configurations may be used with the latter having slightly faster build times over using just an SD card in the RPi.
 
 .. tabs::
 
