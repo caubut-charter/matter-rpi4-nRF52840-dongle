@@ -1,0 +1,185 @@
+name: NIGHTLY
+
+on:
+  push:
+    branches: [ chore/submodule-cleanup ]
+
+jobs:
+  build-ot-nrf528xx-environment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./scripts/setup -u -o OT_NRF528XX
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+        id: buildx
+        with:
+          version: latest
+          driver-opts: image=moby/buildkit:master
+      - run: |
+          DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --cache-to=type=local,dest=cache,mode=max' \
+            ORG=${{ secrets.DOCKERHUB_USERNAME }} \
+            VERSION=nightly \
+            DOCKER_BUILDKIT=1 ./scripts/docker-build --ot-nrf528xx-environment
+      - uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - run: |
+          DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push --cache-from=type=local,src=cache' \
+            ORG=${{ secrets.DOCKERHUB_USERNAME }} \
+            VERSION=nightly \
+            DOCKER_BUILDKIT=1 ./scripts/docker-build --ot-nrf528xx-environment
+
+  build-nrfconnect-toolchain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./scripts/setup -u -o NRFCONNECT_CHIP_DOCKER
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+        id: buildx
+        with:
+          version: latest
+          driver-opts: image=moby/buildkit:master
+      - run: |
+          DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --cache-to=type=local,dest=cache,mode=max' \
+            ORG="${{ secrets.DOCKER_USERNAME }}" \
+            VERSION=nightly \
+            DOCKER_BUILDKIT=1 ./scripts/docker-build --nrfconnect-toolchain
+      - uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - run: |
+          DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push --cache-from=type=local,src=cache' \
+            ORG="${{ secrets.DOCKER_USERNAME }}" \
+            VERSION=nightly \
+            DOCKER_BUILDKIT=1 ./scripts/docker-build --nrfconnect-toolchain
+
+  build-nrfconnect-chip:
+    needs: [ build-nrfconnect-toolchain ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./scripts/setup -u -o NRFCONNECT_CHIP_DOCKER
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+        id: buildx
+        with:
+          version: latest
+          driver-opts: image=moby/buildkit:master
+      - run: |
+          DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --cache-to=type=local,dest=cache,mode=max' \
+            ORG="${{ secrets.DOCKER_USERNAME }}" \
+            VERSION=nightly \
+            DOCKER_BUILDKIT=1 ./scripts/docker-build --nrfconnect-chip
+      - uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - run: |
+          DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push --cache-from=type=local,src=cache' \
+            ORG="${{ secrets.DOCKER_USERNAME }}" \
+            VERSION=nightly \
+            DOCKER_BUILDKIT=1 ./scripts/docker-build --nrfconnect-chip
+
+  build-chip-environment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+        id: buildx
+        with:
+          version: latest
+          driver-opts: image=moby/buildkit:master
+      - run: |
+          DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --cache-to=type=local,dest=cache,mode=max' \
+            ORG="${{ secrets.DOCKER_USERNAME }}" \
+            VERSION=nightly \
+            DOCKER_BUILDKIT=1 ./scripts/docker-build --chip-environment
+      - uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - run: |
+          DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push --cache-from=type=local,src=cache' \
+            ORG="${{ secrets.DOCKER_USERNAME }}" \
+            VERSION=nightly \
+            DOCKER_BUILDKIT=1 ./scripts/docker-build --chip-environment
+
+  build-release:
+    needs:
+      - build-ot-nrf528xx-environment
+      - build-nrfconnect-chip
+      - build-chip-environment
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        id: date
+      - run: ./scripts/setup -u -o 'OT_NRF528XX|MATTER'
+      - run: |
+          docker run --rm \
+           -v $PWD/third_party/ot-nrf528xx:/ot-nrf528xx \
+           -v $PWD/build/ot-nrf528xx:/ot-nrf528xx/build \
+           -w /ot-nrf528xx \
+           ${{ secrets.DOCKERHUB_USERNAME }}/ot-nrf528xx-environment:nightly /bin/bash -c \
+          './script/bootstrap '\
+          '&& script/build nrf52840 USB_trans -DOT_BOOTLOADER=USB -DOT_THREAD_VERSION=1.2 '\
+          '&& arm-none-eabi-objcopy -O ihex build/bin/ot-rcp build/bin/ot-rcp.hex'
+      - run: |
+          docker run --rm \
+           -e CHIP_REVISION=$(cd third_party/connectedhomeip && git rev-parse --short HEAD) \
+           -v $PWD/third_party/connectedhomeip:/var/chip \
+           -v $PWD/build/nrf-sdk:/var/ncs \
+           -v $PWD/build/lighting-app/nrfconnect:/var/chip/examples/lighting-app/nrfconnect/build \
+           ${{ secrets.DOCERHUB_USERNAME }}/nrfconnect-chip:nightly /bin/bash -c \
+          'setup -y '\
+          '&& python3 scripts/setup/nrfconnect/update_ncs.py --update '\
+          '&& cd examples/lighting-app/nrfconnect '\
+          '&& west build -b nrf52840dongle_nrf52840'
+      - run: |
+          docker run --rm \
+           -v $PWD/build/ot-nrf528xx/bin:/root \
+            ${{ secrets.DOCKERHUB_USERNAME }}/nrfutil:nightly pkg generate --hw-version 52 --sd-req=0x00 \
+             --application ot-rcp.hex --application-version 1 ot-rcp.zip
+      - uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          body: ${{ steps.date.outputs.date }}
+          file: build/ot-nrf528xx/bin/ot-rcp.zip
+          tag: nightly-${{ steps.date.outputs.date }}
+          overwrite: true
+      - uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/lighting-app/nrfconnect/zephyr/matter-thread-light.zip
+          tag: nightly-${{ steps.date.outputs.date }}
+          overwrite: true
+      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+          delete_release: true
+          tag_name: nightly
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          body: ${{ steps.date.outputs.date }}
+          file: build/ot-nrf528xx/bin/ot-rcp.zip
+          tag: nightly
+          overwrite: true
+      - uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: /build/lighting-app/nrfconnect/zephyr/matter-thread-light.zip
+          tag: nightly
+          overwrite: true
+      - uses: dev-drprasad/delete-older-releases@v0.2.0
+        with:
+          keep_latest: 15 # two weeks + latest nightly
+          delete_tag_pattern: nightly
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
