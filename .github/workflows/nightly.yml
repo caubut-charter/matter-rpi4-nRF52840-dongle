@@ -199,7 +199,7 @@ jobs:
           'scripts/build_python.sh -m platform'
       - run: (cd build && sudo tar -cJf chip-device-ctrl_x86_64-LATEST.tar.xz --owner=0 --group=0 chip-device-ctrl)
       - run: sudo rm -rf build/chip-device-ctrl
-      - run: (cd third_party/connectedhomeip && sudo git clean -xdf && git submodule foreach --recursive git clean -fdx)
+      - run: (cd third_party/connectedhomeip && sudo git clean -xdf && sudo git submodule foreach --recursive git clean -fdx)
       - run: docker pull --platform linux/aarch64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly
       - run: |
           docker run --rm --entrypoint /bin/bash \
@@ -213,7 +213,7 @@ jobs:
 
 
       - run: sudo rm -rf build/nrf52840-dongle-thread-lighting-app/nrfconnect build/chip-device-ctrl
-      - run: (cd third_party/connectedhomeip && sudo git clean -xdf && git submodule foreach --recursive git clean -fdx)
+      - run: (cd third_party/connectedhomeip && sudo git clean -xdf && sudo git submodule foreach --recursive git clean -fdx)
       - run: CHIP_BRANCH=test_event_6 ./scripts/setup -u -o ^CONNECTEDHOMEIP
       - run: |
           docker run --rm \
@@ -240,7 +240,7 @@ jobs:
           'scripts/build_python.sh -m platform'
       - run: (cd build && sudo tar -cJf chip-device-ctrl_x86_64-TEST_EVENT_6.tar.xz --owner=0 --group=0 chip-device-ctrl)
       - run: sudo rm -rf build/chip-device-ctrl
-      - run: (cd third_party/connectedhomeip && sudo git clean -xdf && git submodule foreach --recursive git clean -fdx)
+      - run: (cd third_party/connectedhomeip && sudo git clean -xdf && sudo git submodule foreach --recursive git clean -fdx)
       - run: docker pull --platform linux/aarch64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly
       - run: |
           docker run --rm --entrypoint /bin/bash \
