@@ -190,6 +190,7 @@ jobs:
            -v $PWD/build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr:/root \
            ${{ secrets.DOCKERHUB_USERNAME }}/nrfutil:nightly pkg generate --hw-version 52 --sd-req=0x00 \
            --application zephyr.hex --application-version 1 nrf52840-dongle-thread-lighting-app-LATEST.zip
+      - run: docker pull --platform linux/x86_64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly
       - run: |
           docker run --rm --entrypoint /bin/bash \
            -v $PWD/third_party/connectedhomeip:/connectedhomeip \
@@ -198,7 +199,8 @@ jobs:
           'scripts/build_python.sh -m platform'
       - run: (cd build && sudo tar -cJf chip-device-ctrl_x86_64-LATEST.tar.xz --owner=0 --group=0 chip-device-ctrl)
       - run: sudo rm -rf build/chip-device-ctrl
-      - run: docker pull --platform aarch64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly
+      - run: (cd third_party/connectedhomeip && sudo git clean -xdf && git submodule foreach --recursive git clean -fdx)
+      - run: docker pull --platform linux/aarch64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly
       - run: |
           docker run --rm --entrypoint /bin/bash \
            -v $PWD/third_party/connectedhomeip:/connectedhomeip \
@@ -211,6 +213,7 @@ jobs:
 
 
       - run: sudo rm -rf build/nrf52840-dongle-thread-lighting-app/nrfconnect build/chip-device-ctrl
+      - run: (cd third_party/connectedhomeip && sudo git clean -xdf && git submodule foreach --recursive git clean -fdx)
       - run: CHIP_BRANCH=test_event_6 ./scripts/setup -u -o '^CHIP'
       - run: |
           docker run --rm \
@@ -228,7 +231,7 @@ jobs:
            -v $PWD/build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr:/root \
            ${{ secrets.DOCKERHUB_USERNAME }}/nrfutil:nightly pkg generate --hw-version 52 --sd-req=0x00 \
            --application zephyr.hex --application-version 1 nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip
-      - run: docker pull --platform x86_64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly
+      - run: docker pull --platform linux/x86_64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly
       - run: |
           docker run --rm --entrypoint /bin/bash \
            -v $PWD/third_party/connectedhomeip:/connectedhomeip \
@@ -237,7 +240,8 @@ jobs:
           'scripts/build_python.sh -m platform'
       - run: (cd build && sudo tar -cJf chip-device-ctrl_x86_64-TEST_EVENT_6.tar.xz --owner=0 --group=0 chip-device-ctrl)
       - run: sudo rm -rf build/chip-device-ctrl
-      - run: docker pull --platform aarch64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly
+      - run: (cd third_party/connectedhomeip && sudo git clean -xdf && git submodule foreach --recursive git clean -fdx)
+      - run: docker pull --platform linux/aarch64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly
       - run: |
           docker run --rm --entrypoint /bin/bash \
            -v $PWD/third_party/connectedhomeip:/connectedhomeip \
@@ -280,13 +284,13 @@ jobs:
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: /build/chip-device-ctrl_x86_64-TEST_EVENT_6.tar.xz
+          file: /build/chip-device-ctrl_x86_64-LATEST.tar.xz
           tag: nightly-${{ steps.date.outputs.date }}
           overwrite: true
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: /build/chip-device-ctrl_x86_64-LATEST.tar.xz
+          file: /build/chip-device-ctrl_x86_64-TEST_EVENT_6.tar.xz
           tag: nightly-${{ steps.date.outputs.date }}
           overwrite: true
       - uses: svenstaro/upload-release-action@v2
