@@ -6,149 +6,149 @@ on:
   # TODO CRON
 
 jobs:
-  build-avahi-utils:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: docker/setup-qemu-action@v1
-      - uses: docker/setup-buildx-action@v1
-        id: buildx
-        with:
-          version: latest
-      - uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - run: |
-          DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
-            ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
-            VERSION=nightly \
-            DOCKER_BUILDKIT=1 ./scripts/docker-build --avahi-utils
-
-  build-chip-environment:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: docker/setup-qemu-action@v1
-      - uses: docker/setup-buildx-action@v1
-        id: buildx
-        with:
-          version: latest
-      - uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - run: |
-          DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push' \
-            ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
-            VERSION=nightly \
-            DOCKER_BUILDKIT=1 ./scripts/docker-build --chip-environment
-
-  build-otbr:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: docker/setup-qemu-action@v1
-      - uses: docker/setup-buildx-action@v1
-        id: buildx
-        with:
-          version: latest
-      - uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - run: ./scripts/setup -u -o OT_BR_POSIX
-      - run: |
-          DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
-            ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
-            VERSION=nightly \
-            DOCKER_BUILDKIT=1 ./scripts/docker-build --otbr
-
-  build-ot-commissioner:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: docker/setup-qemu-action@v1
-      - uses: docker/setup-buildx-action@v1
-        id: buildx
-        with:
-          version: latest
-      - uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - run: ./scripts/setup -u -o OT_COMMISSIONER
-      - run: |
-          DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
-            ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
-            VERSION=nightly \
-            DOCKER_BUILDKIT=1 ./scripts/docker-build --ot-commissioner
-
-  build-ot-nrf528xx-environment:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: docker/setup-qemu-action@v1
-      - uses: docker/setup-buildx-action@v1
-        id: buildx
-        with:
-          version: latest
-      - uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - run: ./scripts/setup -u -o OT_NRF528XX
-      - run: |
-          DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push' \
-            ORG=${{ secrets.DOCKERHUB_USERNAME }} \
-            VERSION=nightly \
-            DOCKER_BUILDKIT=1 ./scripts/docker-build --ot-nrf528xx-environment
-
-  build-nrfconnect-chip:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: docker/setup-qemu-action@v1
-      - uses: docker/setup-buildx-action@v1
-        id: buildx
-        with:
-          version: latest
-      - uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - run: ./scripts/setup -u -o NRFCONNECT_CHIP_DOCKER
-      - run: |
-          DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push' \
-            ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
-            VERSION=nightly \
-            DOCKER_BUILDKIT=1 ./scripts/docker-build --nrfconnect-chip
-
-  build-nrfutil:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: docker/setup-qemu-action@v1
-      - uses: docker/setup-buildx-action@v1
-        id: buildx
-        with:
-          version: latest
-      - uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - run: |
-          DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
-            ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
-            VERSION=nightly \
-            DOCKER_BUILDKIT=1 ./scripts/docker-build --nrfutil
+  #   build-avahi-utils:
+  #     runs-on: ubuntu-latest
+  #     steps:
+  #       - uses: actions/checkout@v2
+  #       - uses: docker/setup-qemu-action@v1
+  #       - uses: docker/setup-buildx-action@v1
+  #         id: buildx
+  #         with:
+  #           version: latest
+  #       - uses: docker/login-action@v1
+  #         with:
+  #           username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #           password: ${{ secrets.DOCKERHUB_TOKEN }}
+  #       - run: |
+  #           DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
+  #             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
+  #             VERSION=nightly \
+  #             DOCKER_BUILDKIT=1 ./scripts/docker-build --avahi-utils
+  #
+  #   build-chip-environment:
+  #     runs-on: ubuntu-latest
+  #     steps:
+  #       - uses: actions/checkout@v2
+  #       - uses: docker/setup-qemu-action@v1
+  #       - uses: docker/setup-buildx-action@v1
+  #         id: buildx
+  #         with:
+  #           version: latest
+  #       - uses: docker/login-action@v1
+  #         with:
+  #           username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #           password: ${{ secrets.DOCKERHUB_TOKEN }}
+  #       - run: |
+  #           DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push' \
+  #             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
+  #             VERSION=nightly \
+  #             DOCKER_BUILDKIT=1 ./scripts/docker-build --chip-environment
+  #
+  #   build-otbr:
+  #     runs-on: ubuntu-latest
+  #     steps:
+  #       - uses: actions/checkout@v2
+  #       - uses: docker/setup-qemu-action@v1
+  #       - uses: docker/setup-buildx-action@v1
+  #         id: buildx
+  #         with:
+  #           version: latest
+  #       - uses: docker/login-action@v1
+  #         with:
+  #           username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #           password: ${{ secrets.DOCKERHUB_TOKEN }}
+  #       - run: ./scripts/setup -u -o OT_BR_POSIX
+  #       - run: |
+  #           DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
+  #             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
+  #             VERSION=nightly \
+  #             DOCKER_BUILDKIT=1 ./scripts/docker-build --otbr
+  #
+  #   build-ot-commissioner:
+  #     runs-on: ubuntu-latest
+  #     steps:
+  #       - uses: actions/checkout@v2
+  #       - uses: docker/setup-qemu-action@v1
+  #       - uses: docker/setup-buildx-action@v1
+  #         id: buildx
+  #         with:
+  #           version: latest
+  #       - uses: docker/login-action@v1
+  #         with:
+  #           username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #           password: ${{ secrets.DOCKERHUB_TOKEN }}
+  #       - run: ./scripts/setup -u -o OT_COMMISSIONER
+  #       - run: |
+  #           DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
+  #             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
+  #             VERSION=nightly \
+  #             DOCKER_BUILDKIT=1 ./scripts/docker-build --ot-commissioner
+  #
+  #   build-ot-nrf528xx-environment:
+  #     runs-on: ubuntu-latest
+  #     steps:
+  #       - uses: actions/checkout@v2
+  #       - uses: docker/setup-qemu-action@v1
+  #       - uses: docker/setup-buildx-action@v1
+  #         id: buildx
+  #         with:
+  #           version: latest
+  #       - uses: docker/login-action@v1
+  #         with:
+  #           username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #           password: ${{ secrets.DOCKERHUB_TOKEN }}
+  #       - run: ./scripts/setup -u -o OT_NRF528XX
+  #       - run: |
+  #           DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push' \
+  #             ORG=${{ secrets.DOCKERHUB_USERNAME }} \
+  #             VERSION=nightly \
+  #             DOCKER_BUILDKIT=1 ./scripts/docker-build --ot-nrf528xx-environment
+  #
+  #   build-nrfconnect-chip:
+  #     runs-on: ubuntu-latest
+  #     steps:
+  #       - uses: actions/checkout@v2
+  #       - uses: docker/setup-qemu-action@v1
+  #       - uses: docker/setup-buildx-action@v1
+  #         id: buildx
+  #         with:
+  #           version: latest
+  #       - uses: docker/login-action@v1
+  #         with:
+  #           username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #           password: ${{ secrets.DOCKERHUB_TOKEN }}
+  #       - run: ./scripts/setup -u -o NRFCONNECT_CHIP_DOCKER
+  #       - run: |
+  #           DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push' \
+  #             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
+  #             VERSION=nightly \
+  #             DOCKER_BUILDKIT=1 ./scripts/docker-build --nrfconnect-chip
+  #
+  #   build-nrfutil:
+  #     runs-on: ubuntu-latest
+  #     steps:
+  #       - uses: actions/checkout@v2
+  #       - uses: docker/setup-qemu-action@v1
+  #       - uses: docker/setup-buildx-action@v1
+  #         id: buildx
+  #         with:
+  #           version: latest
+  #       - uses: docker/login-action@v1
+  #         with:
+  #           username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #           password: ${{ secrets.DOCKERHUB_TOKEN }}
+  #       - run: |
+  #           DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
+  #             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
+  #             VERSION=nightly \
+  #             DOCKER_BUILDKIT=1 ./scripts/docker-build --nrfutil
 
   build-release:
-    needs:
-      - build-ot-nrf528xx-environment
-      - build-nrfconnect-chip
-      - build-chip-environment
-      - build-nrfutil
+    #     needs:
+    #       - build-ot-nrf528xx-environment
+    #       - build-nrfconnect-chip
+    #       - build-chip-environment
+    #       - build-nrfutil
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -175,7 +175,7 @@ jobs:
            -v $PWD/third_party/connectedhomeip:/var/chip \
            -v $PWD/build/nrf-sdk:/var/ncs \
            -v $PWD/build/nrf52840-dongle-thread-lighting-app/nrfconnect:/var/chip/examples/lighting-app/nrfconnect/build \
-           ${{ secrets.DOCKERHUB_USERNAME }}/nrfconnect-chip:nightly /bin/bash -c \
+           ${{ secrets.DOCKERHUB_USERNAME }}/nrfconnect-chip:nightly \
           'setup -y '\
           '&& python3 scripts/setup/nrfconnect/update_ncs.py --update '\
           '&& cd examples/lighting-app/nrfconnect '\
