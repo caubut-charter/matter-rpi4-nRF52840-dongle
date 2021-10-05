@@ -3,6 +3,7 @@ name: NIGHTLY
 on:
   push:
     branches: [ chore/submodule-cleanup ]
+  # TODO CRON
 
 jobs:
   build-avahi-utils:
@@ -162,34 +163,47 @@ jobs:
            ${{ secrets.DOCKERHUB_USERNAME }}/ot-nrf528xx-environment:nightly /bin/bash -c \
           './script/bootstrap '\
           '&& script/build nrf52840 USB_trans -DOT_BOOTLOADER=USB -DOT_THREAD_VERSION=1.2 '\
-          '&& arm-none-eabi-objcopy -O ihex build/bin/ot-rcp build/bin/ot-rcp.hex'
+          '&& arm-none-eabi-objcopy -O ihex build/bin/ot-rcp build/bin/nrf52840-dongle-ot-rcp.hex'
+      - run: |
+          docker run --rm \
+           -v $PWD/build/ot-nrf528xx/bin:/root \
+           ${{ secrets.DOCKERHUB_USERNAME }}/nrfutil:nightly pkg generate --hw-version 52 --sd-req=0x00 \
+           --application nrf52840-dongle-ot-rcp.hex --application-version 1 ot-rcp.zip
       - run: |
           docker run --rm \
            -e CHIP_REVISION=$(cd third_party/connectedhomeip && git rev-parse --short HEAD) \
            -v $PWD/third_party/connectedhomeip:/var/chip \
            -v $PWD/build/nrf-sdk:/var/ncs \
-           -v $PWD/build/lighting-app/nrfconnect:/var/chip/examples/lighting-app/nrfconnect/build \
-           ${{ secrets.DOCERHUB_USERNAME }}/nrfconnect-chip:nightly /bin/bash -c \
+           -v $PWD/build/nrf52840-dongle-thread-lighting-app/nrfconnect:/var/chip/examples/lighting-app/nrfconnect/build \
+           ${{ secrets.DOCKERHUB_USERNAME }}/nrfconnect-chip:nightly /bin/bash -c \
           'setup -y '\
           '&& python3 scripts/setup/nrfconnect/update_ncs.py --update '\
           '&& cd examples/lighting-app/nrfconnect '\
           '&& west build -b nrf52840dongle_nrf52840'
       - run: |
           docker run --rm \
-           -v $PWD/build/ot-nrf528xx/bin:/root \
-            ${{ secrets.DOCKERHUB_USERNAME }}/nrfutil:nightly pkg generate --hw-version 52 --sd-req=0x00 \
-             --application ot-rcp.hex --application-version 1 ot-rcp.zip
+           -v $PWD/build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr:/root \
+           ${{ secrets.DOCKERHUB_USERNAME }}/nrfutil:nightly pkg generate --hw-version 52 --sd-req=0x00 \
+           --application zephyr.hex --application-version 1 nrf52840-dongle-thread-lighting-app.zip
+      - run: |
+          docker run --rm --entrypoint /bin/bash \
+           -v $PWD/third_party/connectedhomeip:/connectedhomeip \
+           -v $PWD/build/chip-device-ctrl:/connectedhomeip/out \
+           ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly -c \
+          'scripts/build_python.sh -m platform'
+      - run: |
+          (cd build && tar -cJf ../chip-device-ctrl_x86_64.tar.xz --owner=0 --group=0 chip-device-ctrl)
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           body: ${{ steps.date.outputs.date }}
-          file: build/ot-nrf528xx/bin/ot-rcp.zip
+          file: build/ot-nrf528xx/bin/nrf52840-dongle-ot-rcp.zip
           tag: nightly-${{ steps.date.outputs.date }}
           overwrite: true
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: /build/lighting-app/nrfconnect/zephyr/nrf52840-dongle-matter-thread-light.zip
+          file: /build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr/nrf52840-dongle-thread-lighting-app.zip
           tag: nightly-${{ steps.date.outputs.date }}
           overwrite: true
       - uses: dev-drprasad/delete-tag-and-release@v0.2.0
@@ -202,13 +216,13 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           body: ${{ steps.date.outputs.date }}
-          file: build/ot-nrf528xx/bin/ot-rcp.zip
+          file: build/ot-nrf528xx/bin/nrf52840-dongle-ot-rcp.zip
           tag: nightly
           overwrite: true
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: /build/lighting-app/nrfconnect/zephyr/nrf52840-matter-dongle-thread-light.zip
+          file: /build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr/nrf52840-dongle-thread-lighting-app.zip
           tag: nightly
           overwrite: true
       - uses: dev-drprasad/delete-older-releases@v0.2.0
