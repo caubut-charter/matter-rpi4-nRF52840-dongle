@@ -17,7 +17,6 @@ CHIP_ENVIRONMENT=false
 OTBR=false
 OT_COMMISSIONER=false
 OT_NRF528XX_ENVIRONMENT=false
-NRFCONNECT_TOOLCHAIN=false
 NRFCONNECT_CHIP=false
 NRFUTIL=false
 
@@ -29,11 +28,10 @@ VERSION=${VERSION:-latest}
 while [ $# -gt 0 ] ; do
   case $1 in
     --avahi-utils) AVAHI_UTILS=true ;;
-    --CHIP-environment) CHIP_ENVIRONMENT=true ;;
+    --chip-environment) CHIP_ENVIRONMENT=true ;;
     --otbr) OTBR=true ;;
     --ot-commissioner) OT_COMMISSIONER=true ;;
     --ot-nrf528xx-environment) OT_NRF528XX_ENVIRONMENT=true ;;
-    --nrfconnect-toolchain) NRFCONNECT_TOOLCHAIN=true ;;
     --nrfconnect-chip) NRFCONNECT_CHIP=true ;;
     --nrfutil) NRFUTIL=true ;;
     --all) AVAHI_UTILS=true; CHIP_ENVIRONMENT=true; OTBR=true; OT_COMMISSIONER=true; OT_NRF528XX_ENVIRONMENT=true; NRFCONNECT_CHIP=true; NRFUTIL=true ;;
@@ -97,12 +95,13 @@ check_hash () {
   fi
 
   if [[ $CHIP_ENVIRONMENT = true ]]; then
-    (set -x && $DOCKER_BUILD -t ${ORG}chip-environment:$VERSION etc/docker/chip/environment)
+    (set -x && $DOCKER_BUILD -t ${ORG}chip-environment:$VERSION etc/docker/connectedhomeip/environment)
   fi
 
-  if [[ $NRFCONNECT_TOOLCHAIN = true ]]; then
+  if [[ $NRFCONNECT_CHIP = true ]]; then
     (cd third_party/nrfconnect-chip-docker && git reset --hard)
     check_hash 'third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile'
+    check_hash 'third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile'
 
     sed -i \
       -e '44,52d' \
@@ -113,11 +112,6 @@ check_hash () {
 
     (cd third_party/nrfconnect-chip-docker/nrfconnect-toolchain \
      && set -x && $DOCKER_BUILD -t ${ORG}nrfconnect-toolchain:$VERSION .)
-  fi
-
-  if [[ $NRFCONNECT_CHIP = true ]]; then
-    (cd third_party/nrfconnect-chip-docker && git reset --hard)
-    check_hash 'third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile'
 
     [[ -z "$DOCKER_BUILDKIT" ]] && FLAGS="--build-arg TARGETARCH=$TARGETARCH" || FLAGS=''
 
