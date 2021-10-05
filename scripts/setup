@@ -53,8 +53,8 @@ done
               (set -x && git clone -j8 ${URL[$REPO]} .)
             fi
             (set -x && git fetch)
-            (set -x && git reset --hard)
-            (set -x && git submodule foreach --recursive git reset --hard)
+            (set -x && git reset --hard && git clean -fd)
+            (set -x && git submodule foreach --recursive git reset --hard && git submodule foreach --recursive git clean -fd)
             if [[ $UPDATE = true || -z ${COMMIT[$REPO]} ]]; then
               (set -x && git checkout -B ${BRANCH[$REPO]} origin/${BRANCH[$REPO]})
             else

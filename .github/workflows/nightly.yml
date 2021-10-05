@@ -57,7 +57,7 @@ jobs:
   #         with:
   #           username: ${{ secrets.DOCKERHUB_USERNAME }}
   #           password: ${{ secrets.DOCKERHUB_TOKEN }}
-  #       - run: ./scripts/setup -u -o OT_BR_POSIX
+  #       - run: ./scripts/setup -u -o ^OT_BR_POSIX
   #       - run: |
   #           DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
   #             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
@@ -77,7 +77,7 @@ jobs:
   #         with:
   #           username: ${{ secrets.DOCKERHUB_USERNAME }}
   #           password: ${{ secrets.DOCKERHUB_TOKEN }}
-  #       - run: ./scripts/setup -u -o OT_COMMISSIONER
+  #       - run: ./scripts/setup -u -o ^OT_COMMISSIONER
   #       - run: |
   #           DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
   #             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
@@ -97,7 +97,7 @@ jobs:
   #         with:
   #           username: ${{ secrets.DOCKERHUB_USERNAME }}
   #           password: ${{ secrets.DOCKERHUB_TOKEN }}
-  #       - run: ./scripts/setup -u -o OT_NRF528XX
+  #       - run: ./scripts/setup -u -o ^OT_NRF528XX
   #       - run: |
   #           DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push' \
   #             ORG=${{ secrets.DOCKERHUB_USERNAME }} \
@@ -117,7 +117,7 @@ jobs:
   #         with:
   #           username: ${{ secrets.DOCKERHUB_USERNAME }}
   #           password: ${{ secrets.DOCKERHUB_TOKEN }}
-  #       - run: ./scripts/setup -u -o NRFCONNECT_CHIP_DOCKER
+  #       - run: ./scripts/setup -u -o ^NRFCONNECT_CHIP_DOCKER
   #       - run: |
   #           DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push' \
   #             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
@@ -154,7 +154,7 @@ jobs:
       - uses: actions/checkout@v2
       - run: echo "::set-output name=date::$(date -u +'%Y-%m-%d')"
         id: date
-      - run: ./scripts/setup -u -o 'OT_NRF528XX|MATTER'
+      - run: ./scripts/setup -u -o '^(OT_NRF528XX|CHIP)'
 
 
       - run: |
@@ -197,7 +197,7 @@ jobs:
           'scripts/build_python.sh -m platform'
       - run: (cd build && sudo tar -cJf chip-device-ctrl_x86_64-LATEST.tar.xz --owner=0 --group=0 chip-device-ctrl)
       - run: sudo rm -rf build/chip-device-ctrl
-      - run: docker pull --platform aarch64 ${{ secrets.DOCERHUB_USERNAME }}/chip-environment:nightly
+      - run: docker pull --platform aarch64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly
       - run: |
           docker run --rm --entrypoint /bin/bash \
            -v $PWD/third_party/connectedhomeip:/connectedhomeip \
@@ -210,7 +210,7 @@ jobs:
 
 
       - run: sudo rm -rf build/nrf52840-dongle-thread-lighting-app/nrfconnect build/chip-device-ctrl
-      - run: MATTER_BRANCH=test_event_6 ./scripts/setup -u -o 'MATTER'
+      - run: CHIP_BRANCH=test_event_6 ./scripts/setup -u -o '^CHIP'
       - run: |
           docker run --rm \
            -e CHIP_REVISION=$(cd third_party/connectedhomeip && git rev-parse --short HEAD) \
@@ -235,7 +235,7 @@ jobs:
           'scripts/build_python.sh -m platform'
       - run: (cd build && sudo tar -cJf chip-device-ctrl_x86_64-TEST_EVENT_6.tar.xz --owner=0 --group=0 chip-device-ctrl)
       - run: sudo rm -rf build/chip-device-ctrl
-      - run: docker pull --platform aarch64 ${{ secrets.DOCERHUB_USERNAME }}/chip-environment:nightly
+      - run: docker pull --platform aarch64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly
       - run: |
           docker run --rm --entrypoint /bin/bash \
            -v $PWD/third_party/connectedhomeip:/connectedhomeip \
