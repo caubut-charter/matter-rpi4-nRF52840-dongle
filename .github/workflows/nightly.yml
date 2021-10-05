@@ -275,6 +275,7 @@ jobs:
   build-chip-device-ctrl-x86_64-latest:
     needs: [ delete-last-nightly-release ]
     runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v2
       - run: echo "::set-output name=date::$(date -u +'%Y-%m-%d')"
         id: date
@@ -285,6 +286,7 @@ jobs:
            -v $PWD/build/chip-device-ctrl:/connectedhomeip/out \
            ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly -c \
           'scripts/build_python.sh -m platform'
+      - run: (cd build && sudo tar -cJf chip-device-ctrl-x86_64-LATEST.tar.xz --owner=0 --group=0 chip-device-ctrl)
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -303,6 +305,7 @@ jobs:
   build-chip-device-ctrl-aarch64-latest:
     needs: [ delete-last-nightly-release ]
     runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v2
       - uses: docker/setup-qemu-action@v1
       - run: echo "::set-output name=date::$(date -u +'%Y-%m-%d')"
@@ -315,6 +318,7 @@ jobs:
            -v $PWD/build/chip-device-ctrl:/connectedhomeip/out \
            ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly -c \
           'scripts/build_python.sh -m platform'
+      - run: (cd build && sudo tar -cJf chip-device-ctrl-aarch64-LATEST.tar.xz --owner=0 --group=0 chip-device-ctrl)
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -333,6 +337,7 @@ jobs:
   build-chip-device-ctrl-x86_64-test_event:
     needs: [ delete-last-nightly-release ]
     runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v2
       - run: echo "::set-output name=date::$(date -u +'%Y-%m-%d')"
         id: date
@@ -343,6 +348,7 @@ jobs:
            -v $PWD/build/chip-device-ctrl:/connectedhomeip/out \
            ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly -c \
           'scripts/build_python.sh -m platform'
+      - run: (cd build && sudo tar -cJf chip-device-ctrl-x86_64-TEST_EVENT_6.tar.xz --owner=0 --group=0 chip-device-ctrl)
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -361,6 +367,7 @@ jobs:
   build-chip-device-ctrl-aarch64-test_event:
     needs: [ delete-last-nightly-release ]
     runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v2
       - uses: docker/setup-qemu-action@v1
       - run: echo "::set-output name=date::$(date -u +'%Y-%m-%d')"
@@ -373,6 +380,7 @@ jobs:
            -v $PWD/build/chip-device-ctrl:/connectedhomeip/out \
            ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly -c \
           'scripts/build_python.sh -m platform'
+      - run: (cd build && sudo tar -cJf chip-device-ctrl-aarch64-TEST_EVENT_6.tar.xz --owner=0 --group=0 chip-device-ctrl)
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -390,6 +398,7 @@ jobs:
 
   cleanup-nightlies:
     needs:
+      - build-ot-rcp
       - build-nrf52840-dongle-thread-lighting-app-latest
       - build-nrf52840-dongle-thread-lighting-app-test_event
       - build-chip-device-ctrl-x86_64-latest
@@ -397,6 +406,7 @@ jobs:
       - build-chip-device-ctrl-x86_64-test_event
       - build-chip-device-ctrl-aarch64-test_event
     runs-on: ubuntu-latest
+    steps:
       - uses: dev-drprasad/delete-older-releases@v0.2.0
         with:
           keep_latest: 15 # two weeks + latest nightly
