@@ -61,15 +61,20 @@ jobs:
            -v $PWD/build/ot-nrf528xx:/ot-nrf528xx/build \
            -w /ot-nrf528xx \
            ${{ secrets.DOCKERHUB_USERNAME }}/ot-nrf528xx-environment:latest /bin/bash -c \
-          './script/bootstrap && script/build nrf52840 USB_trans -DOT_BOOTLOADER=USB -DOT_THREAD_VERSION=1.2 && arm-none-eabi-objcopy -O ihex build/bin/ot-rcp build/bin/ot-rcp.hex'
+          './script/bootstrap '\
+          '&& script/build nrf52840 USB_trans -DOT_BOOTLOADER=USB -DOT_THREAD_VERSION=1.2 '\
+          '&& arm-none-eabi-objcopy -O ihex build/bin/ot-rcp build/bin/ot-rcp.hex'
       - run: |
           docker run --rm \
-          -e CHIP_REVISION=$(cd third_party/connectedhomeip && git rev-parse --short HEAD) \
-          -v $PWD/third_party/connectedhomeip:/var/chip \
-          -v $PWD/build/nrf-sdk:/var/ncs \
-          -v $PWD/build/lighting-app/nrfconnect:/var/chip/examples/lighting-app/nrfconnect/build \
-          caubutcharter/nrfconnect-chip:latest /bin/bash -c \
-          'setup -y && python3 scripts/setup/nrfconnect/update_ncs.py --update && cd examples/lighting-app/nrfconnect && west build -b nrf52840dongle_nrf52840'
+           -e CHIP_REVISION=$(cd third_party/connectedhomeip && git rev-parse --short HEAD) \
+           -v $PWD/third_party/connectedhomeip:/var/chip \
+           -v $PWD/build/nrf-sdk:/var/ncs \
+           -v $PWD/build/lighting-app/nrfconnect:/var/chip/examples/lighting-app/nrfconnect/build \
+           ${{ secrets.DOCERHUB_USERNAME }}/nrfconnect-chip:latest /bin/bash -c \
+          'setup -y '\
+          '&& python3 scripts/setup/nrfconnect/update_ncs.py --update '\
+          '&& cd examples/lighting-app/nrfconnect '\
+          '&& west build -b nrf52840dongle_nrf52840'
       - run: |
           docker run --rm \
            -v $PWD/build/ot-nrf528xx/bin:/root \
