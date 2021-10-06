@@ -142,23 +142,22 @@ jobs:
   #             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
   #             VERSION=nightly \
   #             DOCKER_BUILDKIT=1 ./scripts/docker-build --nrfutil
-  delete-last-nightly-release:
-    #     needs:
-    #       - build-ot-nrf528xx-environment
-    #       - build-nrfconnect-chip
-    #       - build-chip-environment
-    #       - build-nrfutil
-    runs-on: ubuntu-latest
-    steps:
-      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
-        with:
-          delete_release: true
-          tag_name: nightly
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #delete-last-nightly-release:
+  #  #     needs:
+  #  #       - build-ot-nrf528xx-environment
+  #  #       - build-nrfconnect-chip
+  #  #       - build-chip-environment
+  #  #       - build-nrfutil
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - uses: dev-drprasad/delete-tag-and-release@v0.2.0
+  #      with:
+  #        delete_release: true
+  #        tag_name: nightly
+  #      env:
+  #        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  build-ot-rcp:
-    needs: [ delete-last-nightly-release ]
+  build-nrf52840-dongle-ot-rcp:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -179,23 +178,13 @@ jobs:
            -v $PWD/build/ot-nrf528xx/bin:/root \
            ${{ secrets.DOCKERHUB_USERNAME }}/nrfutil:nightly pkg generate --hw-version 52 --sd-req=0x00 \
            --application nrf52840-dongle-ot-rcp.hex --application-version 1 nrf52840-dongle-ot-rcp.zip
-      - uses: svenstaro/upload-release-action@v2
+      - uses: actions/upload-artifact@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          body: ${{ steps.date.outputs.date }}
-          file: build/ot-nrf528xx/bin/nrf52840-dongle-ot-rcp.zip
-          tag: nightly
-          overwrite: true
-      - uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          body: ${{ steps.date.outputs.date }}
-          file: build/ot-nrf528xx/bin/nrf52840-dongle-ot-rcp.zip
-          tag: nightly-${{ steps.date.outputs.date }}
-          overwrite: true
+          name: nrf52840-dongle-ot-rcp
+          path: build/ot-nrf528xx/bin/nrf52840-dongle-ot-rcp.zip
+          retention-days: 1
 
   build-nrf52840-dongle-thread-lighting-app-latest:
-    needs: [ delete-last-nightly-release ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -218,23 +207,13 @@ jobs:
            -v $PWD/build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr:/root \
            ${{ secrets.DOCKERHUB_USERNAME }}/nrfutil:nightly pkg generate --hw-version 52 --sd-req=0x00 \
            --application zephyr.hex --application-version 1 nrf52840-dongle-thread-lighting-app-LATEST.zip
-      - uses: svenstaro/upload-release-action@v2
+      - uses: actions/upload-artifact@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          body: ${{ steps.date.outputs.date }}
-          file: build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr/nrf52840-dongle-thread-lighting-app-LATEST.zip
-          tag: nightly
-          overwrite: true
-      - uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          body: ${{ steps.date.outputs.date }}
-          file: build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr/nrf52840-dongle-thread-lighting-app-LATEST.zip
-          tag: nightly-${{ steps.date.outputs.date }}
-          overwrite: true
+          name: nrf52840-dongle-thread-lighting-app-latest
+          path: build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr/nrf52840-dongle-thread-lighting-app-LATEST.zip
+          retention-days: 1
 
   build-nrf52840-dongle-thread-lighting-app-test_event:
-    needs: [ delete-last-nightly-release ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -257,23 +236,13 @@ jobs:
            -v $PWD/build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr:/root \
            ${{ secrets.DOCKERHUB_USERNAME }}/nrfutil:nightly pkg generate --hw-version 52 --sd-req=0x00 \
            --application zephyr.hex --application-version 1 nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip
-      - uses: svenstaro/upload-release-action@v2
+      - uses: actions/upload-artifact@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          body: ${{ steps.date.outputs.date }}
-          file: build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr/nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip
-          tag: nightly
-          overwrite: true
-      - uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          body: ${{ steps.date.outputs.date }}
-          file: build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr/nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip
-          tag: nightly-${{ steps.date.outputs.date }}
-          overwrite: true
+          name: nrf52840-dongle-thread-lighting-app-test_event
+          path: build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr/nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip
+          retention-days: 1
 
   build-chip-device-ctrl-x86_64-latest:
-    needs: [ delete-last-nightly-release ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -287,23 +256,13 @@ jobs:
            ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly -c \
           'scripts/build_python.sh -m platform'
       - run: (cd build && sudo tar -cJf chip-device-ctrl-x86_64-LATEST.tar.xz --owner=0 --group=0 chip-device-ctrl)
-      - uses: svenstaro/upload-release-action@v2
+      - uses: actions/upload-artifact@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          body: ${{ steps.date.outputs.date }}
-          file: build/chip-device-ctrl-x86_64-LATEST.tar.xz
-          tag: nightly
-          overwrite: true
-      - uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          body: ${{ steps.date.outputs.date }}
-          file: build/chip-device-ctrl-x86_64-LATEST.tar.xz
-          tag: nightly-${{ steps.date.outputs.date }}
-          overwrite: true
+          name: chip-device-ctrl-x86_64-latest
+          path: build/chip-device-ctrl-x86_64-LATEST.tar.xz
+          retention-days: 1
 
   build-chip-device-ctrl-aarch64-latest:
-    needs: [ delete-last-nightly-release ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -319,23 +278,13 @@ jobs:
            ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly -c \
           'scripts/build_python.sh -m platform'
       - run: (cd build && sudo tar -cJf chip-device-ctrl-aarch64-LATEST.tar.xz --owner=0 --group=0 chip-device-ctrl)
-      - uses: svenstaro/upload-release-action@v2
+      - uses: actions/upload-artifact@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          body: ${{ steps.date.outputs.date }}
-          file: build/chip-device-ctrl-aarch64-LATEST.tar.xz
-          tag: nightly
-          overwrite: true
-      - uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          body: ${{ steps.date.outputs.date }}
-          file: build/chip-device-ctrl-aarch64-LATEST.tar.xz
-          tag: nightly-${{ steps.date.outputs.date }}
-          overwrite: true
+          name: chip-device-ctrl-aarch64-latest
+          path: build/chip-device-ctrl-aarch64-LATEST.tar.xz
+          retention-days: 1
 
   build-chip-device-ctrl-x86_64-test_event:
-    needs: [ delete-last-nightly-release ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -349,23 +298,13 @@ jobs:
            ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly -c \
           'scripts/build_python.sh -m platform'
       - run: (cd build && sudo tar -cJf chip-device-ctrl-x86_64-TEST_EVENT_6.tar.xz --owner=0 --group=0 chip-device-ctrl)
-      - uses: svenstaro/upload-release-action@v2
+      - uses: actions/upload-artifact@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          body: ${{ steps.date.outputs.date }}
-          file: build/chip-device-ctrl-x86_64-TEST_EVENT_6.tar.xz
-          tag: nightly
-          overwrite: true
-      - uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          body: ${{ steps.date.outputs.date }}
-          file: build/chip-device-ctrl-x86_64-TEST_EVENT_6.tar.xz
-          tag: nightly-${{ steps.date.outputs.date }}
-          overwrite: true
+          name: chip-device-ctrl-x86_64-test_event
+          path: build/chip-device-ctrl-x86_64-TEST_EVENT_6.tar.xz
+          retention-days: 1
 
   build-chip-device-ctrl-aarch64-test_event:
-    needs: [ delete-last-nightly-release ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -381,22 +320,13 @@ jobs:
            ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly -c \
           'scripts/build_python.sh -m platform'
       - run: (cd build && sudo tar -cJf chip-device-ctrl-aarch64-TEST_EVENT_6.tar.xz --owner=0 --group=0 chip-device-ctrl)
-      - uses: svenstaro/upload-release-action@v2
+      - uses: actions/upload-artifact@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          body: ${{ steps.date.outputs.date }}
-          file: build/chip-device-ctrl-aarch64-TEST_EVENT_6.tar.xz
-          tag: nightly
-          overwrite: true
-      - uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          body: ${{ steps.date.outputs.date }}
-          file: build/chip-device-ctrl-aarch64-TEST_EVENT_6.tar.xz
-          tag: nightly-${{ steps.date.outputs.date }}
-          overwrite: true
+          name: chip-device-ctrl-aarch64-test_event
+          path: build/chip-device-ctrl-aarch64-TEST_EVENT_6.tar.xz
+          retention-days: 1
 
-  cleanup-nightly-releases:
+  publish-release:
     needs:
       - build-ot-rcp
       - build-nrf52840-dongle-thread-lighting-app-latest
@@ -407,6 +337,56 @@ jobs:
       - build-chip-device-ctrl-aarch64-test_event
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: nrf52840-dongle-ot-rcp
+          path: release/nrf52840-dongle-ot-rcp.zip
+      - uses: actions/download-artifact@v2
+        with:
+          name: nrf52840-dongle-thread-lighting-app-latest
+          path: release/nrf52840-dongle-thread-lighting-app-LATEST.zip
+      - uses: actions/download-artifact@v2
+        with:
+          name: nrf52840-dongle-thread-lighting-app-test_event
+          path: release/nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip
+      - uses: actions/download-artifact@v2
+        with:
+          name: chip-device-ctrl-x86_64-latest
+          path: release/chip-device-ctrl-x86_64-LATEST.tar.xz
+      - uses: actions/download-artifact@v2
+        with:
+          name: chip-device-ctrl-aarch64-latest
+          path: release/chip-device-ctrl-aarch64-LATEST.tar.xz
+      - uses: actions/download-artifact@v2
+        with:
+          name: chip-device-ctrl-x86_64-test_event
+          path: release/chip-device-ctrl-x86_64-TEST_EVENT_6.tar.xz
+      - uses: actions/download-artifact@v2
+        with:
+          name: chip-device-ctrl-aarch64-test_event
+          path: release/chip-device-ctrl-aarch64-TEST_EVENT_6.tar.xz
+      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+          delete_release: true
+          tag_name: nightly
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          body: ${{ steps.date.outputs.date }}
+          file: release/*
+          tag: nightly
+          overwrite: true
+          file_glob: true
+      - uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          body: ${{ steps.date.outputs.date }}
+          file: release/*
+          tag: nightly-${{ steps.date.outputs.date }}
+          overwrite: true
+          file_glob: true
       - uses: dev-drprasad/delete-older-releases@v0.2.0
         with:
           keep_latest: 15 # two weeks + latest nightly
