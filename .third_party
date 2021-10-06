@@ -1,6 +1,6 @@
 CONNECTEDHOMEIP_URL=https://github.com/project-chip/connectedhomeip.git
 CONNECTEDHOMEIP_BRANCH=master
-CONNECTEDHOMEIP_COMMIT=6c4af30f1
+CONNECTEDHOMEIP_COMMIT=4a321fe46
 
 NRFCONNECT_CHIP_DOCKER_URL=https://github.com/NordicPlayground/nrfconnect-chip-docker.git
 NRFCONNECT_CHIP_DOCKER_BRANCH=master

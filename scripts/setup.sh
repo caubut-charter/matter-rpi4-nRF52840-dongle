@@ -20,7 +20,7 @@ done
 (
   cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
   cd ..
-  while IFS== read -r KEY VALUE; do
+  while IFS="=" read -r KEY VALUE; do
     if [[ $KEY == '' || $VALUE = '' || $KEY =~ ^[[:space:]]*#.*$ ]]; then
       continue
     fi
@@ -30,18 +30,20 @@ done
     REPOS+=("${KEY%_*}")
     declare -n ARRAY=${KEY##*_}
     declare -n VALUE=$KEY
+    # shellcheck disable=SC2034
     ARRAY[${KEY%_*}]=${VALUE:-${DOT_THIRD_PARTY[$KEY]}}
     unset -n ARRAY
   done
+  # shellcheck disable=SC2207
   REPOS=($(printf "%s\n" "${REPOS[@]}" | sort -u))
-  DOT_THIRD_PARTY=$(mktemp)
+  TMP_THIRD_PARTY=$(mktemp)
   (set -x && mkdir -p third_party)
   for REPO in "${REPOS[@]}"; do
-    echo "${REPO}_URL=${URL[$REPO]}" >> $DOT_THIRD_PARTY
-    echo "${REPO}_BRANCH=${BRANCH[$REPO]}" >> $DOT_THIRD_PARTY
+    echo "${REPO}_URL=${URL[$REPO]}" >> "$TMP_THIRD_PARTY"
+    echo "${REPO}_BRANCH=${BRANCH[$REPO]}" >> "$TMP_THIRD_PARTY"
     if [[ ! $REPO =~ $ONLY ]]; then
       echo "+skipping $REPO"
-      echo "${REPO}_COMMIT=${COMMIT[$REPO]}" >> $DOT_THIRD_PARTY
+      echo "${REPO}_COMMIT=${COMMIT[$REPO]}" >> "$TMP_THIRD_PARTY"
     else
       (
         cd third_party
@@ -61,15 +63,15 @@ done
               (set -x && git checkout "${COMMIT[$REPO]}")
             fi
             (set -x && git submodule update --init --recursive)
-            echo "${REPO}_COMMIT=$(git rev-parse --short HEAD)" >> $DOT_THIRD_PARTY
+            echo "${REPO}_COMMIT=$(git rev-parse --short HEAD)" >> "$TMP_THIRD_PARTY"
           )
       )
     fi
-    if [[ ${REPOS[-1]} != $REPO ]]; then
-      echo '' >> $DOT_THIRD_PARTY
+    if [[ ${REPOS[-1]} != "$REPO" ]]; then
+      echo '' >> "$TMP_THIRD_PARTY"
     fi
   done
   set -x
-  cat $DOT_THIRD_PARTY > .third_party
-  rm $DOT_THIRD_PARTY
+  cat "$TMP_THIRD_PARTY" > .third_party
+  rm "$TMP_THIRD_PARTY"
 )

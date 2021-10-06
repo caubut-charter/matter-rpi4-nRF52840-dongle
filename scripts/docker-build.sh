@@ -52,12 +52,14 @@ declare -A HASH_CHECKS=(
 )
 
 check_hash () {
-  MD5=($(md5sum $1))
-  if [[ -v "HASHES[$1]" && -v "HASH_CHECKS[$1]" && ${HASH_CHECKS[$1]} && $MD5 != "${HASHES[$1]}" ]]; then
+  # shellcheck disable=SC2207
+  MD5=($(md5sum "$1"))
+  if [[ -v "HASHES[$1]" && -v "HASH_CHECKS[$1]" && ${HASH_CHECKS[$1]} && ${MD5[0]} != "${HASHES[$1]}" ]]; then
     echo -e "HASH_ERROR: $1\n"
     echo "Unable to patch file, hash mismatch."
     echo -e "Manually validate the patch and update the hash to proceed.\n"
-    echo "COMPUTED: $MD5"
+    echo "FILE:     ${MD5[1]}"
+    echo "COMPUTED: ${MD5[0]}"
     echo "EXPECTED: ${HASHES[$1]}"
     exit 1;
   fi
@@ -85,6 +87,7 @@ check_hash () {
     (cd third_party/ot-nrf528xx/openthread && git reset --hard)
     check_hash 'third_party/ot-nrf528xx/openthread/etc/docker/environment/Dockerfile'
 
+    # shellcheck disable=SC1003
     sed -i \
       -e '21,$d' \
       -e '/python3 -m pip install -U cmake/i \    && python3 -m pip install --upgrade pip \\' \
@@ -103,6 +106,7 @@ check_hash () {
     check_hash 'third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile'
     check_hash 'third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile'
 
+    # shellcheck disable=SC2016
     sed -i \
       -e '44,52d' \
       -e 's/\${TOOLCHAIN_URL}/https:\/\/developer.arm.com\/-\/media\/Files\/downloads\/gnu-rm\/9-2020q2\/gcc-arm-none-eabi-9-2020-q2-update-$(uname -m)-linux.tar.bz2/' \
@@ -115,12 +119,14 @@ check_hash () {
 
     [[ -z "$DOCKER_BUILDKIT" ]] && FLAGS="--build-arg TARGETARCH=$TARGETARCH" || FLAGS=''
 
+    # shellcheck disable=SC2016
     sed -i \
       -e '/^ARG NCS_REVISION/i \ARG TARGETARCH' \
       -e 's/amd64/${TARGETARCH}/' \
       -e 's/g++-multilib //' \
       third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile
 
+    # shellcheck disable=SC2086
     (cd third_party/nrfconnect-chip-docker/nrfconnect-chip \
      && set -x && $DOCKER_BUILD $FLAGS \
       --build-arg "BASE=${ORG}nrfconnect-toolchain:$VERSION" -t "${ORG}nrfconnect-chip:$VERSION" .)

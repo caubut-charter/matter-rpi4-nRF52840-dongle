@@ -1,12 +1,27 @@
 name: shellcheck
 
-on: [pull_request]
+on:
+  push:
+    branches: [ chore/submodule-cleanup ]
+#on: [pull_request]
 
 jobs:
-  shellcheck:
+  shellcheck-scripts:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: reviewdog/action-shellcheck@v1
+      - uses: ludeeus/action-shellcheck@master
         with:
-          path: ./scripts
+          scandir: './scripts'
+        env:
+          SHELLCHECK_OPTS: -e SC1008 -e SC2096 -s bash
+
+  shellcheck-docker-scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: './etc/docker'
+        env:
+          SHELLCHECK_OPTS: -e SC1008 -e SC2096 -s bash
