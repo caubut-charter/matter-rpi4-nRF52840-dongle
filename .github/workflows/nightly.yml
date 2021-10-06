@@ -328,7 +328,7 @@ jobs:
 
   publish-release:
     needs:
-      - build-ot-rcp
+      - build-nrf52840-dongle-ot-rcp
       - build-nrf52840-dongle-thread-lighting-app-latest
       - build-nrf52840-dongle-thread-lighting-app-test_event
       - build-chip-device-ctrl-x86_64-latest
