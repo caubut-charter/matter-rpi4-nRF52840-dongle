@@ -1,6 +1,6 @@
 CONNECTEDHOMEIP_URL=https://github.com/project-chip/connectedhomeip.git
 CONNECTEDHOMEIP_BRANCH=master
-CONNECTEDHOMEIP_COMMIT=d1a892164
+CONNECTEDHOMEIP_COMMIT=6c4af30f1
 
 NRFCONNECT_CHIP_DOCKER_URL=https://github.com/NordicPlayground/nrfconnect-chip-docker.git
 NRFCONNECT_CHIP_DOCKER_BRANCH=master
@@ -8,7 +8,7 @@ NRFCONNECT_CHIP_DOCKER_COMMIT=63ecc45
 
 OT_BR_POSIX_URL=https://github.com/openthread/ot-br-posix.git
 OT_BR_POSIX_BRANCH=main
-OT_BR_POSIX_COMMIT=a4880eb0a
+OT_BR_POSIX_COMMIT=afde0cf9f
 
 OT_COMMISSIONER_URL=https://github.com/openthread/ot-commissioner.git
 OT_COMMISSIONER_BRANCH=main

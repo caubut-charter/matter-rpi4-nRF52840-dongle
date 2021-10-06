@@ -27,7 +27,7 @@ done
     DOT_THIRD_PARTY[$KEY]=$VALUE
   done < ".third_party"
   for KEY in "${!DOT_THIRD_PARTY[@]}"; do
-    REPOS+=(${KEY%_*})
+    REPOS+=("${KEY%_*}")
     declare -n ARRAY=${KEY##*_}
     declare -n VALUE=$KEY
     ARRAY[${KEY%_*}]=${VALUE:-${DOT_THIRD_PARTY[$KEY]}}
@@ -36,7 +36,7 @@ done
   REPOS=($(printf "%s\n" "${REPOS[@]}" | sort -u))
   DOT_THIRD_PARTY=$(mktemp)
   (set -x && mkdir -p third_party)
-  for REPO in ${REPOS[@]}; do
+  for REPO in "${REPOS[@]}"; do
     echo "${REPO}_URL=${URL[$REPO]}" >> $DOT_THIRD_PARTY
     echo "${REPO}_BRANCH=${BRANCH[$REPO]}" >> $DOT_THIRD_PARTY
     if [[ ! $REPO =~ $ONLY ]]; then
@@ -46,19 +46,19 @@ done
       (
         cd third_party
           (
-            DIR=$(TMP=${URL[$REPO]##*/};echo ${TMP%.*})
-            if [[ ! -d $PATH ]]; then (set -x && mkdir -p $DIR); fi
-            cd $DIR
+            DIR=$(TMP=${URL[$REPO]##*/};echo "${TMP%.*}")
+            if [[ ! -d $PATH ]]; then (set -x && mkdir -p "$DIR"); fi
+            cd "$DIR"
             if [[ $(git rev-parse --git-dir 2> /dev/null) != '.git' ]]; then
-              (set -x && git clone -j8 ${URL[$REPO]} .)
+              (set -x && git clone -j8 "${URL[$REPO]}" .)
             fi
             (set -x && git fetch)
             (set -x && git reset --hard && git clean -fd)
             (set -x && git submodule foreach --recursive git reset --hard && git submodule foreach --recursive git clean -fd)
             if [[ $UPDATE = true || -z ${COMMIT[$REPO]} ]]; then
-              (set -x && git checkout -B ${BRANCH[$REPO]} origin/${BRANCH[$REPO]})
+              (set -x && git checkout -B "${BRANCH[$REPO]}" "origin/${BRANCH[$REPO]}")
             else
-              (set -x && git checkout ${COMMIT[$REPO]})
+              (set -x && git checkout "${COMMIT[$REPO]}")
             fi
             (set -x && git submodule update --init --recursive)
             echo "${REPO}_COMMIT=$(git rev-parse --short HEAD)" >> $DOT_THIRD_PARTY

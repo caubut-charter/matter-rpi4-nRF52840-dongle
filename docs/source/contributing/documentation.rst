@@ -10,7 +10,7 @@ Documentation for this project is built using Sphinx_ which requires `Python>=3.
 Environment Setup
 -----------------
 
-The envrionment setup is tailored to Ubuntu Linux systems.  See the host system's documentation for running on other system types.
+The environment setup is tailored to Ubuntu Linux systems.  See the host system's documentation for running on other system types.
 
 ::
 
@@ -23,8 +23,8 @@ The envrionment setup is tailored to Ubuntu Linux systems.  See the host system'
    # install python package dependencies
    poetry install
 
-Generating the Documentation
-----------------------------
+Building the Documentation
+--------------------------
 
 ::
 
@@ -70,8 +70,8 @@ Starting the Web Server
           -p 8888:443 \
           -d nginx:alpine
 
-Regenerating the Documentation
-------------------------------
+Rebuilding the Documentation
+----------------------------
 
 Incremental updates can be built using the same command as generating the documentation.
 
@@ -79,7 +79,7 @@ Incremental updates can be built using the same command as generating the docume
 
    poetry run make -C docs html
 
-Cleaning the build directory will break the docker volume and requires restarting the web server container.  This step is neccessary to rebuild the table of contents on every page when adding or removing new pages.  Incremental updates only rebuild pages that changed.
+Cleaning the build directory will break the docker volume and requires restarting the web server container.  This step is necessary to rebuild the table of contents on every page when adding or removing new pages.  Incremental updates only rebuild pages that changed.
 
 ::
 

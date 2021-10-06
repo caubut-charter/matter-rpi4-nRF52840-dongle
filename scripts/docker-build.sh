@@ -21,7 +21,7 @@ NRFCONNECT_CHIP=false
 NRFUTIL=false
 
 ORG=${ORG:-}
-if [[ ! -z $ORG ]]; then ORG="$ORG/"; fi
+if [[ -n $ORG ]]; then ORG="$ORG/"; fi
 DOCKER_BUILD=${DOCKER_BUILD:-docker build}
 VERSION=${VERSION:-latest}
 
@@ -53,7 +53,7 @@ declare -A HASH_CHECKS=(
 
 check_hash () {
   MD5=($(md5sum $1))
-  if [[ -v "HASHES[$1]" && -v "HASH_CHECKS[$1]" && ${HASH_CHECKS[$1]} && $MD5 != ${HASHES[$1]} ]]; then
+  if [[ -v "HASHES[$1]" && -v "HASH_CHECKS[$1]" && ${HASH_CHECKS[$1]} && $MD5 != "${HASHES[$1]}" ]]; then
     echo -e "HASH_ERROR: $1\n"
     echo "Unable to patch file, hash mismatch."
     echo -e "Manually validate the patch and update the hash to proceed.\n"
@@ -68,17 +68,17 @@ check_hash () {
   cd ..
 
   if [[ $AVAHI_UTILS = true ]]; then
-    (set -x && $DOCKER_BUILD -t ${ORG}avahi-utils:$VERSION etc/docker/avahi/avahi-utils)
+    (set -x && $DOCKER_BUILD -t "${ORG}avahi-utils:$VERSION" etc/docker/avahi/avahi-utils)
   fi
 
   if [[ $OTBR = true ]]; then
     (cd third_party/ot-br-posix \
-       && set -x && $DOCKER_BUILD --build-arg INFRA_IF_NAME=eth1 -t ${ORG}otbr:$VERSION -f etc/docker/Dockerfile .)
+       && set -x && $DOCKER_BUILD --build-arg INFRA_IF_NAME=eth1 -t "${ORG}otbr:$VERSION" -f etc/docker/Dockerfile .)
   fi
 
   if [[ $OT_COMMISSIONER = true ]]; then
     (cd third_party/ot-commissioner && set -x && $DOCKER_BUILD \
-     -t ${ORG}ot-commissioner:$VERSION -f ../../etc/docker/openthread/ot-commissioner/Dockerfile .)
+     -t "${ORG}ot-commissioner:$VERSION" -f ../../etc/docker/openthread/ot-commissioner/Dockerfile .)
   fi
 
   if [[ $OT_NRF528XX_ENVIRONMENT = true ]]; then
@@ -91,11 +91,11 @@ check_hash () {
       third_party/ot-nrf528xx/openthread/etc/docker/environment/Dockerfile
 
     (cd third_party/ot-nrf528xx/openthread \
-      && set -x && $DOCKER_BUILD -t ${ORG}ot-nrf528xx-environment:$VERSION -f etc/docker/environment/Dockerfile .)
+      && set -x && $DOCKER_BUILD -t "${ORG}ot-nrf528xx-environment:$VERSION" -f etc/docker/environment/Dockerfile .)
   fi
 
   if [[ $CHIP_ENVIRONMENT = true ]]; then
-    (set -x && $DOCKER_BUILD -t ${ORG}chip-environment:$VERSION etc/docker/connectedhomeip/environment)
+    (set -x && $DOCKER_BUILD -t "${ORG}chip-environment:$VERSION" etc/docker/connectedhomeip/environment)
   fi
 
   if [[ $NRFCONNECT_CHIP = true ]]; then
@@ -111,7 +111,7 @@ check_hash () {
       third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile
 
     (cd third_party/nrfconnect-chip-docker/nrfconnect-toolchain \
-     && set -x && $DOCKER_BUILD -t ${ORG}nrfconnect-toolchain:$VERSION .)
+     && set -x && $DOCKER_BUILD -t "${ORG}nrfconnect-toolchain:$VERSION" .)
 
     [[ -z "$DOCKER_BUILDKIT" ]] && FLAGS="--build-arg TARGETARCH=$TARGETARCH" || FLAGS=''
 
@@ -123,10 +123,10 @@ check_hash () {
 
     (cd third_party/nrfconnect-chip-docker/nrfconnect-chip \
      && set -x && $DOCKER_BUILD $FLAGS \
-      --build-arg "BASE=${ORG}nrfconnect-toolchain:$VERSION" -t ${ORG}nrfconnect-chip:$VERSION .)
+      --build-arg "BASE=${ORG}nrfconnect-toolchain:$VERSION" -t "${ORG}nrfconnect-chip:$VERSION" .)
   fi
 
   if [[ $NRFUTIL = true ]]; then
-    (set -x && $DOCKER_BUILD -t ${ORG}nrfutil:$VERSION etc/docker/nordicsemi/nrfutil)
+    (set -x && $DOCKER_BUILD -t "${ORG}nrfutil:$VERSION" etc/docker/nordicsemi/nrfutil)
   fi
 )

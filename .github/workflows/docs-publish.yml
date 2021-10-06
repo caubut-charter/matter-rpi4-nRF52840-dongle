@@ -1,4 +1,4 @@
-name: DOCS-PUBLISH
+name: docs-publish
 
 on:
   push:
@@ -24,15 +24,15 @@ jobs:
         run: poetry install --no-interaction --no-root
       - run: poetry run make -C docs html
       - run: |
-         git config --local user.email "action@github.com"
-         git config --local user.name "GitHub Action"
+         git config --local user.email 'action@github.com'
+         git config --local user.name 'GitHub Action'
          git checkout --orphan gh-pages
          git reset
          touch .nojekyll
          git add .nojekyll
          git add docs/build/html/* -f
          git mv docs/build/html/* ./ -k
-         git commit -m "docs: update hosted version"
+         git commit -m 'docs: update hosted version'
       - uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

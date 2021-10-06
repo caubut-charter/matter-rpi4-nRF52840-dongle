@@ -1,4 +1,4 @@
-name: NIGHTLY
+name: nightly
 
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
           DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
             VERSION=nightly \
-            DOCKER_BUILDKIT=1 ./scripts/docker-build --avahi-utils
+            DOCKER_BUILDKIT=1 ./scripts/docker-build.sh --avahi-utils
 
   build-chip-environment:
     runs-on: ubuntu-latest
@@ -42,7 +42,7 @@ jobs:
           DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push' \
             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
             VERSION=nightly \
-            DOCKER_BUILDKIT=1 ./scripts/docker-build --chip-environment
+            DOCKER_BUILDKIT=1 ./scripts/docker-build.sh --chip-environment
 
   build-otbr:
     runs-on: ubuntu-latest
@@ -57,12 +57,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - run: ./scripts/setup -u -o ^OT_BR_POSIX
+      - run: ./scripts/setup.sh -u -o ^OT_BR_POSIX
       - run: |
           DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
             VERSION=nightly \
-            DOCKER_BUILDKIT=1 ./scripts/docker-build --otbr
+            DOCKER_BUILDKIT=1 ./scripts/docker-build.sh --otbr
 
   build-ot-commissioner:
     runs-on: ubuntu-latest
@@ -77,12 +77,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - run: ./scripts/setup -u -o ^OT_COMMISSIONER
+      - run: ./scripts/setup.sh -u -o ^OT_COMMISSIONER
       - run: |
           DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
             VERSION=nightly \
-            DOCKER_BUILDKIT=1 ./scripts/docker-build --ot-commissioner
+            DOCKER_BUILDKIT=1 ./scripts/docker-build.sh --ot-commissioner
 
   build-ot-nrf528xx-environment:
     runs-on: ubuntu-latest
@@ -97,12 +97,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - run: ./scripts/setup -u -o ^OT_NRF528XX
+      - run: ./scripts/setup.sh -u -o ^OT_NRF528XX
       - run: |
           DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push' \
             ORG=${{ secrets.DOCKERHUB_USERNAME }} \
             VERSION=nightly \
-            DOCKER_BUILDKIT=1 ./scripts/docker-build --ot-nrf528xx-environment
+            DOCKER_BUILDKIT=1 ./scripts/docker-build.sh --ot-nrf528xx-environment
 
   build-nrfconnect-chip:
     runs-on: ubuntu-latest
@@ -117,12 +117,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - run: ./scripts/setup -u -o ^NRFCONNECT_CHIP_DOCKER
+      - run: ./scripts/setup.sh -u -o ^NRFCONNECT_CHIP_DOCKER
       - run: |
           DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push' \
             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
             VERSION=nightly \
-            DOCKER_BUILDKIT=1 ./scripts/docker-build --nrfconnect-chip
+            DOCKER_BUILDKIT=1 ./scripts/docker-build.sh --nrfconnect-chip
 
   build-nrfutil:
     runs-on: ubuntu-latest
@@ -141,7 +141,7 @@ jobs:
           DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
             VERSION=nightly \
-            DOCKER_BUILDKIT=1 ./scripts/docker-build --nrfutil
+            DOCKER_BUILDKIT=1 ./scripts/docker-build.sh --nrfutil
 
   build-nrf52840-dongle-ot-rcp:
     needs:
@@ -152,9 +152,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: echo "::set-output name=date::$(date -u +'%Y-%m-%d')"
-        id: date
-      - run: ./scripts/setup -u -o ^OT_NRF528XX
+      - run: ./scripts/setup.sh -u -o ^OT_NRF528XX
       - run: |
           docker run --rm \
            -v $PWD/third_party/ot-nrf528xx:/ot-nrf528xx \
@@ -184,9 +182,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: echo "::set-output name=date::$(date -u +'%Y-%m-%d')"
-        id: date
-      - run: ./scripts/setup -u -o ^CONNECTEDHOMEIP
+      - run: ./scripts/setup.sh -u -o ^CONNECTEDHOMEIP
       - run: |
           docker run --rm \
            -e CHIP_REVISION=$(cd third_party/connectedhomeip && git rev-parse --short HEAD) \
@@ -218,9 +214,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: echo "::set-output name=date::$(date -u +'%Y-%m-%d')"
-        id: date
-      - run: CHIP_BRANCH=test_event_6 ./scripts/setup -u -o ^CONNECTEDHOMEIP
+      - run: CHIP_BRANCH=test_event_6 ./scripts/setup.sh -u -o ^CONNECTEDHOMEIP
       - run: |
           docker run --rm \
            -e CHIP_REVISION=$(cd third_party/connectedhomeip && git rev-parse --short HEAD) \
@@ -252,9 +246,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: echo "::set-output name=date::$(date -u +'%Y-%m-%d')"
-        id: date
-      - run: ./scripts/setup -u -o ^CONNECTEDHOMEIP
+      - run: ./scripts/setup.sh -u -o ^CONNECTEDHOMEIP
       - run: |
           docker run --rm --entrypoint /bin/bash \
            -v $PWD/third_party/connectedhomeip:/connectedhomeip \
@@ -278,9 +270,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: docker/setup-qemu-action@v1
-      - run: echo "::set-output name=date::$(date -u +'%Y-%m-%d')"
-        id: date
-      - run: ./scripts/setup -u -o ^CONNECTEDHOMEIP
+      - run: ./scripts/setup.sh -u -o ^CONNECTEDHOMEIP
       - run: docker pull --platform linux/aarch64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly
       - run: |
           docker run --rm --entrypoint /bin/bash \
@@ -304,9 +294,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: echo "::set-output name=date::$(date -u +'%Y-%m-%d')"
-        id: date
-      - run: CHIP_BRANCH=test_event_6 ./scripts/setup -u -o ^CONNECTEDHOMEIP
+      - run: CHIP_BRANCH=test_event_6 ./scripts/setup.sh -u -o ^CONNECTEDHOMEIP
       - run: |
           docker run --rm --entrypoint /bin/bash \
            -v $PWD/third_party/connectedhomeip:/connectedhomeip \
@@ -330,9 +318,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: docker/setup-qemu-action@v1
-      - run: echo "::set-output name=date::$(date -u +'%Y-%m-%d')"
-        id: date
-      - run: CHIP_BRANCH=test_event_6 ./scripts/setup -u -o ^CONNECTEDHOMEIP
+      - run: CHIP_BRANCH=test_event_6 ./scripts/setup.sh -u -o ^CONNECTEDHOMEIP
       - run: docker pull --platform linux/aarch64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:nightly
       - run: |
           docker run --rm --entrypoint /bin/bash \
@@ -358,6 +344,8 @@ jobs:
       - build-chip-device-ctrl-aarch64-test_event
     runs-on: ubuntu-latest
     steps:
+      - run: echo "::set-output name=date::$(date -u +'%Y-%m-%d')"
+        id: date
       - uses: actions/download-artifact@v2
         with:
           name: nrf52840-dongle-ot-rcp
