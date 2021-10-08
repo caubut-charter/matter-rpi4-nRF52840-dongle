@@ -21,44 +21,6 @@ All updates should be done from upstream's main.
    # update local main to origin main
    git checkout -B main origin/main
 
-Third-Party Git Repositories
-----------------------------
-
-#. Create a new branch.
-
-   ::
-
-      # remove last update branch
-      git branch -d chore/update-third-party-dependencies
-
-      # create new update branch
-      git checkout -b chore/update-third-party-dependencies
-
-#. Update all third-party dependnecies to their latest version.
-
-   ::
-
-      MATTER_BRANCH=master \
-       NRFCONNECT_CHIP_DOCKER_BRANCH=master \
-       OT_BR_POSIX_BRANCH=main \
-       OT_COMMISSIONER_BRANCH=main \
-       OT_NRF528XX_BRANCH=main \
-       scripts/setup -u
-
-#. Commit the changes.
-
-   ::
-
-      git commit -am 'chore: update third-party dependencies'
-
-#. Push the changes upstream.
-
-   ::
-
-      git push origin chore/update-third-party-dependencies
-
-#. Make a `pull request`_.
-
 Conventional Commits
 --------------------
 

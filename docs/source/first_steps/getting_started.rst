@@ -392,7 +392,7 @@ Preparing the Linux Desktop
 Building Artifacts
 ------------------
 
-Dependency management and building artifacts is performed using two scripts in this repository, the :code:`script/bootstrap` script to manage dependencies and the :code:`script/build` script to build the artifacts.  Both support the :code:`-h` flag to list all available options.  Each dependency of the :code:`script/bootstrap` accepts an optional checkout value for the repository it downloads (e.g. hash, commit, branch, etc.).  For instance, it may be desirable to use one of the test event branches of the Connected Home IP (Matter) repository which is more stable.
+Dependency management and artifact building is performed using two scripts in this repository, the :code:`script/bootstrap` script to manage dependencies and the :code:`script/build` script to build the artifacts.  Both support the :code:`-h` flag to list all available options.  Each dependency of the :code:`script/bootstrap` script accepts an optional checkout value for the repository it downloads (i.e. hash, commit, branch, tag).  As an example, it may be desirable to use one of the test event branches of the Connected Home IP (Matter) repository which is more stable.
 
 ::
 
@@ -404,13 +404,26 @@ For compatibility with this guide, it is recommended to use the :code:`ORG=caubu
 
    ORG=caubutcharter script/build
 
-Existing clones that already have build artifacts can be cleaned using the :code:`--clean` flag when building.  :code:`sudo` may be required as the files written by docker containers to mounted volumes will have root as the owner.
+Existing clones that already have build artifacts can be cleaned using the :code:`--clean`, or :code:`-c`, flag when building.  If this flag is set, it occurs before any other build step.
 
 ::
 
    script/build --clean [ARTIFACT ..]
 
-With the basics covered, there are three ways to work through this guide.  This remainder of this section only covers the first option.  For the last two options, skip the rest of this section.
+Permission errors may occur due to docker containers creating files and directories on mounted volumes as the root user on the host.  The :code:`--fix-permissions`, or :code:`-f`, flag will (slowly) repair the entire directory and is available on both scripts.  If this flag is set, it occurs before any other step.
+
+::
+
+   script/bootstrap --fix-permissions
+   script/build --fix-permissions
+
+To completely restore and update all dependencies, the following example sequence can be used.
+
+::
+
+   script/bootstrap -f && script/build -c
+
+With the basics covered, there are three ways to work through this guide.  The remainder of this section only covers the first option.  For the last two options, skip the rest of this section.
 
 #. pre-build the artifacts
 #. build the artifacts as needed
@@ -420,7 +433,11 @@ For a single host setup (e.g. **RPi Only** and **RPi + SSD** configurations), ev
 
 ::
 
-   script/bootstrap && script/build --all
+   # fresh repository
+   script/bootstrap && ORG=caubutcharter script/build --all
+
+   # dirty repository
+   script/bootstrap -f && ORG=caubutcharter script/build -c --all
 
 For multiple hosts (e.g. **RPi + Linux Desktop** configuration), the dependency graph of the inputs and outputs of these two commands must be considered if looking to download only the required dependencies and build only the required artifacts on each host.  Each colored box represents a final build artifact.
 
@@ -453,19 +470,13 @@ The following is recommended for the **RPi + Linux Desktop** configuration to re
 
    ::
 
-      scripts/bootstrap \
+      script/bootstrap \
        --ot-br-posix \
        --chip
       script/build \
        --otbr-image \
        --chip-environment-image \
        --chip-device-ctrl
-
-For an existing repository, build artifacts can be cleaned (not docker images), with the following command.
-
-::
-
-   scripts/build --clean
 
 After building new docker images, the old images and build layers can be removed to recover disk space.
 

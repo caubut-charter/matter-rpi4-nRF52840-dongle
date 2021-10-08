@@ -26,8 +26,12 @@ usage () {
   echo -e ' \t                 \t container image source'
   echo -e ' \t-a, --all        \t all sources\n'
   echo -e ' Options:\n'
+  echo -e ' \t-f, --fix-permissions'
+  echo -e ' \t                 \t fix permission errors'
   echo -e ' \t-h, --help       \t print this help list'
 }
+
+FIX_PERMISSIONS=false
 
 OT_BR_POSIX=false
 OT_NRF528XX=false
@@ -110,6 +114,7 @@ while [ ${#args[@]} -gt 0 ]; do
     --chip) process_source connectedhomeip ;;
     --nrfconnect-chip) process_source nrfconnect_chip ;;
     --all) all ;;
+    -f | --fix-permissions) FIX_PERMISSIONS=true ;;
     -h | --help) usage; exit;;
     *) usage; exit 1 ;;
   esac
@@ -117,6 +122,14 @@ while [ ${#args[@]} -gt 0 ]; do
 done
 
 [ ${#repos[@]} -eq 0 ] && all
+
+if [ "$FIX_PERMISSIONS" = true ]; then
+  echo "==> Fixing permissions..."
+  docker run --rm \
+    -v "$PWD":/root \
+    -w /root \
+    ubuntu:21.04 /bin/bash -c "chown -R $(id -u):$(id -g) ."
+fi
 
 (set -x && mkdir -p third_party)
 for repo in "${!repos[@]}"; do

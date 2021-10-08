@@ -33,6 +33,8 @@ usage() {
   echo -e ' \t                               \t container image'
   echo -e ' \t-a, --all                      \t all artifacts\n'
   echo -e ' Options:\n'
+  echo -e ' \t-c, --clean                    \t clean non-Docker build artifacts'
+  echo -e ' \t-f, --fix-permissions          \t fix permission errors'
   echo -e ' \t-h, --help                     \t print this help list'
 }
 
@@ -75,6 +77,7 @@ DOCKER_BUILD=${DOCKER_BUILD:-docker build}
 VERSION=${VERSION:-latest}
 
 CLEAN=false
+FIX_PERMISSIONS=false
 
 OTBR_IMAGE=false
 OT_NRF528XX_ENVIRONMENT_IMAGE=false
@@ -115,6 +118,7 @@ while [ $# -gt 0 ]; do
         NRFUTIL_IMAGE=true
         ;;
     -c | --clean) CLEAN=true ;;
+    -f | --fix-permissions) FIX_PERMISSIONS=true ;;
     -h | --help) usage; exit;;
     *) usage; exit 1 ;;
   esac
@@ -146,6 +150,14 @@ check_hash () {
     exit 1;
   fi
 }
+
+if [ "$FIX_PERMISSIONS" = true ]; then
+  echo "==> Fixing permissions..."
+  docker run --rm \
+    -v "$PWD":/root \
+    -w /root \
+    ubuntu:21.04 /bin/bash -c "chown -R $(id -u):$(id -g) ."
+fi
 
 if [ "$CLEAN" = true ]; then
   clean
