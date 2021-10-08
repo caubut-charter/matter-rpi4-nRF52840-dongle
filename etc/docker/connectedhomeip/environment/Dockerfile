@@ -9,8 +9,8 @@ COPY ./entrypoint.sh /
 
 RUN chmod a+x /entrypoint.sh
 
-RUN mkdir /connectedhomeip
+RUN mkdir /var/chip
 
-WORKDIR /connectedhomeip
+WORKDIR /var/chip
 
 ENTRYPOINT ["/entrypoint.sh"]

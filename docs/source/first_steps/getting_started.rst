@@ -13,7 +13,7 @@ Getting Started
 Project Requirements
 --------------------
 
-This guide covers multiple recommended configurations for building and running the demo.  The **RPi + Linux Desktop** configuration features the fastest build and execution times.  If a Linux Desktop is not available, the **RPi Only** or **RPi + SSD** configurations may be used with the latter having slightly faster build times over using just an SD card in the RPi.
+This guide covers multiple recommended configurations.  The **RPi + Linux Desktop** configuration features the fastest build and execution times.  If a Linux Desktop is not available, the **RPi Only** or **RPi + SSD** configurations may be used with the latter having slightly faster build times over using just an SD card in the RPi.
 
 .. tabs::
 
@@ -47,7 +47,7 @@ This guide covers multiple recommended configurations for building and running t
      - microSD card reader
      - Ethernet cable
      - powered USB 3.0 hub (Sabrent 5V/2.5A 4-port USB 3.0 hub used)
-     - external USB SSD (Samsung T7 500GB SSD used)
+     - external USB 3.0 SSD (Samsung T7 500GB SSD used)
 
      .. note::
 
@@ -153,9 +153,9 @@ Preparing the RPi Boot Medium
 
          #. Click **Choose OS** > **Use custom**  and select the :code:`YYYY-MM-DD-raspios-buster-arm64-lite.img`.
 
-         #. Plug the external USB SSD into the Desktop PC.
+         #. Plug the external USB 3.0 SSD into the Desktop PC.
 
-         #. Click **Choose Storage** and select the external USB SSD.
+         #. Click **Choose Storage** and select the external USB 3.0 SSD.
 
          #. Click **Write**.
 
@@ -206,9 +206,9 @@ Preparing the RPi Boot Medium
 
    .. warning::
 
-      If the boot medium is an external USB SSD, make sure to plug it in through the powered USB 3.0 hub to a USB 3.0 (blue) port on the RPi.  This ensures the nRF52840 dongles have enough power and the USB SSD has maximum throughput.  Briefly disconnect the hub from the RPi when first powering it on to ensure it doesn't use the hub for power.  Restore the hub's connection to the RPi a couple seconds after powering the RPi so it can boot off the external USB SSD.  **Software initiated reboots do not have this requirement.**
+      If the boot medium is an external USB 3.0 SSD, make sure to plug it in through the powered USB 3.0 hub to a USB 3.0 (blue) port on the RPi.  This ensures the nRF52840 dongles have enough power and the USB SSD has maximum throughput.  Briefly disconnect the hub from the RPi when first powering it on to ensure it doesn't use the hub for power.  Restore the hub's connection to the RPi a couple seconds after powering the RPi so it can boot off the external USB 3.0 SSD.  **Software initiated reboots do not have this requirement.**
 
-#. Once booted, SSH into the RPi from the Linux Desktop/Desktop PC.  If the hostname was change, the RPi can be reached via :code:`<hostname>.local`, otherwise, it should be reachable via :code:`raspberrypi.local`.  If multiple RPis are on the LAN, check the LAN's router for the correct IP address.
+#. Once booted, SSH into the RPi from the Linux Desktop/Desktop PC.  If the hostname was changed, the RPi can be reached via :code:`<hostname>.local`, otherwise, it should be reachable via :code:`raspberrypi.local`.  If multiple RPis are on the LAN, check the LAN's router for the correct IP address.
 
    ::
 
@@ -497,6 +497,44 @@ Preparing the Build System
    ::
 
       docker image prune
+
+   ::
+
+      $ du -h --max-depth=1 third_party
+      192M    third_party/ot-nrf528xx
+      786M    third_party/ot-commissioner
+      960K    third_party/nrfconnect-chip-docker
+      4.9G    third_party/connectedhomeip
+      237M    third_party/ot-br-posix
+      6.1G    third_party
+
+
++---------------------------+-----------------------------------------------+--------------------------------------------------------------------+
+| :code:`bootstrap`         | :code:`build`                                 | Artifact                                                           |
++===========================+===============================================+====================================================================+
+| :code:`--ot-br-posix`     | :code:`--otbr-image`                          | OpenThread Border Router container image                           |
++---------------------------+-----------------------------------------------+--------------------------------------------------------------------+
+| :code:`--ot-nrf528xx`     | :code:`--ot-nrf528xx-environment-image`       | OpenThread RCP firmware build environment container image          |
+|                           |                                               +--------------------------------------------------------------------+
+|                           | :code:`--nrf52840-dongle-ot-rcp`              | OpenThread RCP firmware                                            |
++---------------------------+-----------------------------------------------+--------------------------------------------------------------------+
+| :code:`--ot-commissioner` | :code:`--ot-commissioner-image`               | OpenThread commissioner container image                            |
++---------------------------+-----------------------------------------------+--------------------------------------------------------------------+
+| :code:`--chip`            | :code:`--nrfconnect-toolchain-image`          | Base container image for :code:`nrfconnect-chip-environment-image` |
+|                           |                                               +--------------------------------------------------------------------+
+| :code:`--nrfconnect-chip` | :code:`--nrfconnect-chip-environment-image`   | nRF52840 dongle-Matter build environment container image           |
+|                           |                                               +--------------------------------------------------------------------+
+|                           | :code:`--nrf52840-dongle-thread-lighting-app` | nRF52840 dongle Thread light firmware                              |
++---------------------------+-----------------------------------------------+--------------------------------------------------------------------+
+| :code:`--chip`            | :code:`--chip-environment-image`              | General Matter build and runtime environment                      |
+|                           |                                               +--------------------------------------------------------------------+
+|                           | :code:`--chip-device-ctrl`                    | Python Matter controller                                           |
++---------------------------+-----------------------------------------------+--------------------------------------------------------------------+
+|                           | :code:`--avahi-utils-image`                   | DNS-SD utilities                                                   |
++---------------------------+-----------------------------------------------+--------------------------------------------------------------------+
+|                           | :code:`--nrfutil-image`                       | nRF52840 dongle flashing utility container image                   |
++---------------------------+-----------------------------------------------+--------------------------------------------------------------------+
+
 
 References
 ----------

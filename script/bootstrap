@@ -1,0 +1,149 @@
+#!/bin/bash
+
+set -euETo pipefail
+shopt -s inherit_errexit
+
+cd "$(dirname "$0")/.."
+
+usage () {
+  echo -e 'Usage: bootstrap [OPTIONS] [[SOURCE [COMMIT|BRANCH|TAG]] ...]\n'
+  echo -e 'Examples:\n'
+  echo -e '  bootstrap                           # Download latest of all sources.'
+  echo -e '  bootstrap --all                     # Download latest of all sources.'
+  echo -e '  bootstrap --chip                    # Download latest Matter source.'
+  echo -e '  bootstrap --chip test_event_6       # Download latest Matter source.'
+  echo -e '                                      # Checkout the '\''test_event_6'\'''
+  echo -e '                                      # Matter branch.'
+  echo -e '  bootstrap --chip test_event_6 --all # Download latest of all sources.'
+  echo -e '                                      # Checkout the '\''test_event_6'\'''
+  echo -e '                                      # Matter branch.\n'
+  echo -e ' Sources:\n'
+  echo -e ' \t--ot-br-posix    \t OpenThread Border Router source'
+  echo -e ' \t--ot-nrf528xx    \t nRF528xx OpenThread RCP firmware source'
+  echo -e ' \t--ot-commissioner\t OpenThread Commissioner source'
+  echo -e ' \t--chip           \t Matter source'
+  echo -e ' \t--nrfconnect-chip\t nRF Connect / Matter build environment'
+  echo -e ' \t                 \t container image source'
+  echo -e ' \t-a, --all        \t all sources\n'
+  echo -e ' Options:\n'
+  echo -e ' \t-h, --help       \t print this help list'
+}
+
+OT_BR_POSIX=false
+OT_NRF528XX=false
+OT_COMMISSIONER=false
+CONNECTEDHOMEIP=false
+NRFCONNECT_CHIP=false
+
+declare -A repos
+repos=()
+
+# shellcheck disable=SC2120
+ot_br_posix() {
+  OT_BR_POSIX=true
+  checkout=${1:-main}
+  repos['https://github.com/openthread/ot-br-posix.git']="$checkout"
+}
+
+# shellcheck disable=SC2120
+ot_nrf528xx() {
+  OT_NRF528XX=true
+  checkout=${1:-main}
+  repos['https://github.com/openthread/ot-nrf528xx.git']="$checkout"
+}
+
+# shellcheck disable=SC2120
+ot_commissioner() {
+  OT_COMMISSIONER=true
+  checkout=${1:-main}
+  repos['https://github.com/openthread/ot-commissioner.git']="$checkout"
+}
+
+# shellcheck disable=SC2120
+connectedhomeip() {
+  CONNECTEDHOMEIP=true
+  checkout=${1:-master}
+  repos['https://github.com/project-chip/connectedhomeip.git']="$checkout"
+}
+
+# shellcheck disable=SC2120
+nrfconnect_chip() {
+  NRFCONNECT_CHIP=true
+  checkout=${1:-master}
+  repos['https://github.com/NordicPlayground/nrfconnect-chip-docker.git']="$checkout"
+}
+
+all() {
+  # shellcheck disable=SC2119
+  [ "$OT_BR_POSIX" = true ] || ot_br_posix
+  # shellcheck disable=SC2119
+  [ "$OT_NRF528XX" = true ] || ot_nrf528xx
+  # shellcheck disable=SC2119
+  [ "$OT_COMMISSIONER" = true ] || ot_commissioner
+  # shellcheck disable=SC2119
+  [ "$CONNECTEDHOMEIP" = true ] || connectedhomeip
+  # shellcheck disable=SC2119
+  [ "$NRFCONNECT_CHIP" = true ] || nrfconnect_chip
+}
+
+args=("$@")
+
+process_source() {
+  if [ ${#args[@]} -gt 1 ]; then
+    case ${args[1]} in
+      -*) $1 ;;
+      *)
+        $1 "${args[1]}"
+        args=("${args[@]:1}");
+        ;;
+    esac
+  else
+    $1
+  fi
+}
+
+while [ ${#args[@]} -gt 0 ]; do
+  case ${args[0]} in
+    --ot-br-posix) process_source ot_br_posix ;;
+    --ot-nrf528xx) process_source ot_nrf528xx ;;
+    --ot-commissioner) process_source ot_commissioner ;;
+    --chip) process_source connectedhomeip ;;
+    --nrfconnect-chip) process_source nrfconnect_chip ;;
+    --all) all ;;
+    -h | --help) usage; exit;;
+    *) usage; exit 1 ;;
+  esac
+  args=("${args[@]:1}");
+done
+
+[ ${#repos[@]} -eq 0 ] && all
+
+(set -x && mkdir -p third_party)
+for repo in "${!repos[@]}"; do
+  (
+    cd third_party
+    (
+      dir=$(tmp=${repo##*/};echo "${tmp%.*}")
+      if [[ ! -d $dir ]]; then (set -x && mkdir -p "$dir"); fi
+      cd "$dir"
+      if [[ $(git rev-parse --git-dir 2> /dev/null) != '.git' ]]; then
+        echo "==> Cloning '$repo'..."
+        (set -x && git clone -j8 "$repo" .)
+      else
+        echo "==> Updating '$repo'..."
+        (
+          set -x \
+          && git fetch \
+          && git reset --hard && git clean -fd \
+          && git submodule foreach --recursive git reset --hard && git submodule foreach --recursive git clean -fd \
+        )
+      fi
+      echo "==> Checking out '${repos[$repo]}'..."
+      (
+        set -x \
+        && git checkout "${repos[$repo]}" \
+        && git submodule update --init --recursive \
+      )
+    )
+  )
+done
