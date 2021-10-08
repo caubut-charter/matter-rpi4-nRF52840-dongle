@@ -451,31 +451,31 @@ The following is recommended for the **RPi + Linux Desktop** configuration to re
    ::
 
       script/bootstrap \
-       --ot-nrf528xx \
-       --ot-commissioner \
+       --chip \
        --nrfconnect-chip \
-       --chip
-      script/build \
-       --ot-nrf528xx-environment-image \
-       --nrf52840-dongle-ot-rcp \
        --ot-commissioner \
-       --nrfconnect-toolchain-image \
-       --nrfconnect-chip-environment-image \
-       --nrf52840-dongle-thread-lighting-app \
+       --ot-nrf528xx
+      script/build \
        --avahi-utils-image \
-       --nrfutil-image
+       --nrf52840-dongle-ot-rcp \
+       --nrf52840-dongle-thread-lighting-app \
+       --nrfconnect-chip-environment-image \
+       --nrfconnect-toolchain-image \
+       --nrfutil-image \
+       --ot-commissioner-image \
+       --ot-nrf528xx-environment-image
 
 #. Build the RPi artifacts.
 
    ::
 
       script/bootstrap \
-       --ot-br-posix \
-       --chip
+       --chip \
+       --ot-br-posix
       script/build \
-       --otbr-image \
+       --chip-device-ctrl \
        --chip-environment-image \
-       --chip-device-ctrl
+       --otbr-image
 
 After building new docker images, the old images and build layers can be removed to recover disk space.
 
@@ -486,6 +486,16 @@ After building new docker images, the old images and build layers can be removed
    ::
 
       docker image prune
+
+::
+
+   docker pull caubutcharter/avahi-utils:latest
+   docker pull caubutcharter/chip-environment:latest
+   docker pull caubutcharter/nrfconnect-chip-environment:latest
+   docker pull caubutcharter/nrfutil:latest
+   docker pull caubutcharter/ot-commissioner:latest
+   docker pull caubutcharter/ot-nrf528xx-environment:latest
+   docker pull caubutcharter/otbr:latest
 
 
 References
