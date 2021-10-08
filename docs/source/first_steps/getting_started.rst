@@ -495,8 +495,62 @@ After building new docker images, the old images and build layers can be removed
    docker pull caubutcharter/nrfutil:latest
    docker pull caubutcharter/ot-commissioner:latest
    docker pull caubutcharter/ot-nrf528xx-environment:latest
-   docker pull caubutcharter/otbr:latest
 
+
++--------------------------------------------------------------------------+------------------------------------------------------------------+
+| Build                                                                    | Download                                                         |
++==========================================================================+==================================================================+
+| **OpenThread Border Router**                                                                                                                |
++--------------------------------------------------------------------------+------------------------------------------------------------------+
+| ::                                                                       | :code:`docker pull caubutcharter/otbr:latest`                    |
+|                                                                          |                                                                  |
+|    script/bootstrap --ot-br-posix                                        |                                                                  |
+|    script/build --otbr-image                                             |                                                                  |
++--------------------------------------------------------------------------+------------------------------------------------------------------+
+| **OpenThread Commissioner**                                                                                                                 |
++--------------------------------------------------------------------------+------------------------------------------------------------------+
+| :code:`script/bootstrap --ot-commissioner`                               | :code:`docker pull caubutcharter/ot-commissioner:latest`         |
+|                                                                          |                                                                  |
+| :code:`script/build --ot-commissioner-image`                             |                                                                  |
++--------------------------------------------------------------------------+------------------------------------------------------------------+
+| **Avahi Utilities**                                                                                                                         |
++--------------------------------------------------------------------------+------------------------------------------------------------------+
+| :code:`script/build --avahi-utils-image`                                 | :code:`docker pull caubutcharter/avahi-utils:latest`             |
++--------------------------------------------------------------------------+------------------------------------------------------------------+
+| **nrf52580 Dongle OpenThread Border Router Radio Co-Processor Firmware**                                                                    |
++--------------------------------------------------------------------------+------------------------------------------------------------------+
+| :code:`script/bootstrap --ot-nrf528xx`                                   | :code:`docker pull caubutcharter/ot-nrf528xx-environment:latest` |
+|                                                                          |                                                                  |
+| :code:`script/build --ot-nrf528xx-environment-image`                     |                                                                  |
++--------------------------------------------------------------------------+------------------------------------------------------------------+
+| :code:`script/build --nrfutil-image`                                       :code:`docker pull caubutcharter/nrfutil:latest`                 |
++--------------------------------------------------------------------------+------------------------------------------------------------------+
+| :code:`script/build --nrf52840-dongle-ot-rcp`                            | :code:`wget/curl`                                                |
++--------------------------------------------------------------------------+------------------------------------------------------------------+
+| **nrf52840 Dongle Thread Lighting App Firmware**                                                                                            |
++--------------------------------------------------------------------------+------------------------------------------------------------------+
+| :code:`script/bootstrap --nrfconnect-chip`                               | :code:`docker pull caubutcharter/nrfconnect-toolchain`           |
+|                                                                          |                                                                  |
+| :code:`script/build --nrfconnect-toolchain-image`                        |                                                                  |
++--------------------------------------------------------------------------+------------------------------------------------------------------+
+| :code:`script/bootstrap --nrfconnect-chip`                               | :code:`docker pull caubutcharter/nrfconnect-chip-environment`    |
+|                                                                          |                                                                  |
+| :code:`script/build --nrfconnect-chip-environment-image`                 |                                                                  |
++--------------------------------------------------------------------------+------------------------------------------------------------------+
+| :code:`script/build --nrfutil-image`                                     | :code:`docker pull caubutcharter/nrfutil:latest`                 |
++--------------------------------------------------------------------------+------------------------------------------------------------------+
+| :code:`script/bootstrap --chip`                                          | :code:`wget/curl`                                                |
+|                                                                          |                                                                  |
+| :code:`script/build --nrf52840-dongle-thread-lighting-app`               |                                                                  |
++--------------------------------------------------------------------------+------------------------------------------------------------------+
+| **Python CHIP Controller**                                                                                                                  |
++--------------------------------------------------------------------------+------------------------------------------------------------------+
+| :code:`script/build --chip-environment-image`                            | :code:`docker pull caubutcharter/chip-environment:latest`        |
++--------------------------------------------------------------------------+------------------------------------------------------------------+
+| :code:`script/bootstrap --chip`                                          | :code:`script/boostrap --chip`                                   |
+|                                                                          |                                                                  |
+| :code:`script/build --chip-device-ctrl`                                  | :code:`wget/curl`                                                |
++--------------------------------------------------------------------------+------------------------------------------------------------------+
 
 References
 ----------

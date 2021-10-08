@@ -301,6 +301,7 @@ jobs:
           file: build/Release/*
           tag: nightly
           file_glob: true
+          overwrite: true
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -308,6 +309,7 @@ jobs:
           file: build/Release/*
           tag: nightly-${{ steps.date.outputs.date }}
           file_glob: true
+          overwrite: true
       - uses: dev-drprasad/delete-older-releases@v0.2.0
         with:
           keep_latest: 15 # two weeks + latest nightly
