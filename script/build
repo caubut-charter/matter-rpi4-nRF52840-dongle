@@ -6,7 +6,34 @@ shopt -s inherit_errexit
 cd "$(dirname "$0")/.."
 
 usage() {
-  echo "Usage: "
+  echo -e 'Usage: build [OPTIONS] [ARTIFACT ...]\n'
+  echo -e 'Examples:\n'
+  echo -e '  build --all                     # Build all artifacts.'
+  echo -e '  build --otbr-image              # Build the OTBR image.'
+  echo -e ' Artifacts:\n'
+  echo -e ' \t--otbr-image                   \t OpenThread Border Router image'
+  echo -e ' \t--ot-nrf528xx-environment-image\t OpenThread RCP firmware'
+  echo -e ' \t                               \t build environment container image'
+  echo -e ' \t--nrf52840-dongle-ot-rcp       \t OpenThread RCP firmware'
+  echo -e ' \t--ot-commissioner-image        \t OpenThread commissioner container'
+  echo -e ' \t                               \t image'
+  echo -e ' \t--nrfconnect-toolchain-image   \t Base container image for'
+  echo -e ' \t                               \t nrfconnect-chip-environment-image'
+  echo -e ' \t--nrfconnect-chip-environment-image'
+  echo -e ' \t                               \t nRF52840 dongle-Matter build'
+  echo -e ' \t                               \t environment container image'
+  echo -e ' \t--nrf52840-dongle-thread-lighting-app'
+  echo -e ' \t                               \t nRF52840 dongle Thread light'
+  echo -e ' \t                               \t firmware'
+  echo -e ' \t--chip-environment-image       \t general Matter build and runtime'
+  echo -e ' \t                               \t environment'
+  echo -e ' \t--chip-device-ctrl             \t Python Matter controller DNS-SD'
+  echo -e ' \t--avahi-utils-image            \t utilities'
+  echo -e ' \t--nrfutil-image                \t nRF52840 dongle flashing utility'
+  echo -e ' \t                               \t container image'
+  echo -e ' \t-a, --all                      \t all artifacts\n'
+  echo -e ' Options:\n'
+  echo -e ' \t-h, --help                     \t print this help list'
 }
 
 clean() (
@@ -124,7 +151,7 @@ if [ "$CLEAN" = true ]; then
   clean
 fi
 
-mkdir -p build
+mkdir -p build/Release
 
 if [[ "$OTBR_IMAGE" = true ]]; then
   echo "==> Building 'otbr-image'..."

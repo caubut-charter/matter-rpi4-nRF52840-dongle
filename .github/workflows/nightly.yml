@@ -191,7 +191,7 @@ jobs:
       - uses: actions/checkout@v2
       - run: script/bootstrap --chip
       - run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --chip-device-ctrl
-      - run: (cd build && tar -cJf Release/chip-device-ctrl.xz --owner=0 --group=0 Release/chip-device-ctrl)
+      - run: (cd build && tar -cJf Release/chip-device-ctrl.tar.xz --owner=0 --group=0 Release/chip-device-ctrl)
       - uses: actions/upload-artifact@v2
         with:
           name: chip-device-ctrl-x86_64-latest
@@ -208,7 +208,7 @@ jobs:
       - run: script/bootstrap --chip
       - run: docker pull --platform linux/aarch64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:latest
       - run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --chip-device-ctrl
-      - run: (cd build && tar -cJf Release/chip-device-ctrl.xz --owner=0 --group=0 Release/chip-device-ctrl)
+      - run: (cd build && tar -cJf Release/chip-device-ctrl.tar.xz --owner=0 --group=0 Release/chip-device-ctrl)
       - uses: actions/upload-artifact@v2
         with:
           name: chip-device-ctrl-aarch64-latest
@@ -223,6 +223,7 @@ jobs:
       - uses: actions/checkout@v2
       - run: script/bootstrap --chip test_event_6
       - run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --chip-device-ctrl
+      - run: (cd build && tar -cJf Release/chip-device-ctrl.tar.xz --owner=0 --group=0 Release/chip-device-ctrl)
       - uses: actions/upload-artifact@v2
         with:
           name: chip-device-ctrl-x86_64-test_event
@@ -239,6 +240,7 @@ jobs:
       - run: script/bootstrap --chip test_event_6
       - run: docker pull --platform linux/aarch64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:latest
       - run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --chip-device-ctrl
+      - run: (cd build && tar -cJf Release/chip-device-ctrl.tar.xz --owner=0 --group=0 Release/chip-device-ctrl)
       - uses: actions/upload-artifact@v2
         with:
           name: chip-device-ctrl-aarch64-test_event

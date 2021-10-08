@@ -23,7 +23,7 @@ This guide covers multiple recommended configurations.  The **RPi + Linux Deskto
      - `Raspberry Pi`_ 4B ("RPi" in this guide)
      - 3x `nRF52840 Dongle`_
      - External 5V AC RPi adapter (CanaKit 3.5A USB-C Used)
-     - 32gb+ microSD card ("SD card" in this guide, 32Gb EVO+ Class 10 used)
+     - 32Gb+ microSD card ("SD card" in this guide, 32Gb EVO+ Class 10 used)
      - microSD card reader
      - Ethernet cable
 
@@ -33,7 +33,7 @@ This guide covers multiple recommended configurations.  The **RPi + Linux Deskto
      - `Raspberry Pi`_ 4B ("RPi" in this guide, RPi 4B used)
      - 3x `nRF52840 Dongle`_
      - External 5V AC RPi adapter (CanaKit 3.5A USB-C Used)
-     - 64Gb+ microSD card ("SD card" in this guide, 64Gb EVO+ Class 10 used)
+     - 32Gb+ microSD card ("SD card" in this guide, 32Gb EVO+ Class 10 used)
      - microSD card reader
      - Ethernet cable
 
@@ -215,7 +215,7 @@ Preparing the RPi Boot Medium
       # default password is "raspberry"
       ssh pi@matter-demo.local
 
-.. _Preparing the RPi:
+.. _Preparing an RPi:
 
 Preparing the RPi
 -----------------
@@ -497,44 +497,6 @@ Preparing the Build System
    ::
 
       docker image prune
-
-   ::
-
-      $ du -h --max-depth=1 third_party
-      192M    third_party/ot-nrf528xx
-      786M    third_party/ot-commissioner
-      960K    third_party/nrfconnect-chip-docker
-      4.9G    third_party/connectedhomeip
-      237M    third_party/ot-br-posix
-      6.1G    third_party
-
-
-+---------------------------+-----------------------------------------------+--------------------------------------------------------------------+
-| :code:`bootstrap`         | :code:`build`                                 | Artifact                                                           |
-+===========================+===============================================+====================================================================+
-| :code:`--ot-br-posix`     | :code:`--otbr-image`                          | OpenThread Border Router container image                           |
-+---------------------------+-----------------------------------------------+--------------------------------------------------------------------+
-| :code:`--ot-nrf528xx`     | :code:`--ot-nrf528xx-environment-image`       | OpenThread RCP firmware build environment container image          |
-|                           |                                               +--------------------------------------------------------------------+
-|                           | :code:`--nrf52840-dongle-ot-rcp`              | OpenThread RCP firmware                                            |
-+---------------------------+-----------------------------------------------+--------------------------------------------------------------------+
-| :code:`--ot-commissioner` | :code:`--ot-commissioner-image`               | OpenThread commissioner container image                            |
-+---------------------------+-----------------------------------------------+--------------------------------------------------------------------+
-| :code:`--chip`            | :code:`--nrfconnect-toolchain-image`          | Base container image for :code:`nrfconnect-chip-environment-image` |
-|                           |                                               +--------------------------------------------------------------------+
-| :code:`--nrfconnect-chip` | :code:`--nrfconnect-chip-environment-image`   | nRF52840 dongle-Matter build environment container image           |
-|                           |                                               +--------------------------------------------------------------------+
-|                           | :code:`--nrf52840-dongle-thread-lighting-app` | nRF52840 dongle Thread light firmware                              |
-+---------------------------+-----------------------------------------------+--------------------------------------------------------------------+
-| :code:`--chip`            | :code:`--chip-environment-image`              | General Matter build and runtime environment                      |
-|                           |                                               +--------------------------------------------------------------------+
-|                           | :code:`--chip-device-ctrl`                    | Python Matter controller                                           |
-+---------------------------+-----------------------------------------------+--------------------------------------------------------------------+
-|                           | :code:`--avahi-utils-image`                   | DNS-SD utilities                                                   |
-+---------------------------+-----------------------------------------------+--------------------------------------------------------------------+
-|                           | :code:`--nrfutil-image`                       | nRF52840 dongle flashing utility container image                   |
-+---------------------------+-----------------------------------------------+--------------------------------------------------------------------+
-
 
 References
 ----------
