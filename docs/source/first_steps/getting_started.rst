@@ -215,7 +215,7 @@ Preparing the RPi Boot Medium
       # default password is "raspberry"
       ssh pi@matter-demo.local
 
-.. _Preparing an RPi:
+.. _Preparing the RPi:
 
 Preparing the RPi
 -----------------
@@ -295,9 +295,6 @@ Preparing the RPi
             git clone https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle.git
             cd matter-rpi4-nRF52840-dongle
 
-            # setup third-party dependencies
-            ./scripts/setup
-
       .. group-tab:: Update
 
          .. warning::
@@ -312,58 +309,6 @@ Preparing the RPi
             git reset --hard
             # update local main to origin main
             git checkout -B main origin/main
-            # update third-party dependencies
-            ./scripts/setup
-
-#. Optionally, update third-party dependencies.  Third-party dependencies are defined in :code:`.third_party` and are fixed to specific commits (like git submodules) last tested with this guide.  Due to the frequent activity in each third-party repository, the setup script can also be used to update a third-party dependency to the latest version, the latest version of a specific branch, or a specific commit.  Below are some examples.
-
-   ::
-
-      # update all third-party dependencies to their latest version
-      ./scripts/setup -u
-
-      # update all third-party dependencies to match .third_party,
-      # except switch to the latest commit in the stable 'test_event_6' branch
-      # of the connectedhomeip project
-      MATTER_BRANCH=test_event_6 scripts/setup
-
-      # update all third-party dependencies to their latest version,
-      # except switch to the latest commit in the stable 'test_event_6' branch
-      # of the connectedhomeip project
-      MATTER_BRANCH=test_event_6 scripts/setup -u
-
-      # update all third-party dependencies to match .third_party,
-      # except switch to a specific commit of the connectedhomeip project
-      MATTER_COMMIT=<hash> scripts/setup
-
-#. Build the :code:`openthread/otbr` image.
-
-   .. note::
-
-      There is a preexisting image on Docker Hub for the RPi, but it will not work for this guide due to the use of a :code:`macvlan` network on :code:`eth1`.  Docker always places the :code:`bridge` network on :code:`eth0` if the container is restarted.
-
-   ::
-
-      (cd third_party/ot-br-posix \
-       && docker build --build-arg INFRA_IF_NAME=eth1 -t openthread/otbr:latest -f etc/docker/Dockerfile .)
-
-#. Build the required docker images.
-
-   ::
-
-      ./scripts/docker-build \
-       --matter/environment \
-       --openthread/otbr
-
-#. Optionally, remove any build layers to recover disk space.
-
-   .. warning::
-
-      This will remove any build layers and untagged images not attached to a container on the entire system, even for other users or projects.
-
-   ::
-
-      docker image prune
 
 Preparing the Linux Desktop
 ---------------------------
@@ -429,9 +374,6 @@ Preparing the Linux Desktop
             git clone https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle.git
             cd matter-rpi4-nRF52840-dongle
 
-            # setup third-party dependencies
-            ./scripts/setup
-
       .. group-tab:: Update
 
          .. warning::
@@ -446,49 +388,86 @@ Preparing the Linux Desktop
             git reset --hard
             # update local main to origin main
             git checkout -B main origin/main
-            # update third-party dependencies
-            ./scripts/setup
 
-#. Optionally, update third-party dependencies.  Third-party dependencies are defined in :code:`.third_party` and are fixed to specific commits (like git submodules) last tested with this guide.  Due to the frequent activity in each third-party repository, the setup script can also be used to update a third-party dependency to the latest version, the latest version of a specific branch, or a specific commit.  Below are some examples.
+Building Artifacts
+------------------
+
+Dependency management and building artifacts is performed using two scripts in this repository, the :code:`script/bootstrap` script to manage dependencies and the :code:`script/build` script to build the artifacts.  Both support the :code:`-h` flag to list all available options.  Each dependency of the :code:`script/bootstrap` accepts an optional checkout value for the repository it downloads (e.g. hash, commit, branch, etc.).  For instance, it may be desirable to use one of the test event branches of the Connected Home IP (Matter) repository which is more stable.
+
+::
+
+   script/bootstrap --chip test_event_6
+
+For compatibility with this guide, it is recommended to use the :code:`ORG=caubutcharter` environment variable to set the organization of the built docker images.  Nightly builds of these images are pushed to Docker Hub using this organization as an alternative to building them.
+
+::
+
+   ORG=caubutcharter script/build
+
+Existing clones that already have build artifacts can be cleaned using the :code:`--clean` flag when building.  :code:`sudo` may be required as the files written by docker containers to mounted volumes will have root as the owner.
+
+::
+
+   script/build --clean [ARTIFACT ..]
+
+With the basics covered, there are three ways to work through this guide.  This remainder of this section only covers the first option.  For the last two options, skip the rest of this section.
+
+#. pre-build the artifacts
+#. build the artifacts as needed
+#. download the nightly built artifacts as needed
+
+For a single host setup (e.g. **RPi Only** and **RPi + SSD** configurations), everything can be pre-built with the following command.
+
+::
+
+   script/bootstrap && script/build --all
+
+For multiple hosts (e.g. **RPi + Linux Desktop** configuration), the dependency graph of the inputs and outputs of these two commands must be considered if looking to download only the required dependencies and build only the required artifacts on each host.  Each colored box represents a final build artifact.
+
+.. image:: ../_static/dependency_graph.png
+   :align: center
+   :width: 800
+
+The following is recommended for the **RPi + Linux Desktop** configuration to reduce build times while the final demo runs entirely on the RPi.  This setup favors building and flashing all firmware (magenta) from the Linux Desktop as well as building and running most utilities (green).  Services (purple) are recommended to run on the RPi.  The :code:`chip-device-ctrl` (blue) is favored to run on the RPi to use the Bluetooth radio through docker which is disruptive to the host.
+
+#. Build the Linux Desktop artifacts.
 
    ::
 
-      # update all third-party dependencies to their latest version
-      ./scripts/setup -u
+      script/bootstrap \
+       --ot-nrf528xx \
+       --ot-commissioner \
+       --nrfconnect-chip \
+       --chip
+      script/build \
+       --ot-nrf528xx-environment-image \
+       --nrf52840-dongle-ot-rcp \
+       --ot-commissioner \
+       --nrfconnect-toolchain-image \
+       --nrfconnect-chip-environment-image \
+       --nrf52840-dongle-thread-lighting-app \
+       --avahi-utils-image \
+       --nrfutil-image
 
-      # update all third-party dependencies to match .third_party,
-      # except switch to the latest commit in the stable 'test_event_6' branch
-      # of the connectedhomeip project
-      MATTER_BRANCH=test_event_6 scripts/setup
-
-      # update all third-party dependencies to their latest version,
-      # except switch to the latest commit in the stable 'test_event_6' branch
-      # of the connectedhomeip project
-      MATTER_BRANCH=test_event_6 scripts/setup -u
-
-      # update all third-party dependencies to match .third_party,
-      # except switch to a specific commit of the connectedhomeip project
-      MATTER_COMMIT=<hash> scripts/setup
-
-Preparing the Build System
---------------------------
-
-.. note::
-
-   For an **RPi + Linux Desktop** configuration, the "build system" will be the Linux Desktop.  For an **RPi Only** or **RPi + SSD** configuration, the "build system" will be the RPi.
-
-#. Build the required docker images.
+#. Build the RPi artifacts.
 
    ::
 
-      ./scripts/docker-build \
-       --avahi/avahi-utils \
-       --openthread/environment \
-       --openthread/ot-commissioner \
-       --nordicsemi/nrfconnect-chip \
-       --nordicsemi/nrfutil
+      scripts/bootstrap \
+       --ot-br-posix \
+       --chip
+      script/build \
+       --otbr-image \
+       --chip-environment-image \
+       --chip-device-ctrl
 
-#. Optionally, remove any build layers to recover disk space.
+For an existing repository, build artifacts can be cleaned (not docker images), with the following command.
+
+::
+
+   scripts/build --clean
+
+After building new docker images, the old images and build layers can be removed to recover disk space.
 
    .. warning::
 
@@ -497,6 +476,7 @@ Preparing the Build System
    ::
 
       docker image prune
+
 
 References
 ----------
