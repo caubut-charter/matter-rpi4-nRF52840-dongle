@@ -6,257 +6,256 @@ on:
   # TODO CRON
 
 jobs:
-  #   build-avahi-utils-image:
-  #     runs-on: ubuntu-latest
-  #     steps:
-  #       - uses: actions/checkout@v2
-  #       - uses: docker/setup-qemu-action@v1
-  #       - uses: docker/setup-buildx-action@v1
-  #         id: buildx
-  #         with:
-  #           version: latest
-  #       - uses: docker/login-action@v1
-  #         with:
-  #           username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #           password: ${{ secrets.DOCKERHUB_TOKEN }}
-  #       - run: |
-  #           DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
-  #             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
-  #             DOCKER_BUILDKIT=1 script/build --avahi-utils-image
-  #
-  #   build-chip-environment-image:
-  #     runs-on: ubuntu-latest
-  #     steps:
-  #       - uses: actions/checkout@v2
-  #       - uses: docker/setup-qemu-action@v1
-  #       - uses: docker/setup-buildx-action@v1
-  #         id: buildx
-  #         with:
-  #           version: latest
-  #       - uses: docker/login-action@v1
-  #         with:
-  #           username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #           password: ${{ secrets.DOCKERHUB_TOKEN }}
-  #       - run: |
-  #           DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push' \
-  #             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
-  #             DOCKER_BUILDKIT=1 script/build --chip-environment-image
-  #
-  #   build-otbr-image:
-  #     runs-on: ubuntu-latest
-  #     steps:
-  #       - uses: actions/checkout@v2
-  #       - uses: docker/setup-qemu-action@v1
-  #       - uses: docker/setup-buildx-action@v1
-  #         id: buildx
-  #         with:
-  #           version: latest
-  #       - uses: docker/login-action@v1
-  #         with:
-  #           username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #           password: ${{ secrets.DOCKERHUB_TOKEN }}
-  #       - run: script/bootstrap --ot-br-posix
-  #       - run: |
-  #           DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
-  #             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
-  #             DOCKER_BUILDKIT=1 script/build --otbr-image
-  #
-  #   build-ot-commissioner-image:
-  #     runs-on: ubuntu-latest
-  #     steps:
-  #       - uses: actions/checkout@v2
-  #       - uses: docker/setup-qemu-action@v1
-  #       - uses: docker/setup-buildx-action@v1
-  #         id: buildx
-  #         with:
-  #           version: latest
-  #       - uses: docker/login-action@v1
-  #         with:
-  #           username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #           password: ${{ secrets.DOCKERHUB_TOKEN }}
-  #       - run: script/bootstrap --ot-commissioner
-  #       - run: |
-  #           DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
-  #             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
-  #             DOCKER_BUILDKIT=1 script/build --ot-commissioner-image
-  #
-  #   build-ot-nrf528xx-environment-image:
-  #     runs-on: ubuntu-latest
-  #     steps:
-  #       - uses: actions/checkout@v2
-  #       - uses: docker/setup-qemu-action@v1
-  #       - uses: docker/setup-buildx-action@v1
-  #         id: buildx
-  #         with:
-  #           version: latest
-  #       - uses: docker/login-action@v1
-  #         with:
-  #           username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #           password: ${{ secrets.DOCKERHUB_TOKEN }}
-  #       - run: script/bootstrap --ot-nrf528xx
-  #       - run: |
-  #           DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push' \
-  #             ORG=${{ secrets.DOCKERHUB_USERNAME }} \
-  #             DOCKER_BUILDKIT=1 script/build --ot-nrf528xx-environment-image
-  #
-  #   build-nrfconnect-chip-environment-image:
-  #     runs-on: ubuntu-latest
-  #     steps:
-  #       - uses: actions/checkout@v2
-  #       - uses: docker/setup-qemu-action@v1
-  #       - uses: docker/setup-buildx-action@v1
-  #         id: buildx
-  #         with:
-  #           version: latest
-  #       - uses: docker/login-action@v1
-  #         with:
-  #           username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #           password: ${{ secrets.DOCKERHUB_TOKEN }}
-  #       - run: script/bootstrap --nrfconnect-chip
-  #       - run: |
-  #           DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push' \
-  #             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
-  #             DOCKER_BUILDKIT=1 script/build \
-  #             --nrfconnect-toolchain-image \
-  #             --nrfconnect-chip-environment-image
-  #
-  #   build-nrfutil-image:
-  #     runs-on: ubuntu-latest
-  #     steps:
-  #       - uses: actions/checkout@v2
-  #       - uses: docker/setup-qemu-action@v1
-  #       - uses: docker/setup-buildx-action@v1
-  #         id: buildx
-  #         with:
-  #           version: latest
-  #       - uses: docker/login-action@v1
-  #         with:
-  #           username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #           password: ${{ secrets.DOCKERHUB_TOKEN }}
-  #       - run: |
-  #           DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
-  #             ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
-  #             DOCKER_BUILDKIT=1 script/build --nrfutil-image
-  #
-  #   build-nrf52840-dongle-ot-rcp:
-  #     needs:
-  #       - build-ot-nrf528xx-environment-image
-  #       - build-nrfutil-image
-  #     runs-on: ubuntu-latest
-  #     steps:
-  #       - uses: actions/checkout@v2
-  #       - run: script/bootstrap --ot-nrf528xx
-  #       - run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --nrf52840-dongle-ot-rcp
-  #       - uses: actions/upload-artifact@v2
-  #         with:
-  #           name: nrf52840-dongle-ot-rcp
-  #           path: build/Release/nrf52840-dongle-ot-rcp.zip
-  #           retention-days: 1
-  #
-  #   build-nrf52840-dongle-thread-lighting-app-latest:
-  #     needs:
-  #       - build-nrfconnect-chip-environment-image
-  #       - build-nrfutil-image
-  #     runs-on: ubuntu-latest
-  #     steps:
-  #       - uses: actions/checkout@v2
-  #       - run: script/bootstrap --chip
-  #       - run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --nrf52840-dongle-thread-lighting-app
-  #       - uses: actions/upload-artifact@v2
-  #         with:
-  #           name: nrf52840-dongle-thread-lighting-app-latest
-  #           path: build/Release/nrf52840-dongle-thread-lighting-app.zip
-  #           retention-days: 1
-  #
-  #   build-nrf52840-dongle-thread-lighting-app-test_event:
-  #     needs:
-  #       - build-nrfconnect-chip-environment-image
-  #       - build-nrfutil-image
-  #     runs-on: ubuntu-latest
-  #     steps:
-  #       - uses: actions/checkout@v2
-  #       - run: script/bootstrap --chip test_event_6
-  #       - run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --nrf52840-dongle-thread-lighting-app
-  #       - uses: actions/upload-artifact@v2
-  #         with:
-  #           name: nrf52840-dongle-thread-lighting-app-test_event
-  #           path: build/Release/nrf52840-dongle-thread-lighting-app.zip
-  #           retention-days: 1
-  #
+  build-avahi-utils-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+        id: buildx
+        with:
+          version: latest
+      - uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - run: |
+          DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
+            ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
+            DOCKER_BUILDKIT=1 script/build --avahi-utils-image
+
+  build-chip-environment-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+        id: buildx
+        with:
+          version: latest
+      - uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - run: |
+          DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push' \
+            ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
+            DOCKER_BUILDKIT=1 script/build --chip-environment-image
+
+  build-otbr-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+        id: buildx
+        with:
+          version: latest
+      - uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - run: script/bootstrap --ot-br-posix
+      - run: |
+          DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
+            ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
+            DOCKER_BUILDKIT=1 script/build --otbr-image
+
+  build-ot-commissioner-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+        id: buildx
+        with:
+          version: latest
+      - uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - run: script/bootstrap --ot-commissioner
+      - run: |
+          DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
+            ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
+            DOCKER_BUILDKIT=1 script/build --ot-commissioner-image
+
+  build-ot-nrf528xx-environment-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+        id: buildx
+        with:
+          version: latest
+      - uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - run: script/bootstrap --ot-nrf528xx
+      - run: |
+          DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push' \
+            ORG=${{ secrets.DOCKERHUB_USERNAME }} \
+            DOCKER_BUILDKIT=1 script/build --ot-nrf528xx-environment-image
+
+  build-nrfconnect-chip-environment-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+        id: buildx
+        with:
+          version: latest
+      - uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - run: script/bootstrap --nrfconnect-chip
+      - run: |
+          DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push' \
+            ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
+            DOCKER_BUILDKIT=1 script/build \
+            --nrfconnect-toolchain-image \
+            --nrfconnect-chip-environment-image
+
+  build-nrfutil-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+        id: buildx
+        with:
+          version: latest
+      - uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - run: |
+          DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
+            ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
+            DOCKER_BUILDKIT=1 script/build --nrfutil-image
+
+  build-nrf52840-dongle-ot-rcp:
+    needs:
+      - build-ot-nrf528xx-environment-image
+      - build-nrfutil-image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: script/bootstrap --ot-nrf528xx
+      - run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --nrf52840-dongle-ot-rcp
+      - uses: actions/upload-artifact@v2
+        with:
+          name: nrf52840-dongle-ot-rcp
+          path: build/Release/nrf52840-dongle-ot-rcp.zip
+          retention-days: 1
+
+  build-nrf52840-dongle-thread-lighting-app-latest:
+    needs:
+      - build-nrfconnect-chip-environment-image
+      - build-nrfutil-image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: script/bootstrap --chip
+      - run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --nrf52840-dongle-thread-lighting-app
+      - uses: actions/upload-artifact@v2
+        with:
+          name: nrf52840-dongle-thread-lighting-app-latest
+          path: build/Release/nrf52840-dongle-thread-lighting-app.zip
+          retention-days: 1
+
+  build-nrf52840-dongle-thread-lighting-app-test_event:
+    needs:
+      - build-nrfconnect-chip-environment-image
+      - build-nrfutil-image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: script/bootstrap --chip test_event_6
+      - run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --nrf52840-dongle-thread-lighting-app
+      - uses: actions/upload-artifact@v2
+        with:
+          name: nrf52840-dongle-thread-lighting-app-test_event
+          path: build/Release/nrf52840-dongle-thread-lighting-app.zip
+          retention-days: 1
+
   build-chip-device-ctrl-x86_64-latest:
-    #   needs:
-    #     - build-chip-environment-image
+    needs:
+      - build-chip-environment-image
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - run: script/bootstrap --chip
       - run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --chip-device-ctrl
       - run: (cd build && tar -cJf Release/chip-device-ctrl.tar.xz --owner=0 --group=0 Release/chip-device-ctrl)
-      - run: ls -lah build/Release
       - uses: actions/upload-artifact@v2
         with:
           name: chip-device-ctrl-x86_64-latest
           path: build/Release/chip-device-ctrl.tar.xz
           retention-days: 1
-  #
-  #   build-chip-device-ctrl-aarch64-latest:
-  #     needs:
-  #       - build-chip-environment-image
-  #     runs-on: ubuntu-latest
-  #     steps:
-  #       - uses: actions/checkout@v2
-  #       - uses: docker/setup-qemu-action@v1
-  #       - run: script/bootstrap --chip
-  #       - run: docker pull --platform linux/aarch64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:latest
-  #       - run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --chip-device-ctrl
-  #       - run: (cd build && tar -cJf Release/chip-device-ctrl.tar.xz --owner=0 --group=0 Release/chip-device-ctrl)
-  #       - uses: actions/upload-artifact@v2
-  #         with:
-  #           name: chip-device-ctrl-aarch64-latest
-  #           path: build/Release/chip-device-ctrl.tar.xz
-  #           retention-days: 1
-  #
-  #   build-chip-device-ctrl-x86_64-test_event:
-  #     needs:
-  #       - build-chip-environment-image
-  #     runs-on: ubuntu-latest
-  #     steps:
-  #       - uses: actions/checkout@v2
-  #       - run: script/bootstrap --chip test_event_6
-  #       - run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --chip-device-ctrl
-  #       - run: (cd build && tar -cJf Release/chip-device-ctrl.tar.xz --owner=0 --group=0 Release/chip-device-ctrl)
-  #       - uses: actions/upload-artifact@v2
-  #         with:
-  #           name: chip-device-ctrl-x86_64-test_event
-  #           path: build/Release/chip-device-ctrl.tar.xz
-  #           retention-days: 1
-  #
-  #   build-chip-device-ctrl-aarch64-test_event:
-  #     needs:
-  #       - build-chip-environment-image
-  #     runs-on: ubuntu-latest
-  #     steps:
-  #       - uses: actions/checkout@v2
-  #       - uses: docker/setup-qemu-action@v1
-  #       - run: script/bootstrap --chip test_event_6
-  #       - run: docker pull --platform linux/aarch64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:latest
-  #       - run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --chip-device-ctrl
-  #       - run: (cd build && tar -cJf Release/chip-device-ctrl.tar.xz --owner=0 --group=0 Release/chip-device-ctrl)
-  #       - uses: actions/upload-artifact@v2
-  #         with:
-  #           name: chip-device-ctrl-aarch64-test_event
-  #           path: build/Release/chip-device-ctrl.tar.xz
-  #           retention-days: 1
+
+  build-chip-device-ctrl-aarch64-latest:
+    needs:
+      - build-chip-environment-image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/setup-qemu-action@v1
+      - run: script/bootstrap --chip
+      - run: docker pull --platform linux/aarch64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:latest
+      - run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --chip-device-ctrl
+      - run: (cd build && tar -cJf Release/chip-device-ctrl.tar.xz --owner=0 --group=0 Release/chip-device-ctrl)
+      - uses: actions/upload-artifact@v2
+        with:
+          name: chip-device-ctrl-aarch64-latest
+          path: build/Release/chip-device-ctrl.tar.xz
+          retention-days: 1
+
+  build-chip-device-ctrl-x86_64-test_event:
+    needs:
+      - build-chip-environment-image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: script/bootstrap --chip test_event_6
+      - run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --chip-device-ctrl
+      - run: (cd build && tar -cJf Release/chip-device-ctrl.tar.xz --owner=0 --group=0 Release/chip-device-ctrl)
+      - uses: actions/upload-artifact@v2
+        with:
+          name: chip-device-ctrl-x86_64-test_event
+          path: build/Release/chip-device-ctrl.tar.xz
+          retention-days: 1
+
+  build-chip-device-ctrl-aarch64-test_event:
+    needs:
+      - build-chip-environment-image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/setup-qemu-action@v1
+      - run: script/bootstrap --chip test_event_6
+      - run: docker pull --platform linux/aarch64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:latest
+      - run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --chip-device-ctrl
+      - run: (cd build && tar -cJf Release/chip-device-ctrl.tar.xz --owner=0 --group=0 Release/chip-device-ctrl)
+      - uses: actions/upload-artifact@v2
+        with:
+          name: chip-device-ctrl-aarch64-test_event
+          path: build/Release/chip-device-ctrl.tar.xz
+          retention-days: 1
 
   publish-release:
-    #     needs:
-    #       - build-nrf52840-dongle-ot-rcp
-    #       - build-nrf52840-dongle-thread-lighting-app-latest
-    #       - build-nrf52840-dongle-thread-lighting-app-test_event
-    #       - build-chip-device-ctrl-x86_64-latest
-    #       - build-chip-device-ctrl-aarch64-latest
-    #       - build-chip-device-ctrl-x86_64-test_event
-    #       - build-chip-device-ctrl-aarch64-test_event
+    needs:
+      - build-nrf52840-dongle-ot-rcp
+      - build-nrf52840-dongle-thread-lighting-app-latest
+      - build-nrf52840-dongle-thread-lighting-app-test_event
+      - build-chip-device-ctrl-x86_64-latest
+      - build-chip-device-ctrl-aarch64-latest
+      - build-chip-device-ctrl-x86_64-test_event
+      - build-chip-device-ctrl-aarch64-test_event
     runs-on: ubuntu-latest
     steps:
       - run: echo "::set-output name=date::$(date -u +'%Y-%m-%d')"
@@ -289,7 +288,6 @@ jobs:
         with:
           name: chip-device-ctrl-aarch64-test_event
           path: build/Release/chip-device-ctrl-aarch64-TEST_EVENT_6.tar.xz
-      - run: ls -lah build/Release
       - uses: dev-drprasad/delete-tag-and-release@v0.2.0
         with:
           delete_release: true

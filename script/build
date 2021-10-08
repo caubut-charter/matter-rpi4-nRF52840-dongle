@@ -259,6 +259,7 @@ fi
 if [[ "$NRF52840_DONGLE_THREAD_LIGHTING_APP" = true ]]; then
   echo "==> Building 'nrf52840-dongle-thread-lighting-app'..."
   mkdir -p build/nrf-sdk
+  mkdir -p build/nrf52840-dongle-thread-lighting-app/nrfconnect
   mkdir -p third_party/connectedhomeip/examples/lighting-app/nrfconnect/build
   docker run --rm \
     -e CHIP_REVISION="$(cd third_party/connectedhomeip && git rev-parse --short HEAD)" \
@@ -292,7 +293,7 @@ if [[ "$CHIP_DEVICE_CTRL" = true ]]; then
   mkdir -p third_party/connectedhomeip/out
   docker run --rm --entrypoint /bin/bash \
     -v "$PWD"/third_party/connectedhomeip:/var/chip \
-    -v "$PWD"/build/chip-device-ctrl:/var/chip/out \
+    -v "$PWD"/build/Release/chip-device-ctrl:/var/chip/out \
     "${ORG}chip-environment:$VERSION" -c \
     'scripts/build_python.sh -m platform'
   echo "==> Fixing permissions (may take a couple minutes)..."
