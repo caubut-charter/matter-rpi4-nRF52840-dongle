@@ -389,10 +389,10 @@ Preparing the Linux Desktop
             # update local main to origin main
             git checkout -B main origin/main
 
-Building Artifacts
-------------------
+Building
+--------
 
-Dependency management and artifact building is performed using two scripts in this repository, the :code:`script/bootstrap` script to manage dependencies and the :code:`script/build` script to build the artifacts.  Both support the :code:`-h` flag to list all available options.  Each dependency of the :code:`script/bootstrap` script accepts an optional checkout value for the repository it downloads (i.e. hash, commit, branch, tag).  As an example, it may be desirable to use one of the test event branches of the Connected Home IP (Matter) repository which is more stable.
+Dependency management and artifact building is performed using two scripts in this repository, the :code:`script/bootstrap` script to manage dependencies and the :code:`script/build` script to build the artifacts.  Both support the :code:`-h` flag to list all available options.  Each dependency of the :code:`script/bootstrap` script accepts an optional checkout value for the repository it downloads (i.e. hash, commit, branch, tag).  As an example, it may be desirable to use one of the test event branches of the Connected Home IP (Matter) repository which may be more stable.
 
 ::
 
@@ -410,24 +410,23 @@ Existing clones that already have build artifacts can be cleaned using the :code
 
    script/build --clean [ARTIFACT ..]
 
-Permission errors may occur due to docker containers creating files and directories on mounted volumes as the root user on the host.  The :code:`--fix-permissions`, or :code:`-f`, flag will (slowly) repair the entire directory and is available on both scripts.  If this flag is set, it occurs before any other step.
+Permission errors may occur due to docker containers creating files and directories on mounted volumes as the root user on the host.  The scripts will always attempt to fix them incrementally as it runs, but if permissions issue are triggered, the :code:`--fix-permissions`, or :code:`-f`, flag will (slowly) repair the entire project and is available on both scripts.  If this flag is set, it occurs before any other step.
 
 ::
 
    script/bootstrap --fix-permissions
    script/build --fix-permissions
 
-To completely restore and update all dependencies, the following example sequence can be used.
+To completely restore the project to its initial state and update all dependencies, the following example sequence can be used.
 
 ::
 
    script/bootstrap -f && script/build -c
 
-With the basics covered, there are three ways to work through this guide.  The remainder of this section only covers the first option.  For the last two options, skip the rest of this section.
+With the basics covered, there are two ways to work through this guide.
 
-#. pre-build the artifacts
-#. build the artifacts as needed
-#. download the nightly built artifacts as needed
+#. build the artifacts
+#. download the artifacts built nightly
 
 For a single host setup (e.g. **RPi Only** and **RPi + SSD** configurations), everything can be pre-built with the following command.
 

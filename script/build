@@ -152,7 +152,7 @@ check_hash () {
 }
 
 if [ "$FIX_PERMISSIONS" = true ]; then
-  echo "==> Fixing permissions..."
+  echo "==> Fixing permissions (may take a couple minutes)..."
   docker run --rm \
     -v "$PWD":/root \
     -w /root \
@@ -193,6 +193,7 @@ fi
 
 if [[ "$NRF52840_DONGLE_OT_RCP" = true ]]; then
   echo "==> Building 'nrf52840-dongle-ot-rcp'..."
+  mkdir -p build/ot-nrf528xx
   docker run --rm \
     -v "$PWD"/third_party/ot-nrf528xx:/ot-nrf528xx \
     -v "$PWD"/build/ot-nrf528xx:/ot-nrf528xx/build \
@@ -209,7 +210,6 @@ if [[ "$NRF52840_DONGLE_OT_RCP" = true ]]; then
     -v "$PWD"/build/ot-nrf528xx:/ot-nrf528xx/build \
     ubuntu:21.04 /bin/bash -c "chown -R $(id -u):$(id -g) /ot-nrf528xx"
   echo "==> Generating release artifact..."
-  mkdir -p build/Release
   mv build/ot-nrf528xx/bin/nrf52840-dongle-ot-rcp.zip build/Release
 fi
 
@@ -258,6 +258,8 @@ fi
 
 if [[ "$NRF52840_DONGLE_THREAD_LIGHTING_APP" = true ]]; then
   echo "==> Building 'nrf52840-dongle-thread-lighting-app'..."
+  mkdir -p build/nrf-sdk
+  mkdir -p third_party/connectedhomeip/examples/lighting-app/nrfconnect/build
   docker run --rm \
     -e CHIP_REVISION="$(cd third_party/connectedhomeip && git rev-parse --short HEAD)" \
     -v "$PWD"/third_party/connectedhomeip:/var/chip \
@@ -276,7 +278,6 @@ if [[ "$NRF52840_DONGLE_THREAD_LIGHTING_APP" = true ]]; then
     -v "$PWD"/build/nrf52840-dongle-thread-lighting-app/nrfconnect:/var/chip/examples/lighting-app/nrfconnect/build \
     ubuntu:21.04 /bin/bash -c "chown -R $(id -u):$(id -g) /var/chip /var/ncs"
   echo "==> Generating release artifact..."
-  mkdir -p build/Release
   mv "build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr/nrf52840-dongle-thread-lighting-app.zip" build/Release
 fi
 
@@ -287,13 +288,15 @@ fi
 
 if [[ "$CHIP_DEVICE_CTRL" = true ]]; then
   echo "==> Building 'chip-device-ctrl'..."
+  mkdir -p build/Release/chip-device-ctrl
+  mkdir -p third_party/connectedhomeip/out
   docker run --rm --entrypoint /bin/bash \
     -v "$PWD"/third_party/connectedhomeip:/var/chip \
     -v "$PWD"/build/chip-device-ctrl:/var/chip/out \
     "${ORG}chip-environment:$VERSION" -c \
     'scripts/build_python.sh -m platform'
   echo "==> Fixing permissions (may take a couple minutes)..."
-  docker run --rm \
+  docker run --rm -it \
     -v "$PWD"/third_party/connectedhomeip:/var/chip \
     -v "$PWD"/build/Release/chip-device-ctrl:/var/chip/out \
     ubuntu:21.04 /bin/bash -c "chown -R $(id -u):$(id -g) /var/chip"

@@ -124,7 +124,7 @@ done
 [ ${#repos[@]} -eq 0 ] && all
 
 if [ "$FIX_PERMISSIONS" = true ]; then
-  echo "==> Fixing permissions..."
+  echo "==> Fixing permissions (may take a couple minutes)..."
   docker run --rm \
     -v "$PWD":/root \
     -w /root \
