@@ -258,6 +258,7 @@ jobs:
   #       - build-chip-device-ctrl-aarch64-test_event
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - run: echo "::set-output name=date::$(date -u +'%Y-%m-%d')"
         id: date
   #       - uses: actions/download-artifact@v2
@@ -294,6 +295,16 @@ jobs:
           tag_name: nightly-${{ steps.date.outputs.date }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "refs/tags/nightly-${{ steps.date.outputs.date }}",
+              sha: context.sha
+            })
       - uses: softprops/action-gh-release@v1
         with:
           name: nightly-${{ steps.date.outputs.date }}
@@ -304,6 +315,16 @@ jobs:
         with:
           delete_release: true
           tag_name: nightly
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "refs/tags/nightly",
+              sha: context.sha
+            })
       - uses: softprops/action-gh-release@v1
         with:
           name: nightly
