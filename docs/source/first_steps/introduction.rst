@@ -7,58 +7,65 @@
 Introduction
 ============
 
-This project is an introductory step-by-step walk-through for building, commissioning, and testing your first Matter_ components.  It is meant as a bootstrap guide for anyone interested in Matter that wants to quickly setup a runnable example.  `nRF52840 Dongles`_ are used as low-cost radios and microcontrollers.  A `Raspberry Pi 4B`_ is used for building artifacts and running services.  Theoretically, an x64 Linux Desktop can be used for any step, and in some cases it is desirable (e.g. building firmware), but it is not tested as frequently.  *Every* stage is containerized to prevent dependency issues on the host.
+This project is a bootstrap guide for anyone interested in Matter_ who wants to quickly setup some runnable examples.  The reader is assumed to have outside familiarity with the Matter specification, but they are struggling to get the examples to work.  `nRF52840 Dongles`_ are used as low-cost radios and microcontrollers.  A `Raspberry Pi 4B`_ ("RPi" in this guide) is used for building artifacts and running services.  Theoretically, an x64 Linux Desktop can be used for any step, and in some cases is desirable (e.g. building firmware), but not all components are tested as frequently.  *Every* stage is containerized to prevent dependency issues on the host.
 
-Instructions are included to build everything from scratch.  Some of the build steps are executed via scripts in this repository which perform some minimal patching so everything builds on the Raspberry Pi or to reduce the container image sizes.  CI/CD pipelines are setup on this project to generate nightly builds of the `container images`_ and various `build artifacts`_ as an alternative option to building everything from scratch.
+Instructions include how to build everything from scratch.  Build steps are executed via scripts in this repository which perform some minimal patching so everything works through the Raspberry Pi and to reduce container image sizes by sharing reusable dependencies as mounted volumes.  CI/CD pipelines are setup on this project to generate nightly builds of the `container images`_ and various `build artifacts`_ as an alternative option.  All container images are build for :code:`aarm64` and :code:`x64` architectures.
 
 Major Components
 ----------------
 
-+----------------------------------+----------------------------------------------------------------------------------------+
-| Component                        | Description                                                                            |
-+==================================+========================================================================================+
-| Border Router                    | A Thread border router bridges a home Ethernet/WiFi network with a Thread network.     |
-|                                  | OpenThread Border Router (OTBR) will be used.  OTBR will run in a docker               |
-|                                  | container but requires a radio that speaks Thread. The Thread Radio Co-Processor       |
-|                                  | is the Thread radio that can be used for this purpose.  An nRF52840 dongle will        |
-|                                  | be flashed and provisioned for this guide.                                             |
-+----------------------------------+----------------------------------------------------------------------------------------+
-| Matter Commissioner/Controller   | For this guide, it is a docker application that can push WiFi or Thread credentials to |
-|                                  | a Matter accessory via the RPi's built-in Bluetooth radio (commissioner).  Once        |
-|                                  | commissioned, it can send commands, such as on/off (controller).                       |
-+----------------------------------+----------------------------------------------------------------------------------------+
-| Matter Thread Accessory (WIP)    | A Matter accessory that connects to the local network via Thread.  An nRF52840         |
-|                                  | dongle with the lighting example will be used.                                         |
-+----------------------------------+----------------------------------------------------------------------------------------+
-| Matter Ethernet Accessory (TODO) | A Matter accessory that connects via Ethernet or WiFi.  The lighting example will be   |
-|                                  | used in a docker container.  An nRF52840 dongle will be used for this accessory's      |
-|                                  | BLE radio so it can be commissioned.                                                   |
-+----------------------------------+----------------------------------------------------------------------------------------+
++----------------------------------+---------------------------------------------------------------------------------------+
+| Component                        | Description                                                                           |
++==================================+=======================================================================================+
+| Thread Border Router             | Bridges a home Ethernet/WiFi network with a Thread network.  OpenThread Border Router |
+|                                  |                                                                                       |
+|                                  | (OTBR) is used. The process requires a radio that speaks Thread.  A Thread Radio      |
+|                                  |                                                                                       |
+|                                  | Co-Processor (RCP) built from an nRF52840 dongle serves this purpose.                 |
++----------------------------------+---------------------------------------------------------------------------------------+
+| Matter Commissioner/Controller   | An application that can push WiFi/Thread credentials and Fabric information to a      |
+|                                  |                                                                                       |
+|                                  | Matter accessory via the RPi's built-in Bluetooth radio (commissioner).  Once         |
+|                                  |                                                                                       |
+|                                  | commissioned, it can send commands, such as on/off (controller).  This guide uses the |
+|                                  |                                                                                       |
+|                                  | python controller called :code:`chip-device-ctrl`.                                    |
++----------------------------------+---------------------------------------------------------------------------------------+
+| Matter Thread Accessory (WIP)    | A Matter accessory that connects to the local network via Thread.  An nRF52840 dongle |
+|                                  |                                                                                       |
+|                                  | with the lighting example will be used.                                               |
++----------------------------------+---------------------------------------------------------------------------------------+
+| Matter Ethernet Accessory (TODO) | A Matter accessory that connects via Ethernet or WiFi.  The lighting example will be  |
+|                                  |                                                                                       |
+|                                  | used in a container.  An nRF52840 dongle will be used for this accessory's BLE radio  |
+|                                  |                                                                                       |
+|                                  | so it can be commissioned by the RPi.                                                 |
++----------------------------------+---------------------------------------------------------------------------------------+
 
-Physically, these components may resemble the following diagram.
+Physically, these components may resemble the following diagram all running off a single RPi.
 
 .. image:: ../_static/physical_diagram.png
    :align: center
 
-Minor Components
+Other Components
 ----------------
 
-+---------------------------+-------------+
-| Component                 | Description |
-+===========================+=============+
-| OpenThread Commissioner   |             |
-+---------------------------+-------------+
-| DNS-SD Client             |             |
-+---------------------------+-------------+
-| nRF52840 Flashing Utility |             |
-+---------------------------+-------------+
++----------------------------------+-----------------------------------------------------------------------------+
+| Component                        | Description                                                                 |
++==================================+=============================================================================+
+| OpenThread Commissioner          | A Thread commissioner for end devices that do not use Matter.               |
+|                                  |                                                                             |
+|                                  | :code:`ot-commissioner` is used.                                            |
++----------------------------------+-----------------------------------------------------------------------------+
+| DNS-SD Client                    | A DNS service discovery client.  :code:`avahi-utils` is used.               |
++----------------------------------+-----------------------------------------------------------------------------+
+| nRF52840 Dongle Flashing Utility | A utility to upload firmware to nRF52840 dongles.  :code:`nrfutil` is used. |
++----------------------------------+-----------------------------------------------------------------------------+
 
-In order for service discovery to work, containers need to be attached to the same Local Area Network.  This project does this by attaching containers to the host's network.  Below is an example architecture diagram that allows containers to run on different hosts by using this method.  Should a test environment derived from the steps in this project outgrow a single host, it should still work the same when split over several hosts.
+Networking
+----------
 
-   .. image:: ../_static/logical_diagram.png
-      :align: center
+In order for service discovery to work, containers need to be attached to the same Local Area Network.  This project does this by attaching containers to the host's network using a macvlan.  Below is an example logical topology that allows containers to run on different hosts by using this method.  Should a test environment derived this project outgrow a single host, it should still function the same when split over several hosts.
 
-
-- :doc:`../components/otbr`
-- :doc:`../components/matter_thread_light` (WIP)
-- Matter WiFi/Ethernet Light (TODO)
+.. image:: ../_static/logical_diagram.png
+   :align: center

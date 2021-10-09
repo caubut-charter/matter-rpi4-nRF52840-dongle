@@ -258,7 +258,6 @@ jobs:
   #       - build-chip-device-ctrl-aarch64-test_event
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
       - run: echo "::set-output name=date::$(date -u +'%Y-%m-%d')"
         id: date
   #       - uses: actions/download-artifact@v2
@@ -292,24 +291,27 @@ jobs:
       - uses: dev-drprasad/delete-tag-and-release@v0.2.0
         with:
           delete_release: true
-          tag_name: nightly
+          tag_name: nightly-${{ steps.date.outputs.date }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: ls -la
-      - run: ls -la build
-      - run: ls -la build/Release
-      - uses: svenstaro/upload-release-action@v2
+      - uses: softprops/action-gh-release@v1
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          name: nightly-${{ steps.date.outputs.date }}
           body: ${{ steps.date.outputs.date }}
-          file: build/Release/chip-device-ctrl-x86_64-LATEST.tar.xz
-          tag: nightly
-      - uses: svenstaro/upload-release-action@v2
+          files: |
+            build/Release/chip-device-ctrl-x86_64-LATEST.tar.xz
+      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          delete_release: true
+          tag_name: nightly
+      - uses: softprops/action-gh-release@v1
+        with:
+          name: nightly
           body: ${{ steps.date.outputs.date }}
-          file: build/Release/chip-device-ctrl-x86_64-LATEST.tar.xz
-          tag: nightly-${{ steps.date.outputs.date }}
+          files: |
+            build/Release/chip-device-ctrl-x86_64-LATEST.tar.xz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: dev-drprasad/delete-older-releases@v0.2.0
         with:
           keep_latest: 15 # two weeks + latest nightly
