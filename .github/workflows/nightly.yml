@@ -302,16 +302,14 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           body: ${{ steps.date.outputs.date }}
-          file: build/Release/*
+          file: build/Release/chip-device-ctrl-x86_64-LATEST.tar.xz
           tag: nightly
-          file_glob: true
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           body: ${{ steps.date.outputs.date }}
-          file: build/Release/*
+          file: build/Release/chip-device-ctrl-x86_64-LATEST.tar.xz
           tag: nightly-${{ steps.date.outputs.date }}
-          file_glob: true
       - uses: dev-drprasad/delete-older-releases@v0.2.0
         with:
           keep_latest: 15 # two weeks + latest nightly

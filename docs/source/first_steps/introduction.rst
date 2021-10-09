@@ -11,13 +11,53 @@ This project is an introductory step-by-step walk-through for building, commissi
 
 Instructions are included to build everything from scratch.  Some of the build steps are executed via scripts in this repository which perform some minimal patching so everything builds on the Raspberry Pi or to reduce the container image sizes.  CI/CD pipelines are setup on this project to generate nightly builds of the `container images`_ and various `build artifacts`_ as an alternative option to building everything from scratch.
 
+Major Components
+----------------
+
++----------------------------------+----------------------------------------------------------------------------------------+
+| Component                        | Description                                                                            |
++==================================+========================================================================================+
+| Border Router                    | A Thread border router bridges a home Ethernet/WiFi network with a Thread network.     |
+|                                  | OpenThread Border Router (OTBR) will be used.  OTBR will run in a docker               |
+|                                  | container but requires a radio that speaks Thread. The Thread Radio Co-Processor       |
+|                                  | is the Thread radio that can be used for this purpose.  An nRF52840 dongle will        |
+|                                  | be flashed and provisioned for this guide.                                             |
++----------------------------------+----------------------------------------------------------------------------------------+
+| Matter Commissioner/Controller   | For this guide, it is a docker application that can push WiFi or Thread credentials to |
+|                                  | a Matter accessory via the RPi's built-in Bluetooth radio (commissioner).  Once        |
+|                                  | commissioned, it can send commands, such as on/off (controller).                       |
++----------------------------------+----------------------------------------------------------------------------------------+
+| Matter Thread Accessory (WIP)    | A Matter accessory that connects to the local network via Thread.  An nRF52840         |
+|                                  | dongle with the lighting example will be used.                                         |
++----------------------------------+----------------------------------------------------------------------------------------+
+| Matter Ethernet Accessory (TODO) | A Matter accessory that connects via Ethernet or WiFi.  The lighting example will be   |
+|                                  | used in a docker container.  An nRF52840 dongle will be used for this accessory's      |
+|                                  | BLE radio so it can be commissioned.                                                   |
++----------------------------------+----------------------------------------------------------------------------------------+
+
+Physically, these components may resemble the following diagram.
+
+.. image:: ../_static/physical_diagram.png
+   :align: center
+
+Minor Components
+----------------
+
++---------------------------+-------------+
+| Component                 | Description |
++===========================+=============+
+| OpenThread Commissioner   |             |
++---------------------------+-------------+
+| DNS-SD Client             |             |
++---------------------------+-------------+
+| nRF52840 Flashing Utility |             |
++---------------------------+-------------+
+
 In order for service discovery to work, containers need to be attached to the same Local Area Network.  This project does this by attaching containers to the host's network.  Below is an example architecture diagram that allows containers to run on different hosts by using this method.  Should a test environment derived from the steps in this project outgrow a single host, it should still work the same when split over several hosts.
 
-   .. image:: ../_static/example_network_architecture.png
+   .. image:: ../_static/logical_diagram.png
       :align: center
 
-Project Components
-------------------
 
 - :doc:`../components/otbr`
 - :doc:`../components/matter_thread_light` (WIP)
