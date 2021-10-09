@@ -258,6 +258,7 @@ jobs:
   #       - build-chip-device-ctrl-aarch64-test_event
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - run: echo "::set-output name=date::$(date -u +'%Y-%m-%d')"
         id: date
   #       - uses: actions/download-artifact@v2
