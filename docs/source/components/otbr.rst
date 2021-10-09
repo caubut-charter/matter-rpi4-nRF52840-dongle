@@ -12,64 +12,10 @@ OpenThread Border Router
 
 This section covers building a Thread `Radio Co-Processor`_ (RPC) and setting up an `OpenThread Border Router`_ (OTBR) on an RPi.
 
-Building the RCP Image
-----------------------
-
-#. From the build system, run the OpenThread build environment.
-
-   .. note::
-
-      Building will occur in the :code:`build/ot-nrf528xx` directory.  Remove this directory first if a fresh build is desired.
-
-      ::
-
-         sudo rm -rf build/ot-nrf528xx
-
-   ::
-
-      docker run -it --rm \
-       -v $PWD/third_party/ot-nrf528xx:/ot-nrf528xx \
-       -v $PWD/build/ot-nrf528xx:/ot-nrf528xx/build \
-       -w /ot-nrf528xx \
-       caubutcharter/ot-nrf528xx-environment:latest
-
-#. Install OpenThread dependencies.
-
-   ::
-
-      ./script/bootstrap
-
-#. Build OpenThread for the nRF52840 dongle which creates an RCP image at :code:`build/bin/ot-rcp`.
-
-   ::
-
-      script/build nrf52840 USB_trans -DOT_BOOTLOADER=USB -DOT_THREAD_VERSION=1.2
-
-#. Convert the RCP image to the :code:`.hex` format.
-
-   ::
-
-      arm-none-eabi-objcopy -O ihex build/bin/ot-rcp build/bin/ot-rcp.hex
-
-#. Exit the container which will stop and automatically remove it.
-
-   ::
-
-      exit
-
 .. _Flashing the RCP:
 
 Flashing the RCP
 ----------------
-
-#. From the build system, generate the RCP firmware package.
-
-   ::
-
-      docker run --rm \
-       -v $PWD/build/ot-nrf528xx/bin:/root \
-       nordicsemi/nrfutil:latest pkg generate --hw-version 52 --sd-req=0x00 \
-       --application ot-rcp.hex --application-version 1 ot-rcp.zip
 
 #. Select an nRF52840 dongle for OTBR, note its MAC address, and plug it into an open USB port on the build system.
 

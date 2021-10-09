@@ -392,6 +392,81 @@ Preparing the Linux Desktop
 Building
 --------
 
+The remainder of this guide assumes all container images and firmware have been built.  After building new container images, the old images and build layers can be removed to recover disk space.
+
+   .. warning::
+
+      This will remove any build layers and untagged images not attached to a container on the entire system, even for other users or projects.
+
+   ::
+
+      docker image prune
+
+TLDR
+""""
+
+The following are recommendations for the **RPi + Linux Desktop** and **RPi Only / RPi + SSD** configurations.  The former's goal is to reduce build times while the final demo runs entirely on the RPi.  This setup favors building and flashing all firmware from the Linux Desktop as well as building and running most utilities.  Services are recommended to run on the RPi.  :code:`chip-device-ctrl`  is also recommended to run on the RPi to use the Bluetooth radio on the RPi which would be potentially disruptive to the host.
+
+.. tabs::
+
+   .. tab:: Build
+
+      .. tabs::
+
+         .. group-tab:: RPi + Linux Desktop
+
+            ::
+
+               # RPi
+               script/bootstrap \
+                --chip \
+                --ot-br-posix
+               script/build \
+                --chip-device-ctrl \
+                --chip-environment-image \
+                --otbr-image
+
+               # Linux Desktop
+               script/bootstrap \
+                --chip \
+                --nrfconnect-chip \
+                --ot-commissioner \
+                --ot-nrf528xx
+               script/build \
+                --avahi-utils-image \
+                --nrf52840-dongle-ot-rcp \
+                --nrf52840-dongle-thread-lighting-app \
+                --nrfconnect-chip-environment-image \
+                --nrfconnect-toolchain-image \
+                --nrfutil-image \
+                --ot-commissioner-image \
+                --ot-nrf528xx-environment-image
+
+         .. group-tab:: RPi Only / RPi + SSD
+
+            ::
+
+               script/bootstrap -f && script/build -c --all
+
+   .. tab:: Download
+
+      .. tabs::
+
+         .. group-tab:: RPi + Linux Desktop
+
+            ::
+
+               ...
+
+         .. group-tab:: RPi Only / RPi + SSD
+
+            ::
+
+               ...
+
+Detailed Instructions
+"""""""""""""""""""""
+
 Dependency management and artifact building is performed using two scripts in this repository, the :code:`script/bootstrap` script to manage dependencies and the :code:`script/build` script to build the artifacts.  Both support the :code:`-h` flag to list all available options.  Each dependency of the :code:`script/bootstrap` script accepts an optional checkout value for the repository it downloads (i.e. hash, commit, branch, tag).  The exact repositories used for dependencies can be seen by inspecting the script.  As an example, it may be desirable to use one of the test event branches of the Connected Home IP (Matter) repository which may be more stable.
 
 ::
@@ -410,7 +485,7 @@ Existing clones of this repository that already have built artifacts can be clea
 
    script/build --clean [ARTIFACT ..]
 
-Permission errors may occur due to containers creating files and directories on mounted volumes as the root user on the host.  The scripts will always attempt to fix them incrementally as it runs, but if permission issues are triggered, the :code:`--fix-permissions`, or :code:`-f`, flag will (slowly) repair the entire project and is available on both scripts.  If this flag is set, it occurs before any other step.
+Permission errors may occur due to containers creating files and directories on mounted volumes as the root user on the host.  The scripts fix them incrementally as they run, but if permission issues are triggered due to a unclean exit, the :code:`--fix-permissions`, or :code:`-f`, flag will (slowly) repair the entire project and is available on both scripts.  If this flag is set, it occurs before any other step.
 
 ::
 
@@ -421,25 +496,9 @@ To completely restore the project to its initial state and update all dependenci
 
 ::
 
-   script/bootstrap -f && script/build -c
+   script/bootstrap -f && script/build -c --all
 
-For a single host setup (e.g. **RPi Only** and **RPi + SSD** configurations), everything can be built like below.
-
-::
-
-   # fresh repository
-   script/bootstrap && ORG=caubutcharter script/build --all
-
-   # dirty repository
-   script/bootstrap -f && ORG=caubutcharter script/build -c --all
-
-Alternatively, just the core components can be directly downloaded.
-
-::
-
-   TODO
-
-For multiple hosts (e.g. **RPi + Linux Desktop** configuration), the dependency graph must be considered if looking to download only the required dependencies and build only the required artifacts on each host.  Each colored box represents a final build artifact.
+For multiple hosts (e.g. **RPi + Linux Desktop** configuration), the dependency graph must be considered if looking to buid or download only the required dependencies and artifacts on each host.  Each colored box represents a final build artifact.
 
 .. image:: ../_static/dependency_graph.png
    :align: center
@@ -529,49 +588,6 @@ The table below explains how to build or download every build artifact including
 |                                                                          |                                                             |
 |    script/build --avahi-utils-image                                      |    docker pull caubutcharter/avahi-utils:latest             |
 +--------------------------------------------------------------------------+-------------------------------------------------------------+
-
-The following is recommended for the **RPi + Linux Desktop** configuration to reduce build times while the final demo runs entirely on the RPi.  This setup favors building and flashing all firmware (magenta) from the Linux Desktop as well as building and running most utilities (green).  Services (purple) are recommended to run on the RPi.  The :code:`chip-device-ctrl` (blue) is favored to run on the RPi to use the Bluetooth radio on the RPi which is disruptive to the host.
-
-#. Build the Linux Desktop artifacts.
-
-   ::
-
-      script/bootstrap \
-       --chip \
-       --nrfconnect-chip \
-       --ot-commissioner \
-       --ot-nrf528xx
-      script/build \
-       --avahi-utils-image \
-       --nrf52840-dongle-ot-rcp \
-       --nrf52840-dongle-thread-lighting-app \
-       --nrfconnect-chip-environment-image \
-       --nrfconnect-toolchain-image \
-       --nrfutil-image \
-       --ot-commissioner-image \
-       --ot-nrf528xx-environment-image
-
-#. Build the RPi artifacts.
-
-   ::
-
-      script/bootstrap \
-       --chip \
-       --ot-br-posix
-      script/build \
-       --chip-device-ctrl \
-       --chip-environment-image \
-       --otbr-image
-
-After building new container images, the old images and build layers can be removed to recover disk space.
-
-   .. warning::
-
-      This will remove any build layers and untagged images not attached to a container on the entire system, even for other users or projects.
-
-   ::
-
-      docker image prune
 
 References
 ----------

@@ -10,73 +10,10 @@
 Matter Thread Light
 ===================
 
-This section covers building a Matter Thread light accessory on an nRF52840 dongle and commissioning it onto the OTBR Thread network.
-
-Building the Accessory Image
-----------------------------
-
-#. From the build system, run the nRF Connect Matter build environment.
-
-   .. note::
-
-      Building will occur in the :code:`build/lighting-app/nrfconnect` directory.  Remove this directory first if a fresh build is desired.
-
-      ::
-
-         sudo rm -rf build/lighting-app/nrfconnect
-
-   .. note::
-
-      The nRF Connect SDK is cached in the :code:`build/nrf-sdk` directory so it can be reused for other builds.  Remove this directory first if a fresh build is desired.
-
-      ::
-
-         sudo rm -rf build/nrf-sdk
-
-   ::
-
-      docker run -it --rm \
-       -e CHIP_REVISION=$(cd third_party/connectedhomeip && git rev-parse --short HEAD) \
-       -v $PWD/third_party/connectedhomeip:/var/chip \
-       -v $PWD/build/nrf-sdk:/var/ncs \
-       -v $PWD/build/lighting-app/nrfconnect:/var/chip/examples/lighting-app/nrfconnect/build \
-       caubutcharter/nrfconnect-chip:latest
-
-#. Install nRF Connect and Matter dependencies.
-
-   ::
-
-       # bootstrap if build/nrf-sdk is empty
-       setup
-
-       # update build/nrf-sdk
-       python3 scripts/setup/nrfconnect/update_ncs.py --update
-
-#. Build the lighting example for the nRF52840 dongle which creates a :code:`.hex` format image at :code:`build/zephyr/zephyr.hex`.
-
-   ::
-
-       cd examples/lighting-app/nrfconnect
-       west build -b nrf52840dongle_nrf52840
-
-#. Exit the container which will stop and automatically remove it.
-
-   ::
-
-      exit
-
+This section covers flashing a Matter Thread light accessory on an nRF52840 dongle and commissioning it onto the OTBR Thread network.
 
 Flashing the Accessory
 ----------------------
-
-#. From the build system, generate the nRF52840 dongle firmware package.
-
-   ::
-
-      docker run --rm \
-       -v $PWD/build/lighting-app/nrfconnect/zephyr:/root \
-       nordicsemi/nrfutil:latest pkg generate --hw-version 52 --sd-req=0x00 \
-       --application zephyr.hex --application-version 1 matter-thread-light.zip
 
 #. Select an nRF52840 dongle for OTBR, note its MAC address, and plug it into an open USB port on the build system.
 
