@@ -1,8 +1,8 @@
 name: 🌠 nightly
 
-on:
-  schedule: [ push]
-  #    - cron:  '0 0 * * *'
+on: [ push ]
+  #  schedule:
+  #  - cron:  '0 0 * * *'
 
 jobs:
   build-avahi-utils-image:
