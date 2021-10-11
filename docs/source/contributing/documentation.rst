@@ -5,7 +5,7 @@
 Documentation
 =============
 
-Documentation for this project is built using Sphinx_ which requires `Python>=3.6`_ and the Poetry_ package manager.  This process is handled by the CI/CD pipeline, but the documentation can be built locally and previewed at http://localhost:8888 using docker.
+Documentation for this project is built using Sphinx_ which requires `Python>=3.6`_ and the Poetry_ package manager.  This process is handled by the CI/CD pipeline, but the documentation can be built locally and previewed at http://localhost:8888 using a container.
 
 Environment Setup
 -----------------
@@ -79,7 +79,7 @@ Incremental updates can be built using the same command as generating the docume
 
    poetry run make -C docs html
 
-Cleaning the build directory will break the docker volume and requires restarting the web server container.  This step is necessary to rebuild the table of contents on every page when adding or removing new pages.  Incremental updates only rebuild pages that changed.
+Cleaning the build directory will break the container volume and requires restarting the web server container.  This step is necessary to rebuild the table of contents on every page when adding or removing new pages.  Incremental updates only rebuild pages that changed.
 
 ::
 

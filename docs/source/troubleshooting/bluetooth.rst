@@ -6,12 +6,12 @@ Bluetooth Troubleshooting
 
 This document is for issues with Bluetooth using :code:`chip-device-ctrl`.
 
-.. _Docker Container HCI Issues:
+.. _Container HCI Issues:
 
-Docker Container HCI Issues
----------------------------
+Container HCI Issues
+--------------------
 
-For the following errors, the docker container is unable to control the RPi's Bluetooth Host Controller Interface (HCI).
+For the following errors, the container is unable to control the RPi's Bluetooth Host Controller Interface (HCI).
 
 ::
 

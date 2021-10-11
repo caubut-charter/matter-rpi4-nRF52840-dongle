@@ -113,15 +113,13 @@ while [ ${#args[@]} -gt 0 ]; do
     --ot-commissioner) process_source ot_commissioner ;;
     --chip) process_source connectedhomeip ;;
     --nrfconnect-chip) process_source nrfconnect_chip ;;
-    --all) all ;;
+    -a | --all) all ;;
     -f | --fix-permissions) FIX_PERMISSIONS=true ;;
     -h | --help) usage; exit;;
     *) usage; exit 1 ;;
   esac
   args=("${args[@]:1}");
 done
-
-[ ${#repos[@]} -eq 0 ] && all
 
 if [ "$FIX_PERMISSIONS" = true ]; then
   echo "==> Fixing permissions (may take a couple minutes)..."

@@ -29,7 +29,7 @@ jobs:
       - name: 🛠 Build image
         run: |
           DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
-            ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
+            IMAGE_PREFIX="${{ secrets.DOCKERHUB_USERNAME }}" \
             DOCKER_BUILDKIT=1 script/build --avahi-utils-image
 
   build-chip-environment-image:
@@ -56,7 +56,7 @@ jobs:
       - name: 🛠 Build image
         run: |
           DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push' \
-            ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
+            IMAGE_PREFIX="${{ secrets.DOCKERHUB_USERNAME }}" \
             DOCKER_BUILDKIT=1 script/build --chip-environment-image
 
   build-otbr-image:
@@ -86,7 +86,7 @@ jobs:
       - name: 🛠 Build image
         run: |
           DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
-            ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
+            IMAGE_PREFIX="${{ secrets.DOCKERHUB_USERNAME }}" \
             DOCKER_BUILDKIT=1 script/build --otbr-image
 
   build-ot-commissioner-image:
@@ -116,7 +116,7 @@ jobs:
       - name: 🛠 Build image
         run: |
           DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
-            ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
+            IMAGE_PREFIX="${{ secrets.DOCKERHUB_USERNAME }}" \
             DOCKER_BUILDKIT=1 script/build --ot-commissioner-image
 
   build-ot-nrf528xx-environment-image:
@@ -146,7 +146,7 @@ jobs:
       - name: 🛠 Build image
         run: |
           DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push' \
-            ORG=${{ secrets.DOCKERHUB_USERNAME }} \
+            IMAGE_PREFIX=${{ secrets.DOCKERHUB_USERNAME }} \
             DOCKER_BUILDKIT=1 script/build --ot-nrf528xx-environment-image
 
   build-nrfconnect-chip-environment-image:
@@ -176,7 +176,7 @@ jobs:
       - name: 🛠 Build image
         run: |
             DOCKER_BUILD='docker buildx build --platform linux/amd64,linux/arm64 --push' \
-              ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
+              IMAGE_PREFIX="${{ secrets.DOCKERHUB_USERNAME }}" \
               DOCKER_BUILDKIT=1 script/build \
               --nrfconnect-toolchain-image \
               --nrfconnect-chip-environment-image
@@ -205,7 +205,7 @@ jobs:
       - name: 🛠 Build image
         run: |
             DOCKER_BUILD="docker buildx build --platform linux/amd64,linux/arm64 --push" \
-              ORG="${{ secrets.DOCKERHUB_USERNAME }}" \
+              IMAGE_PREFIX="${{ secrets.DOCKERHUB_USERNAME }}" \
               DOCKER_BUILDKIT=1 script/build --nrfutil-image
 
   build-nrf52840-dongle-ot-rcp:
@@ -221,7 +221,7 @@ jobs:
         run: script/bootstrap --ot-nrf528xx
 
       - name: 🛠 Build artifact
-        run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --nrf52840-dongle-ot-rcp
+        run: IMAGE_PREFIX="${{ secrets.DOCKERHUB_USERNAME }}" script/build --nrf52840-dongle-ot-rcp
 
       - name: ⬆ Upload artifact
         uses: actions/upload-artifact@v2
@@ -242,7 +242,7 @@ jobs:
         run: script/bootstrap --chip
 
       - name: 🛠 Build artifact
-        run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --nrf52840-dongle-thread-lighting-app
+        run: IMAGE_PREFIX="${{ secrets.DOCKERHUB_USERNAME }}" script/build --nrf52840-dongle-thread-lighting-app
 
       - name: 🔖 Rename artifact
         run: mv nrf52840-dongle-thread-lighting-app.zip nrf52840-dongle-thread-lighting-app-LATEST.zip
@@ -267,7 +267,7 @@ jobs:
         run: script/bootstrap --chip test_event_6
 
       - name: 🛠 Build artifact
-        run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --nrf52840-dongle-thread-lighting-app
+        run: IMAGE_PREFIX="${{ secrets.DOCKERHUB_USERNAME }}" script/build --nrf52840-dongle-thread-lighting-app
 
       - name: 🔖 Rename artifact
         run: mv nrf52840-dongle-thread-lighting-app.zip nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip
@@ -291,7 +291,7 @@ jobs:
         run: script/bootstrap --chip
 
       - name: 🛠 Build artifact
-        run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --chip-device-ctrl
+        run: IMAGE_PREFIX="${{ secrets.DOCKERHUB_USERNAME }}" script/build --chip-device-ctrl
 
       - name: 🗃 Archive artifact
         run: tar -cJf chip-device-ctrl-x86_64-LATEST.tar.xz --owner=0 --group=0 chip-device-ctrl
@@ -321,7 +321,7 @@ jobs:
         run: docker pull --platform linux/aarch64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:latest
 
       - name: 🛠 Build artifact
-        run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --chip-device-ctrl
+        run: IMAGE_PREFIX="${{ secrets.DOCKERHUB_USERNAME }}" script/build --chip-device-ctrl
 
       - name: 🗃 Archive artifact
         run: tar -cJf chip-device-ctrl-aarch64-LATEST.tar.xz --owner=0 --group=0 chip-device-ctrl
@@ -345,7 +345,7 @@ jobs:
         run: script/bootstrap --chip test_event_6
 
       - name: 🛠 Build artifact
-        run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --chip-device-ctrl
+        run: IMAGE_PREFIX="${{ secrets.DOCKERHUB_USERNAME }}" script/build --chip-device-ctrl
 
       - name: 🗃 Archive artifact
         run: tar -cJf chip-device-ctrl-x86_64-TEST_EVENT_6.tar.xz --owner=0 --group=0 chip-device-ctrl
@@ -375,7 +375,7 @@ jobs:
         run: docker pull --platform linux/aarch64 ${{ secrets.DOCKERHUB_USERNAME }}/chip-environment:latest
 
       - name: 🛠 Build artifact
-        run: ORG="${{ secrets.DOCKERHUB_USERNAME }}" script/build --chip-device-ctrl
+        run: IMAGE_PREFIX="${{ secrets.DOCKERHUB_USERNAME }}" script/build --chip-device-ctrl
 
       - name: 🗃 Archive artifact
         run: tar -cJf chip-device-ctrl-aarch64-TEST_EVENT_6.tar.xz --owner=0 --group=0 chip-device-ctrl

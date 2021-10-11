@@ -1,8 +1,5 @@
 .. _Radio Co-Processor: https://openthread.io/platforms#radio-co-processor-rcp
 .. _OpenThread Border Router: https://openthread.io/guides/border-router
-.. _nRF Util: https://www.nordicsemi.com/Products/Development-tools/nrf-util
-.. _Configuring OpenThread Radio Co-processor on nRF52840 Dongle: https://github.com/project-chip/connectedhomeip/blob/master/docs/guides/openthread_rcp_nrf_dongle.md
-.. _Build OpenThread: https://openthread.io/guides/build
 .. _Run OTBR Docker: https://openthread.io/guides/border-router/docker/run
 .. _Thread CLI Documentation: https://github.com/openthread/openthread/blob/main/src/cli/README.md
 .. _ot-commissioner CLI Documentation: https://github.com/openthread/ot-commissioner/tree/main/src/app/cli
@@ -126,7 +123,7 @@ Verifying OTBR
 
 #. On the build system, verify the mesh commissioning protocol (MeshCoP) advertisement from OTBR.  Capture the **address** and **port** to test the commissioning process.
 
-   .. warning:: The chosen IPv4 address must be unique from other docker containers on the host's broadcast domain to ensure a unique MAC address is generated.
+   .. warning:: The chosen IPv4 address must be unique from other containers on the host's broadcast domain to ensure a unique MAC address is generated.
 
    .. note::
 
@@ -141,7 +138,7 @@ Verifying OTBR
 
 #. Run the ot-commissioner.
 
-   .. warning:: The chosen IPv4 address must be unique from other docker containers on the host's broadcast domain to ensure a unique MAC address is generated.
+   .. warning:: The chosen IPv4 address must be unique from other containers on the host's broadcast domain to ensure a unique MAC address is generated.
 
    ::
 
@@ -178,8 +175,6 @@ Verifying OTBR
 References
 ----------
 
-- `Configuring OpenThread Radio Co-processor on nRF52840 Dongle`_
-- `Build OpenThread`_
 - `Run OTBR Docker`_
 - `Thread CLI Documentation`_
 - `ot-commissioner CLI Documentation`_

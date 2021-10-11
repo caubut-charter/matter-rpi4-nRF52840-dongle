@@ -7,9 +7,9 @@
 Introduction
 ============
 
-This project is a bootstrap guide for anyone interested in Matter_ who wants to quickly setup some runnable examples.  The reader is assumed to have outside familiarity with the Matter specification, but they are struggling to get the examples to work.  `nRF52840 Dongles`_ are used as low-cost radios and microcontrollers.  A `Raspberry Pi 4B`_ ("RPi" in this guide) is used for building artifacts and running services.  Theoretically, an x64 Linux Desktop can be used for any step, and in some cases is desirable (e.g. building firmware), but not all components are tested as frequently.  *Every* stage is containerized to prevent dependency issues on the host.
+This project is a bootstrap guide for anyone interested in Matter_ who wants to quickly setup some runnable examples.  The reader is assumed to have outside familiarity with the Matter specification.  `nRF52840 Dongles`_ are used as low-cost radios and microcontrollers.  A `Raspberry Pi 4B`_ ("RPi" in this guide) is used for building artifacts and running services.  Theoretically, an x64 Linux Desktop can be used for any step, and in some cases is desirable (e.g. building firmware), but not all components are tested as frequently.  *Every* stage is containerized to prevent dependency issues on the host.
 
-Instructions include how to build everything from scratch.  Build steps are executed via scripts in this repository which perform some minimal patching so everything works through the Raspberry Pi and to reduce container image sizes by sharing reusable dependencies as mounted volumes.  CI/CD pipelines are setup on this project to generate nightly builds of the `container images`_ and various `build artifacts`_ as an alternative option.  All container images are build for :code:`aarm64` and :code:`x64` architectures.
+Instructions include how to build everything from scratch.  Build steps are executed via scripts in this repository which perform some minimal patching so everything works through the Raspberry Pi and to reduce container image sizes by sharing reusable dependencies as mounted volumes.  CI/CD pipelines are setup on this project to generate nightly builds of the `container images`_ and various `build artifacts`_ as an alternative option.  All container images are built for :code:`aarm64` and :code:`x64` architectures.
 
 Major Components
 ----------------
@@ -17,9 +17,9 @@ Major Components
 +----------------------------------+---------------------------------------------------------------------------------------+
 | Component                        | Description                                                                           |
 +==================================+=======================================================================================+
-| Thread Border Router             | Bridges a home Ethernet/WiFi network with a Thread network.  OpenThread Border Router |
+| Thread Border Router             | Bridges a home Ethernet/WiFi network with a Thread network using OpenThread Border    |
 |                                  |                                                                                       |
-|                                  | (OTBR) is used. The process requires a radio that speaks Thread.  A Thread Radio      |
+|                                  | Router (OTBR). The process requires a radio that work with Thread.  A Thread Radio    |
 |                                  |                                                                                       |
 |                                  | Co-Processor (RCP) built from an nRF52840 dongle serves this purpose.                 |
 +----------------------------------+---------------------------------------------------------------------------------------+
@@ -29,20 +29,20 @@ Major Components
 |                                  |                                                                                       |
 |                                  | commissioned, it can send commands, such as on/off (controller).  This guide uses the |
 |                                  |                                                                                       |
-|                                  | python controller called :code:`chip-device-ctrl`.                                    |
+|                                  | python controller :code:`chip-device-ctrl`.                                           |
 +----------------------------------+---------------------------------------------------------------------------------------+
 | Matter Thread Accessory (WIP)    | A Matter accessory that connects to the local network via Thread.  An nRF52840 dongle |
 |                                  |                                                                                       |
-|                                  | with the lighting example will be used.                                               |
+|                                  | with the lighting example is used.                                                    |
 +----------------------------------+---------------------------------------------------------------------------------------+
-| Matter Ethernet Accessory (TODO) | A Matter accessory that connects via Ethernet or WiFi.  The lighting example will be  |
+| Matter Ethernet Accessory (TODO) | A Matter accessory that connects via Ethernet/WiFi.  The lighting example is run in   |
 |                                  |                                                                                       |
-|                                  | used in a container.  An nRF52840 dongle will be used for this accessory's BLE radio  |
+|                                  | a container.  An nRF52840 dongle is used for this accessory's BLE radio so it can be  |
 |                                  |                                                                                       |
-|                                  | so it can be commissioned by the RPi.                                                 |
+|                                  | commissioned by the RPi.                                                              |
 +----------------------------------+---------------------------------------------------------------------------------------+
 
-Physically, these components may resemble the following diagram all running off a single RPi.
+Physically, these components may resemble the following diagram when all running off a single RPi.
 
 .. image:: ../_static/physical_diagram.png
    :align: center
@@ -65,7 +65,7 @@ Other Components
 Networking
 ----------
 
-In order for service discovery to work, containers need to be attached to the same Local Area Network.  This project does this by attaching containers to the host's network using a macvlan.  Below is an example logical topology that allows containers to run on different hosts by using this method.  Should a test environment derived this project outgrow a single host, it should still function the same when split over several hosts.
+In order for service discovery to work, containers need to be attached to the same Local Area Network.  This project does this by attaching containers to the host's network using a macvlan.  Below is an example logical topology that allows containers to run on different hosts by using this method.  Should a test environment derived from this project outgrow a single host, it should still function the same when split over several hosts.
 
 .. image:: ../_static/logical_diagram.png
    :align: center

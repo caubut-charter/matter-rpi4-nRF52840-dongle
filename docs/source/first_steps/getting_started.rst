@@ -6,6 +6,10 @@
 .. _docker: https://docs.docker.com/engine/install/ubuntu/
 .. _Raspberry Pi Imager: https://www.raspberrypi.org/software/
 .. _How to Boot Raspberry Pi 4 / 400 From a USB SSD or Flash Drive: https://www.tomshardware.com/how-to/boot-raspberry-pi-4-usb
+.. _Configuring OpenThread Radio Co-processor on nRF52840 Dongle: https://github.com/project-chip/connectedhomeip/blob/master/docs/guides/openthread_rcp_nrf_dongle.md
+.. _Build OpenThread: https://openthread.io/guides/build
+.. _nRF Util: https://www.nordicsemi.com/Products/Development-tools/nrf-util
+.. _CHIP nRF Connect Lighting Example Application: https://github.com/project-chip/connectedhomeip/tree/master/examples/lighting-app/nrfconnect#setting-up-the-environment
 
 Getting Started
 ===============
@@ -269,7 +273,7 @@ Preparing the RPi
 
    .. note::
 
-      The :code:`169.254.0.0/16` IPv4 link-local space won't be used for network traffic, but an IPv4 address is required by the docker network driver and every container connected directly to the host's broadcast domain needs a unique IPv4 address as it is used in MAC address generation.
+      The :code:`169.254.0.0/16` IPv4 link-local space won't be used for network traffic, but an IPv4 address is required by the container network driver and every container connected directly to the host's broadcast domain needs a unique IPv4 address as it is used in MAC address generation.
 
    ::
 
@@ -348,7 +352,7 @@ Preparing the Linux Desktop
 
    .. note::
 
-      The :code:`169.254.0.0/16` IPv4 link-local space won't be used for network traffic, but an IPv4 address is required by the docker network driver and every container connected directly to the host's broadcast domain needs a unique IPv4 address as it is used in MAC address generation.
+      The :code:`169.254.0.0/16` IPv4 link-local space won't be used for network traffic, but an IPv4 address is required by the container network driver and every container connected directly to the host's broadcast domain needs a unique IPv4 address as it is used in MAC address generation.
 
    ::
 
@@ -389,14 +393,14 @@ Preparing the Linux Desktop
             # update local main to origin main
             git checkout -B main origin/main
 
-Building
---------
+Building/Downloading Artifacts
+------------------------------
 
-The remainder of this guide assumes all container images and firmware have been built.  After building new container images, the old images and build layers can be removed to recover disk space.
+The remainder of this guide assumes all container images and firmware have been built.  After building new container images, the old container images and build layers can be removed to recover disk space.
 
    .. warning::
 
-      This will remove any build layers and untagged images not attached to a container on the entire system, even for other users or projects.
+      This will remove any untagged container images and build layers not attached to a container on the entire system, even for other users or projects.
 
    ::
 
@@ -405,64 +409,101 @@ The remainder of this guide assumes all container images and firmware have been 
 TLDR
 """"
 
-The following are recommendations for the **RPi + Linux Desktop** and **RPi Only / RPi + SSD** configurations.  The former's goal is to reduce build times while the final demo runs entirely on the RPi.  This setup favors building and flashing all firmware from the Linux Desktop as well as building and running most utilities.  Services are recommended to run on the RPi.  :code:`chip-device-ctrl`  is also recommended to run on the RPi to use the Bluetooth radio on the RPi which would be potentially disruptive to the host.
+The following are recommendations for the **RPi + Linux Desktop** and **RPi Only / RPi + SSD** configurations.  The former's goal is to reduce build times while the final demo runs entirely on the RPi.  This setup favors building and flashing all firmware from the Linux Desktop as well as building and running most utilities.  Services are recommended to run on the RPi.  :code:`chip-device-ctrl`  is also recommended to run on the RPi to use the Bluetooth radio on the RPi which could be potentially disruptive to the host.
+
+Building
+''''''''
 
 .. tabs::
 
-   .. tab:: Build
+   .. group-tab:: RPi + Linux Desktop
 
-      .. tabs::
+      ::
 
-         .. group-tab:: RPi + Linux Desktop
+         # RPi
+         script/bootstrap -f \
+          --ot-br-posix \
+          --chip
+         IMAGE_PREFIX=caubutcharter script/build -c \
+          --otbr-image \
+          --chip-environment-image \
+          --chip-device-ctrl
 
-            ::
+         # Linux Desktop
+         script/bootstrap -f \
+          --ot-nrf528xx \
+          --ot-commissioner \
+          --chip \
+          --nrfconnect-chip
+         IMAGE_PREFIX=caubutcharter script/build -c \
+          --ot-commissioner-image \
+          --ot-nrf528xx-environment-image \
+          --nrf52840-dongle-ot-rcp \
+          --nrfconnect-chip-environment-image \
+          --nrfconnect-toolchain-image \
+          --nrf52840-dongle-thread-lighting-app \
+          --avahi-utils-image \
+          --nrfutil-image
 
-               # RPi
-               script/bootstrap \
-                --chip \
-                --ot-br-posix
-               script/build \
-                --chip-device-ctrl \
-                --chip-environment-image \
-                --otbr-image
+   .. group-tab:: RPi Only / RPi + SSD
 
-               # Linux Desktop
-               script/bootstrap \
-                --chip \
-                --nrfconnect-chip \
-                --ot-commissioner \
-                --ot-nrf528xx
-               script/build \
-                --avahi-utils-image \
-                --nrf52840-dongle-ot-rcp \
-                --nrf52840-dongle-thread-lighting-app \
-                --nrfconnect-chip-environment-image \
-                --nrfconnect-toolchain-image \
-                --nrfutil-image \
-                --ot-commissioner-image \
-                --ot-nrf528xx-environment-image
+      ::
 
-         .. group-tab:: RPi Only / RPi + SSD
+         script/bootstrap -f --all && IMAGE_PREFIX=caubutcharter script/build -c --all
 
-            ::
+Downloading
+'''''''''''
 
-               script/bootstrap -f && script/build -c --all
+.. tabs::
 
-   .. tab:: Download
+   .. group-tab:: RPi + Linux Desktop
 
-      .. tabs::
+      ::
 
-         .. group-tab:: RPi + Linux Desktop
+         # RPi
+         export BASE_URL=https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/releases/download/nightly
+         script/bootstrap -f --chip && script/build -c
+         docker pull caubutcharter/otbr:latest
+         docker pull caubutcharter/chip-environment:latest
+         # latest
+         wget -c $BASE_URL/chip-device-ctrl-$(uname -m)-LATEST.tar.xz -O - |
+          tar -xJ -C build/Release
+         # test event
+         wget -c $BASE_URL/chip-device-ctrl-$(uname -m)-TEST_EVENT_6.tar.xz -O - |
+          tar -xJ -C build/Release
 
-            ::
+         # Linux Desktop
+         export BASE_URL=https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/releases/download/nightly
+         script/build -f -c
+         docker pull caubutcharter/ot-commissioner:latest
+         docker pull caubutcharter/avahi-utils:latest
+         docker pull caubutcharter/nrfutil:latest
+         wget -c $BASE_URL/nrf52840-dongle-ot-rcp.zip -P build/Release
+         # latest
+         wget -c $BASE_URL/nrf52840-dongle-thread-lighting-app-LATEST.zip -P build/Release
+         # test event
+         wget -c $BASE_URL/nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip -P build/Release
 
-               ...
+   .. group-tab:: RPi Only / RPi + SSD
 
-         .. group-tab:: RPi Only / RPi + SSD
+      ::
 
-            ::
-
-               ...
+         export BASE_URL=https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/releases/download/nightly
+         script/bootstrap -f --chip && script/build -c
+         docker pull caubutcharter/otbr:latest
+         docker pull caubutcharter/ot-commissioner:latest
+         docker pull caubutcharter/chip-environment:latest
+         docker pull caubutcharter/avahi-utils:latest
+         docker pull caubutcharter/nrfutil:latest
+         wget -c $BASE_URL/nrf52840-dongle-ot-rcp.zip -O build/Release
+         # latest
+         wget -c $BASE_URL/nrf52840-dongle-thread-lighting-app-LATEST.zip -P build/Release
+         wget -c $BASE_URL/chip-device-ctrl-$(uname -m)-LATEST.tar.xz -O - |
+          tar -xJ -C build/Release
+         # test event
+         wget -c $BASE_URL/nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip -P build/Release
+         wget -c $BASE_URL/chip-device-ctrl-$(uname -m)-TEST_EVENT_6.tar.xz -O - |
+          tar -xJ -C build/Release
 
 Detailed Instructions
 """""""""""""""""""""
@@ -473,19 +514,19 @@ Dependency management and artifact building is performed using two scripts in th
 
    script/bootstrap --chip test_event_6
 
-For compatibility with this guide, it is recommended to use the :code:`ORG=caubutcharter` environment variable to set the organization of the built docker images.  Nightly builds of these images are pushed to Docker Hub using this organization as an alternative to building them.
+For compatibility with this guide, it is recommended to use the :code:`IMAGE_PREFIX=caubutcharter` environment variable to set the user of the built container images.  Nightly builds of these images are pushed to Docker Hub using this user as an alternative to building them.
 
 ::
 
-   ORG=caubutcharter script/build [ARTIFACT ..]
+   IMAGE_PREFIX=caubutcharter script/build [ARTIFACT .. | --all]
 
 Existing clones of this repository that already have built artifacts can be cleaned using the :code:`--clean`, or :code:`-c`, flag when building.  If this flag is set, it occurs before any other build step.
 
 ::
 
-   script/build --clean [ARTIFACT ..]
+   IMAGE_PREFIX=caubutcharter script/build --clean [ARTIFACT .. | --all]
 
-Permission errors may occur due to containers creating files and directories on mounted volumes as the root user on the host.  The scripts fix them incrementally as they run, but if permission issues are triggered due to a unclean exit, the :code:`--fix-permissions`, or :code:`-f`, flag will (slowly) repair the entire project and is available on both scripts.  If this flag is set, it occurs before any other step.
+Permission errors may occur due to containers creating files and directories on mounted volumes as the root user on the host.  The scripts fix them incrementally as they run, but if permission issues are triggered due to a unclean exit, the :code:`--fix-permissions`, or :code:`-f`, flag can (slowly) repair the entire project and is available in both scripts.  If this flag is set, it occurs before any other step.
 
 ::
 
@@ -496,100 +537,131 @@ To completely restore the project to its initial state and update all dependenci
 
 ::
 
-   script/bootstrap -f && script/build -c --all
+   script/bootstrap -f --all && script/build -c
 
-For multiple hosts (e.g. **RPi + Linux Desktop** configuration), the dependency graph must be considered if looking to buid or download only the required dependencies and artifacts on each host.  Each colored box represents a final build artifact.
+Buildx can be used to build container images and is used for generating the nightly builds.  Since some container images are used as the base of other container images and the Dockerfiles are managed outside of this repository (no multi-stage build in one file), a registry is needed to build everything locally.  If not provided, those base images will be pulled from https://hub.docker.com/u/caubutcharter over the ones built with the command below.  While possible, such a setup is outside of the scope of this guide.  That said, when using :code:`script/build` and buildx, the :code:`DOCKER_BUILDKIT=1` environment variable must be set to disable :code:`TARGETARCH` emulation.
+
+::
+
+   DOCKER_BUILD="docker buildx build --load" \
+    IMAGE_PREFIX=caubutcharter \
+    DOCKER_BUILDKIT=1 script/build --all
+
+For multiple hosts (e.g. **RPi + Linux Desktop** configuration), the dependency graph must be considered if looking to build or download only the required dependencies and artifacts on each host.  Each colored box represents a final build artifact.
 
 .. image:: ../_static/dependency_graph.png
    :align: center
 
-The table below explains how to build or download every build artifact including any intermediary artifacts.
+The table below explains how to build or download every build artifact, including any intermediary artifacts.  The following commands should be run to prepare/control the build/download environment.  Nightlies are archived by GitHub for the last 90 days at https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/actions/workflows/nightly.yml.
 
-+--------------------------------------------------------------------------+-------------------------------------------------------------+
-| Build                                                                    | Download                                                    |
-+==========================================================================+=============================================================+
-| **OpenThread Border Router**                                                                                                           |
-+--------------------------------------------------------------------------+-------------------------------------------------------------+
-| ::                                                                       | ::                                                          |
-|                                                                          |                                                             |
-|    script/bootstrap --ot-br-posix                                        |    docker pull caubutcharter/otbr:latest                    |
-|    script/build --otbr-image                                             |                                                             |
-+--------------------------------------------------------------------------+-------------------------------------------------------------+
-| **nrf52580 Dongle OpenThread Border Router Radio Co-Processor Firmware**                                                               |
-+--------------------------------------------------------------------------+-------------------------------------------------------------+
-| ::                                                                       | ::                                                          |
-|                                                                          |                                                             |
-|    script/bootstrap --ot-nrf528xx                                        |    docker pull caubutcharter/ot-nrf528xx-environment:latest |
-|    script/build --ot-nrf528xx-environment-image                          |                                                             |
-|                                                                          |                                                             |
-| (only required if building and not downloading the image)                | (only required if building and not downloading the image)   |
-+--------------------------------------------------------------------------+-------------------------------------------------------------+
-| ::                                                                       | ::                                                          |
-|                                                                          |                                                             |
-|    docker pull caubutcharter/nrfutil:latest                              |    docker pull caubutcharter/nrfutil:latest                 |
-|    script/build --nrfutil-image                                          |                                                             |
-|                                                                          |                                                             |
-| (required to build and/or flash the image)                               | (required to build and/or flash the image)                  |
-+--------------------------------------------------------------------------+-------------------------------------------------------------+
-| ::                                                                       | ::                                                          |
-|                                                                          |                                                             |
-|    script/build --nrf52840-dongle-ot-rcp                                 |    TODO                                                     |
-+--------------------------------------------------------------------------+-------------------------------------------------------------+
-| **OpenThread Commissioner**                                                                                                            |
-+--------------------------------------------------------------------------+-------------------------------------------------------------+
-| ::                                                                       | ::                                                          |
-|                                                                          |                                                             |
-|    script/bootstrap --ot-commissioner                                    |    docker pull caubutcharter/ot-commissioner:latest         |
-|    script/build --ot-commissioner-image                                  |                                                             |
-+--------------------------------------------------------------------------+-------------------------------------------------------------+
-| **nrf52840 Dongle Thread Lighting App Firmware**                                                                                       |
-+--------------------------------------------------------------------------+-------------------------------------------------------------+
-| ::                                                                       | ::                                                          |
-|                                                                          |                                                             |
-|    script/bootstrap --nrfconnect-chip                                    |    docker pull caubutcharter/nrfconnect-toolchain           |
-|    script/build --nrfconnect-toolchain-image                             |                                                             |
-|                                                                          |                                                             |
-| (only required if building and not downloading the image)                | (only required if building and not downloading the image)   |
-+--------------------------------------------------------------------------+-------------------------------------------------------------+
-| ::                                                                       | ::                                                          |
-|                                                                          |                                                             |
-|    script/bootstrap --nrfconnect-chip                                    |    docker pull caubutcharter/nrfconnect-chip-environment    |
-|    script/build --nrfconnect-chip-environment-image                      |                                                             |
-|                                                                          |                                                             |
-| (only required if building and not downloading the image)                | (only required if building and not downloading the image)   |
-+--------------------------------------------------------------------------+-------------------------------------------------------------+
-| ::                                                                       | ::                                                          |
-|                                                                          |                                                             |
-|    script/build --nrfutil-image                                          |    docker pull caubutcharter/nrfutil:latest                 |
-|                                                                          |                                                             |
-| (required to build and/or flash the image)                               | (required to build and/or flash the image)                  |
-+--------------------------------------------------------------------------+-------------------------------------------------------------+
-| ::                                                                       | ::                                                          |
-|                                                                          |                                                             |
-|    script/bootstrap --chip                                               |    TODO                                                     |
-|    script/build --nrf52840-dongle-thread-lighting-app                    |                                                             |
-+--------------------------------------------------------------------------+-------------------------------------------------------------+
-| **Python CHIP Controller**                                                                                                             |
-+--------------------------------------------------------------------------+-------------------------------------------------------------+
-| ::                                                                       | ::                                                          |
-|                                                                          |                                                             |
-|    script/build --chip-environment-image                                 |    docker pull caubutcharter/chip-environment:latest        |
-|                                                                          |                                                             |
-| (required to run the python package)                                     | (required to run the python package)                        |
-+--------------------------------------------------------------------------+-------------------------------------------------------------+
-| ::                                                                       | ::                                                          |
-|                                                                          |                                                             |
-|    script/bootstrap --chip                                               |    script/boostrap --chip                                   |
-|    script/build --chip-device-ctrl                                       |    wget/curl                                                |
-+--------------------------------------------------------------------------+-------------------------------------------------------------+
-| **Avahi Utilities**                                                                                                                    |
-+--------------------------------------------------------------------------+-------------------------------------------------------------+
-| ::                                                                       | ::                                                          |
-|                                                                          |                                                             |
-|    script/build --avahi-utils-image                                      |    docker pull caubutcharter/avahi-utils:latest             |
-+--------------------------------------------------------------------------+-------------------------------------------------------------+
+::
+
+   # generate the output directory (required to use download commands)
+   mkdir -p build/Release
+   # container image prefix (default: none)
+   IMAGE_PREFIX=caubutcharter
+   # container image version (default: latest)
+   VERSION=latest
+   # GitHub release URL (default: none)
+   BASE_URL=https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/releases/download/nightly
+
++--------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| Build                                                                    | Download                                                                            |
++==========================================================================+=====================================================================================+
+| **OpenThread Border Router**                                             |                                                                                     |
++--------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| ::                                                                       | ::                                                                                  |
+|                                                                          |                                                                                     |
+|    script/bootstrap --ot-br-posix                                        |    docker pull caubutcharter/otbr:latest                                            |
+|    script/build --otbr-image                                             |                                                                                     |
++--------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| **nrf52580 Dongle OpenThread Border Router Radio Co-Processor Firmware**                                                                                       |
++--------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| ::                                                                       | ::                                                                                  |
+|                                                                          |                                                                                     |
+|    script/bootstrap --ot-nrf528xx                                        |    docker pull caubutcharter/ot-nrf528xx-environment:latest                         |
+|    script/build --ot-nrf528xx-environment-image                          |                                                                                     |
+|                                                                          |                                                                                     |
+| (only required if building and not downloading the firmware image)       | (only required if building and not downloading the firmware image)                  |
++--------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| ::                                                                       | ::                                                                                  |
+|                                                                          |                                                                                     |
+|    script/build --nrfutil-image                                          |    docker pull caubutcharter/nrfutil:latest                                         |
+|                                                                          |                                                                                     |
+| (required to build and/or flash the firmware image)                      | (required to build and/or flash the firmware image)                                 |
++--------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| ::                                                                       | ::                                                                                  |
+|                                                                          |                                                                                     |
+|    script/build --nrf52840-dongle-ot-rcp                                 |    wget -c $BASE_URL/nrf52840-dongle-ot-rcp.zip -P build/Release                    |
++--------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| **OpenThread Commissioner**                                                                                                                                    |
++--------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| ::                                                                       | ::                                                                                  |
+|                                                                          |                                                                                     |
+|    script/bootstrap --ot-commissioner                                    |    docker pull caubutcharter/ot-commissioner:latest                                 |
+|    script/build --ot-commissioner-image                                  |                                                                                     |
++--------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| **nrf52840 Dongle Thread Lighting App Firmware**                                                                                                               |
++--------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| ::                                                                       | ::                                                                                  |
+|                                                                          |                                                                                     |
+|    script/bootstrap --nrfconnect-chip                                    |    docker pull caubutcharter/nrfconnect-toolchain                                   |
+|    script/build --nrfconnect-toolchain-image                             |                                                                                     |
+|                                                                          |                                                                                     |
+| (only required if building and not downloading the firmware image)       | (only required if building and not downloading the firmware image)                  |
++--------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| ::                                                                       | ::                                                                                  |
+|                                                                          |                                                                                     |
+|    script/bootstrap --nrfconnect-chip                                    |    docker pull caubutcharter/nrfconnect-chip-environment                            |
+|    script/build --nrfconnect-chip-environment-image                      |                                                                                     |
+|                                                                          |                                                                                     |
+| (only required if building and not downloading the firmware image)       | (only required if building and not downloading the firmware image)                  |
++--------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| ::                                                                       | ::                                                                                  |
+|                                                                          |                                                                                     |
+|    script/build --nrfutil-image                                          |    docker pull caubutcharter/nrfutil:latest                                         |
+|                                                                          |                                                                                     |
+| (required to build and/or flash the firmware image)                      | (required to build and/or flash the firmware image)                                 |
++--------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| ::                                                                       | ::                                                                                  |
+|                                                                          |                                                                                     |
+|    script/bootstrap --chip                                               |    # latest                                                                         |
+|    script/build --nrf52840-dongle-thread-lighting-app                    |    wget -c $BASE_URL/nrf52840-dongle-thread-lighting-app-LATEST.zip -P \            |
+|                                                                          |     build/Release                                                                   |
+|                                                                          |    # test event                                                                     |
+|                                                                          |    wget -c $BASE_URL/nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip -P \      |
+|                                                                          |     build/Release                                                                   |
++--------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| **Python CHIP Controller**                                                                                                                                     |
++--------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| ::                                                                       | ::                                                                                  |
+|                                                                          |                                                                                     |
+|    script/build --chip-environment-image                                 |    docker pull caubutcharter/chip-environment:latest                                |
+|                                                                          |                                                                                     |
+| (required to run the python package)                                     | (required to run the python package)                                                |
++--------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| ::                                                                       | ::                                                                                  |
+|                                                                          |                                                                                     |
+|    script/bootstrap --chip                                               |    script/boostrap --chip                                                           |
+|    script/build --chip-device-ctrl                                       |    # latest                                                                         |
+|                                                                          |    wget -c $BASE_URL/chip-device-ctrl-$(uname -m)-LATEST.tar.xz -O - |              |
+|                                                                          |     tar -xJ -C build/Release                                                        |
+|                                                                          |    # test event                                                                     |
+|                                                                          |    wget -c $BASE_URL/chip-device-ctrl-$(uname -m)-TEST_EVENT_6.tar.xz -O - |        |
+|                                                                          |     tar -xJ -C build/Release                                                        |
++--------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| **Avahi Utilities**                                                                                                                                            |
++--------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| ::                                                                       | ::                                                                                  |
+|                                                                          |                                                                                     |
+|    script/build --avahi-utils-image                                      |    docker pull caubutcharter/avahi-utils:latest                                     |
++--------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
 
 References
 ----------
 
 - `How to Boot Raspberry Pi 4 / 400 From a USB SSD or Flash Drive`_
+- `Configuring OpenThread Radio Co-processor on nRF52840 Dongle`_
+- `Build OpenThread`_
+- `nRF Util`_
+- `CHIP nRF Connect Lighting Example Application`_

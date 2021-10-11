@@ -1,4 +1,3 @@
-.. _CHIP nRF Connect Lighting Example Application: https://github.com/project-chip/connectedhomeip/tree/master/examples/lighting-app/nrfconnect#setting-up-the-environment
 .. _Zephyr Project Documentation\: nRF52840 Dongle: https://docs.zephyrproject.org/latest/boards/arm/nrf52840dongle_nrf52840/doc/index.html#programming-and-debugging
 .. _Accessing Bluetooth dongle from inside Docker?: https://stackoverflow.com/questions/28868393/accessing-bluetooth-dongle-from-inside-docker
 .. _Bluetooth socket can't be opened inside container: https://github.com/moby/moby/issues/16208#issuecomment-161770118
@@ -64,7 +63,7 @@ Commissioning the Device
 
       docker run -it --rm --net=host --privileged matter/chip-device-ctrl:latest /bin/bash
 
-#. In the container, make sure the Bluetooth service is running.  If it is not, see :ref:`Docker Container HCI Issues`.
+#. In the container, make sure the Bluetooth service is running.  If it is not, see :ref:`Container HCI Issues`.
 
    ::
 
@@ -184,7 +183,6 @@ Commissioning the Device
 References
 ----------
 
-- `CHIP nRF Connect Lighting Example Application`_
 - `Zephyr Project Documentation: nRF52840 Dongle`_
 - `Accessing Bluetooth dongle from inside Docker?`_
 - `Bluetooth socket can't be opened inside container`_
