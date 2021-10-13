@@ -80,6 +80,7 @@ Preparing the RPi Boot Medium
 
          ::
 
+            cd ~/Downloads
             unzip YYYY-MM-DD-raspios-buster-arm64-lite.zip
 
       .. group-tab:: macOS
@@ -100,7 +101,7 @@ Preparing the RPi Boot Medium
          ::
 
             # this will probably fail due to missing dependencies, that's okay
-            sudo dpkg -i /path/to/imager_<X.Y.Z>_amd64.deb
+            sudo dpkg -i imager_<X.Y.Z>_amd64.deb
 
             # this fixes it
             sudo apt-get install -f
@@ -409,7 +410,7 @@ The remainder of this guide assumes all container images and firmware have been 
 TLDR
 """"
 
-The following are recommendations for the **RPi + Linux Desktop** and **RPi Only / RPi + SSD** configurations.  The former's goal is to reduce build times while the final demo runs entirely on the RPi.  This setup favors building and flashing all firmware from the Linux Desktop as well as building and running most utilities.  Services are recommended to run on the RPi.  :code:`chip-device-ctrl`  is also recommended to run on the RPi to use the Bluetooth radio on the RPi which could be potentially disruptive to the host.
+The following are recommendations for the **RPi + Linux Desktop** and **RPi Only / RPi + SSD** configurations.  The former's goal is to reduce build times while the final demo runs entirely on the RPi.  This setup favors building and flashing all firmware from the Linux Desktop as well as building and running most utilities.  Services are recommended to run on the RPi.  :code:`chip-device-ctrl`  is also recommended to run on the RPi to use the Bluetooth radio on the RPi which could be potentially disruptive to the host.  Latest and test event builds are available when downloading; only choose one.
 
 Building
 ''''''''
@@ -465,9 +466,11 @@ Downloading
          script/bootstrap -f --chip && script/build -c
          docker pull caubutcharter/otbr:latest
          docker pull caubutcharter/chip-environment:latest
+
          # latest
          wget -c $BASE_URL/chip-device-ctrl-$(uname -m)-LATEST.tar.xz -O - |
           tar -xJ -C build/Release
+
          # test event
          wget -c $BASE_URL/chip-device-ctrl-$(uname -m)-TEST_EVENT_6.tar.xz -O - |
           tar -xJ -C build/Release
@@ -479,8 +482,10 @@ Downloading
          docker pull caubutcharter/avahi-utils:latest
          docker pull caubutcharter/nrfutil:latest
          wget -c $BASE_URL/nrf52840-dongle-ot-rcp.zip -P build/Release
+
          # latest
          wget -c $BASE_URL/nrf52840-dongle-thread-lighting-app-LATEST.zip -P build/Release
+
          # test event
          wget -c $BASE_URL/nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip -P build/Release
 
@@ -495,11 +500,13 @@ Downloading
          docker pull caubutcharter/chip-environment:latest
          docker pull caubutcharter/avahi-utils:latest
          docker pull caubutcharter/nrfutil:latest
-         wget -c $BASE_URL/nrf52840-dongle-ot-rcp.zip -O build/Release
+         wget -c $BASE_URL/nrf52840-dongle-ot-rcp.zip -P build/Release
+
          # latest
          wget -c $BASE_URL/nrf52840-dongle-thread-lighting-app-LATEST.zip -P build/Release
          wget -c $BASE_URL/chip-device-ctrl-$(uname -m)-LATEST.tar.xz -O - |
           tar -xJ -C build/Release
+
          # test event
          wget -c $BASE_URL/nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip -P build/Release
          wget -c $BASE_URL/chip-device-ctrl-$(uname -m)-TEST_EVENT_6.tar.xz -O - |

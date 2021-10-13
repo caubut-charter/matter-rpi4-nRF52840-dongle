@@ -18,7 +18,7 @@ usage () {
   echo -e '                                      # Checkout the '\''test_event_6'\'''
   echo -e '                                      # Matter branch.\n'
   echo -e ' Sources:\n'
-  echo -e ' \t--ot-br-posix    \t OpenThread Border Router source'
+  echo -e ' \t--otbr           \t OpenThread Border Router source'
   echo -e ' \t--ot-nrf528xx    \t nRF528xx OpenThread RCP firmware source'
   echo -e ' \t--ot-commissioner\t OpenThread Commissioner source'
   echo -e ' \t--chip           \t Matter source'
@@ -43,7 +43,7 @@ declare -A repos
 repos=()
 
 # shellcheck disable=SC2120
-ot_br_posix() {
+otbr() {
   OT_BR_POSIX=true
   checkout=${1:-main}
   repos['https://github.com/openthread/ot-br-posix.git']="$checkout"

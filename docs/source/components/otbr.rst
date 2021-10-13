@@ -39,9 +39,9 @@ Flashing the RCP
    ::
 
       docker run -it --rm \
-       -v $PWD/build/ot-nrf528xx/bin:/root \
+       -v $PWD/build/Release:/root \
        --device $(readlink -f $RCP_TTY):$(readlink -f $RCP_TTY) \
-       nordicsemi/nrfutil:latest dfu usb-serial -pkg ot-rcp.zip -p $(readlink -f $RCP_TTY)
+       caubutcharter/nrfutil:latest dfu usb-serial -pkg nrf52840-dongle-ot-rcp.zip -p $(readlink -f $RCP_TTY)
 
 .. _Setting Up OTBR:
 
@@ -72,7 +72,7 @@ Setting Up OTBR
 
       docker create --rm --name otbr --hostname otbr -p 8080:80 --privileged \
        --sysctl "net.ipv6.conf.eth1.disable_ipv6=0 net.ipv6.conf.eth1.forwarding=1" \
-       openthread/otbr:latest --radio-url spinel+hdlc+uart://$(readlink -f $RCP_TTY)
+       caubutcharter/otbr:latest --radio-url spinel+hdlc+uart://$(readlink -f $RCP_TTY)
       docker network connect matter-bridge --ip 169.254.100.0 otbr
       docker start otbr
       docker exec -it otbr ip address del 169.254.100.0/16 dev eth1
@@ -134,7 +134,7 @@ Verifying OTBR
       docker run -it --rm \
        --network matter-bridge --ip 169.254.200.0 \
        --sysctl "net.ipv6.conf.all.disable_ipv6=0" \
-       avahi/avahi-utils:latest avahi-browse -lr _meshcop._udp
+       caubutcharter/avahi-utils:latest avahi-browse -lr _meshcop._udp
 
 #. Run the ot-commissioner.
 
@@ -145,7 +145,7 @@ Verifying OTBR
        docker run -it --rm \
         --network=matter-bridge --ip 169.254.100.10 \
         --sysctl "net.ipv6.conf.all.disable_ipv6=0" \
-        openthread/ot-commissioner:latest
+        caubutcharter/ot-commissioner:latest
 
 #. Set the PSKc key to the one captured while setting up OTBR.
 

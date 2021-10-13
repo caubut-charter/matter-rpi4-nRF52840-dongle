@@ -38,10 +38,17 @@ Flashing the Accessory
 
    ::
 
+      # latest
       docker run -it --rm \
-       -v $PWD/build/lighting-app/nrfconnect/zephyr:/root \
+       -v $PWD/build/Release:/root \
        --device $(readlink -f $LIGHT_TTY):$(readlink -f $LIGHT_TTY) \
-       nordicsemi/nrfutil:latest dfu usb-serial -pkg matter-thread-light.zip -p $(readlink -f $LIGHT_TTY)
+       caubutcharter/nrfutil:latest dfu usb-serial -pkg nrf52840-dongle-thread-lighting-app-LATEST.zip -p $(readlink -f $LIGHT_TTY)
+
+      # test event
+      docker run -it --rm \
+       -v $PWD/build/Release:/root \
+       --device $(readlink -f $LIGHT_TTY):$(readlink -f $LIGHT_TTY) \
+       caubutcharter/nrfutil:latest dfu usb-serial -pkg nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip -p $(readlink -f $LIGHT_TTY)
 
 Commissioning the Device
 ------------------------
@@ -61,7 +68,10 @@ Commissioning the Device
 
    ::
 
-      docker run -it --rm --net=host --privileged matter/chip-device-ctrl:latest /bin/bash
+      docker run -it --rm --net=host --privileged \
+       -v "$PWD"/third_party/connectedhomeip:/var/chip \
+       -v "$PWD"/build/Release/chip-device-ctrl:/var/chip/out \
+       caubutcharter/chip-environment:latest /bin/bash
 
 #. In the container, make sure the Bluetooth service is running.  If it is not, see :ref:`Container HCI Issues`.
 
@@ -82,7 +92,6 @@ Commissioning the Device
 
       If the dongle was previously commissioned, even unsuccessfully, the settings may still exist on the dongle even after flashing.  This can be observed by the light pattern not matching the above statement.  To clear the settings, hold the :code:`SW1` button (different from the button used to flash the dongle) until the following sequence of LED patterns completes (about 6 seconds):
 
-      - :code:`LD2` will light up blue and start blinking
       - :code:`LD1` and :code:`LD2` will start blinking in unison
       - both LEDs will stop blinking
 
@@ -101,7 +110,7 @@ Commissioning the Device
    ::
 
       # example: connect -ble 3840 20202021 123456
-      connect -ble <steup> discriminator> <pin_code> <temp_id>
+      connect -ble <discriminator> <pin_code> <temp_id>
 
 
 #. Inject the previously obtained Active Operational Dataset as hex-encoded value using ZCL Network Commissioning cluster.
@@ -143,7 +152,7 @@ Commissioning the Device
       $ docker run -it --rm \
        --network matter-bridge --ip 169.254.200.0 \
        --sysctl "net.ipv6.conf.all.disable_ipv6=0" \
-       avahi/avahi-utils:latest avahi-browse --all | grep matter
+       caubutcharter/avahi-utils:latest avahi-browse --all | grep matter
       +   eth0 IPv6 0A3DC266752DF2DB                              _matterc._udp        local
       +   eth0 IPv6 C8E944D0D1FA50DC-00000000000004D2             _matter._tcp         local
       +   eth0 IPv6 DCBC16980E4F73F3                              _matterc._udp        local
@@ -151,7 +160,7 @@ Commissioning the Device
      $ docker run -it --rm \
       --network matter-bridge --ip 169.254.200.0 \
       --sysctl "net.ipv6.conf.all.disable_ipv6=0" \
-      avahi/avahi-utils:latest avahi-browse -lr _matter._tcp.
+      caubutcharter/avahi-utils:latest avahi-browse -lr _matter._tcp.
      Avahi mDNS/DNS-SD Daemon is running
      +   eth0 IPv6 C8E944D0D1FA50DC-00000000000004D2             _matter._tcp         local
      =   eth0 IPv6 C8E944D0D1FA50DC-00000000000004D2             _matter._tcp         local

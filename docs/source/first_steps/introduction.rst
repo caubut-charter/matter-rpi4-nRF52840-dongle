@@ -1,4 +1,4 @@
-.. _Matter: https://buildwithmatter.com/
+.. _Building with Matter: https://buildwithmatter.com/
 .. _nRF52840 Dongles: https://www.nordicsemi.com/Products/Development-hardware/nRF52840-Dongle/GetStarted
 .. _Raspberry Pi 4B: https://www.raspberrypi.org/products/
 .. _container images: https://hub.docker.com/u/caubutcharter
@@ -7,12 +7,10 @@
 Introduction
 ============
 
-This project is a bootstrap guide for anyone interested in Matter_ who wants to quickly setup some runnable examples.  The reader is assumed to have outside familiarity with the Matter specification.  `nRF52840 Dongles`_ are used as low-cost radios and microcontrollers.  A `Raspberry Pi 4B`_ ("RPi" in this guide) is used for building artifacts and running services.  Theoretically, an x64 Linux Desktop can be used for any step, and in some cases is desirable (e.g. building firmware), but not all components are tested as frequently.  *Every* stage is containerized to prevent dependency issues on the host.
+This project is a bootstrap guide for setting up a runnable example of `Building with Matter`_  on a `Raspberry Pi 4B`_ ("RPi" in this guide) using low-cost `nRF52840 Dongles`_.  The reader is assumed to have some outside understanding of Matter.  Instructions include how to build everything from scratch.  Containers are used when possible.  Build steps are executed via scripts in this repository which perform some minimal patching so everything works through the Raspberry Pi and to reduce container image sizes by sharing reusable dependencies as mounted volumes.  CI/CD pipelines are setup on this project to generate nightly builds of the `container images`_ and various `build artifacts`_ as an alternative option to building from scratch.
 
-Instructions include how to build everything from scratch.  Build steps are executed via scripts in this repository which perform some minimal patching so everything works through the Raspberry Pi and to reduce container image sizes by sharing reusable dependencies as mounted volumes.  CI/CD pipelines are setup on this project to generate nightly builds of the `container images`_ and various `build artifacts`_ as an alternative option.  All container images are built for :code:`aarm64` and :code:`x64` architectures.
-
-Major Components
-----------------
+Main Components
+---------------
 
 +----------------------------------+---------------------------------------------------------------------------------------+
 | Component                        | Description                                                                           |
@@ -35,11 +33,9 @@ Major Components
 |                                  |                                                                                       |
 |                                  | with the lighting example is used.                                                    |
 +----------------------------------+---------------------------------------------------------------------------------------+
-| Matter Ethernet Accessory (TODO) | A Matter accessory that connects via Ethernet/WiFi.  The lighting example is run in   |
+| Matter Ethernet Accessory (TODO) | A Matter accessory that connects via Ethernet/WiFi.  An nRF52840 dongle is used for   |
 |                                  |                                                                                       |
-|                                  | a container.  An nRF52840 dongle is used for this accessory's BLE radio so it can be  |
-|                                  |                                                                                       |
-|                                  | commissioned by the RPi.                                                              |
+|                                  | this accessory's BLE radio so it can be commissioned by the RPi.                      |
 +----------------------------------+---------------------------------------------------------------------------------------+
 
 Physically, these components may resemble the following diagram when all running off a single RPi.
