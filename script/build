@@ -62,7 +62,8 @@ clean() (
       && set -x \
       && cd "$repo" \
       && git reset --hard && git clean -fdx \
-      && git submodule foreach --recursive git reset --hard && git submodule foreach --recursive git clean -fdx
+      && git submodule foreach --recursive git reset --hard \
+      && git submodule foreach --recursive git clean -fdx
     )
   done
 )

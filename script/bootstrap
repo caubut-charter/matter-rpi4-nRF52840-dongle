@@ -146,14 +146,15 @@ for repo in "${!repos[@]}"; do
           set -x \
           && git fetch \
           && git reset --hard && git clean -fd \
-          && git submodule foreach --recursive git reset --hard && git submodule foreach --recursive git clean -fd \
+          && git submodule foreach --recursive git reset --hard \
+          && git submodule foreach --recursive git clean -fd
         )
       fi
       echo "==> Checking out '${repos[$repo]}'..."
       (
         set -x \
-        && git checkout "${repos[$repo]}" \
-        && git submodule update --init --recursive \
+        && git checkout -B "${repos[$repo]}" "origin/${repos[$repo]}" \
+        && git submodule update --init --recursive
       )
     )
   )

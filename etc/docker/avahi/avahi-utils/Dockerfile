@@ -2,7 +2,7 @@ FROM ubuntu:21.04
 
 RUN set -x \
     && apt-get update && apt-get upgrade -y \
-    && apt-get install --no-install-recommends -y net-tools iproute2 avahi-utils \
+    && apt-get install --no-install-recommends -y avahi-utils \
     && service dbus start \
     && service avahi-daemon start \
     && apt-get -y clean && apt-get -y autoremove \
