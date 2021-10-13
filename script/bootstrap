@@ -6,34 +6,31 @@ shopt -s inherit_errexit
 cd "$(dirname "$0")/.."
 
 usage () {
-  echo -e 'Usage: bootstrap [OPTIONS] [[SOURCE [COMMIT|BRANCH|TAG]] ...]\n'
-  echo -e 'Examples:\n'
-  echo -e '  bootstrap                           # Download latest of all sources.'
-  echo -e '  bootstrap --all                     # Download latest of all sources.'
-  echo -e '  bootstrap --chip                    # Download latest Matter source.'
-  echo -e '  bootstrap --chip test_event_6       # Download latest Matter source.'
+  echo -e 'Usage: bootstrap [OPTIONS] [[TARGET [COMMIT|BRANCH|TAG]] ...]\n'
+  echo -e 'Examples:'
+  echo -e '  bootstrap --all                     # Bootstrap everything.'
+  echo -e '  bootstrap --chip                    # Bootstrap latest Matter source.'
+  echo -e '  bootstrap --chip test_event_6       # Bootstrap latest Matter source.'
   echo -e '                                      # Checkout the '\''test_event_6'\'''
   echo -e '                                      # Matter branch.'
-  echo -e '  bootstrap --chip test_event_6 --all # Download latest of all sources.'
+  echo -e '  bootstrap --chip test_event_6 --all # Bootstrap everything.'
   echo -e '                                      # Checkout the '\''test_event_6'\'''
   echo -e '                                      # Matter branch.\n'
-  echo -e ' Sources:\n'
-  echo -e ' \t--otbr           \t OpenThread Border Router source'
-  echo -e ' \t--ot-nrf528xx    \t nRF528xx OpenThread RCP firmware source'
-  echo -e ' \t--ot-commissioner\t OpenThread Commissioner source'
-  echo -e ' \t--chip           \t Matter source'
-  echo -e ' \t--nrfconnect-chip\t nRF Connect / Matter build environment'
-  echo -e ' \t                 \t container image source'
-  echo -e ' \t-a, --all        \t all sources\n'
-  echo -e ' Options:\n'
-  echo -e ' \t-f, --fix-permissions'
-  echo -e ' \t                 \t fix permission errors'
-  echo -e ' \t-h, --help       \t print this help list'
+  echo -e ' Targets:'
+  echo -e ' \t--otbr               \t OpenThread Border Router'
+  echo -e ' \t--ot-nrf528xx        \t nRF528xx OpenThread RCP firmware'
+  echo -e ' \t--ot-commissioner    \t OpenThread Commissioner'
+  echo -e ' \t--chip               \t Matter (Connected Home IP a.k.a CHIP)'
+  echo -e ' \t--nrfconnect-chip    \t nRF Connect / Matter build environment'
+  echo -e ' \t-a, --all            \t all targets\n'
+  echo -e ' Options:'
+  echo -e ' \t-f, --fix-permissions\t fix permission errors'
+  echo -e ' \t-h, --help           \t print this help list'
 }
 
 FIX_PERMISSIONS=false
 
-OT_BR_POSIX=false
+OTBR=false
 OT_NRF528XX=false
 OT_COMMISSIONER=false
 CONNECTEDHOMEIP=false
@@ -44,7 +41,7 @@ repos=()
 
 # shellcheck disable=SC2120
 otbr() {
-  OT_BR_POSIX=true
+  OTBR=true
   checkout=${1:-main}
   repos['https://github.com/openthread/ot-br-posix.git']="$checkout"
 }
@@ -79,7 +76,7 @@ nrfconnect_chip() {
 
 all() {
   # shellcheck disable=SC2119
-  [ "$OT_BR_POSIX" = true ] || ot_br_posix
+  [ "$OTBR" = true ] || otbr
   # shellcheck disable=SC2119
   [ "$OT_NRF528XX" = true ] || ot_nrf528xx
   # shellcheck disable=SC2119
@@ -129,7 +126,8 @@ if [ "$FIX_PERMISSIONS" = true ]; then
     ubuntu:21.04 /bin/bash -c "chown -R $(id -u):$(id -g) ."
 fi
 
-(set -x && mkdir -p third_party)
+mkdir -p third_party
+
 for repo in "${!repos[@]}"; do
   (
     cd third_party
@@ -159,3 +157,7 @@ for repo in "${!repos[@]}"; do
     )
   )
 done
+
+if [[ "$OTBR" = true ]]; then
+  (set -x && cd third_party/ot-br-posix && ./script/bootstrap)
+fi
