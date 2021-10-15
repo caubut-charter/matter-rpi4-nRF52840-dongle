@@ -6,14 +6,13 @@ shopt -s inherit_errexit
 cd "$(dirname "$0")/.."
 
 usage() {
-  echo -e 'Usage: build [OPTIONS] [ARTIFACT ...]\n'
-  echo -e 'Examples:\n'
-  echo -e '  build --all                     # Build all artifacts.'
-  echo -e '  build --otbr-image              # Build the OTBR image.\n'
-  echo -e ' Artifacts:\n'
-  echo -e ' \t--otbr-image                   \t OpenThread Border Router image'
-  echo -e ' \t--ot-nrf528xx-environment-image\t OpenThread RCP firmware'
-  echo -e ' \t                               \t build environment container image'
+  echo -e 'Usage: setup [OPTIONS] [ARTIFACT ...]\n'
+  echo -e 'Examples:'
+  echo -e ' \tsetup --all                    \t Setup all artifacts.\n'
+  echo -e ' Artifacts:'
+  echo -e ' \t--otbr                         \t OpenThread Border Router'
+  echo -e ' \t--ot-nrf528xx-environment-image\t OpenThread RCP firmware build'
+  echo -e ' \t                               \t environment container image'
   echo -e ' \t--nrf52840-dongle-ot-rcp       \t OpenThread RCP firmware'
   echo -e ' \t--ot-commissioner-image        \t OpenThread commissioner container'
   echo -e ' \t                               \t image'
@@ -25,23 +24,21 @@ usage() {
   echo -e ' \t--nrf52840-dongle-thread-lighting-app'
   echo -e ' \t                               \t nRF52840 dongle Thread light'
   echo -e ' \t                               \t firmware'
-  echo -e ' \t--chip-environment-image       \t general Matter build and runtime'
-  echo -e ' \t                               \t environment'
+  echo -e ' \t--chip-environment-image       \t Matter build and environment'
   echo -e ' \t--chip-device-ctrl             \t Python Matter controller DNS-SD'
-  echo -e ' \t--avahi-utils-image            \t utilities'
   echo -e ' \t--nrfutil-image                \t nRF52840 dongle flashing utility'
   echo -e ' \t                               \t container image'
   echo -e ' \t-a, --all                      \t all artifacts\n'
-  echo -e ' Environment variables:\n'
+  echo -e ' Environment variables:'
   echo -e ' \tDOCKER_BUILD                   \t docker build command'
   echo -e ' \t                               \t default: '\''docker-build'\'
   echo -e ' \tDOCKER_BUILDKIT                \t set to '\''1'\'' if using BuildKit'
   echo -e ' \t                               \t to disable TARGETARCH emulation'
-  echo -e ' \tIMAGE_PREFIX                   \t Docker image name prefix'
-  echo -e ' \tVERSION                        \t Docker image version'
+  echo -e ' \tDOCKER_IMAGE_PREFIX            \t Docker image name prefix'
+  echo -e ' \tDOCKER_IMAGE_VERSION           \t Docker image version'
   echo -e ' \t                               \t default: '\''latest'\''\n'
-  echo -e ' Options:\n'
-  echo -e ' \t-c, --clean                    \t clean non-Docker build artifacts'
+  echo -e ' Options:'
+  echo -e ' \t-c, --clean                    \t clean build artifacts'
   echo -e ' \t-f, --fix-permissions          \t fix permission errors'
   echo -e ' \t-h, --help                     \t print this help list'
 }
@@ -80,15 +77,15 @@ fi
 
 DOCKER_BUILDKIT=${DOCKER_BUILDKIT-}
 
-IMAGE_PREFIX=${IMAGE_PREFIX:-}
-if [[ -n $IMAGE_PREFIX ]]; then IMAGE_PREFIX="$IMAGE_PREFIX/"; fi
+DOCKER_IMAGE_PREFIX=${DOCKER_IMAGE_PREFIX:-}
+if [[ -n $DOCKER_IMAGE_PREFIX ]]; then DOCKER_IMAGE_PREFIX="$DOCKER_IMAGE_PREFIX/"; fi
 DOCKER_BUILD=${DOCKER_BUILD:-docker build}
-VERSION=${VERSION:-latest}
+DOCKER_IMAGE_VERSION=${DOCKER_IMAGE_VERSION:-latest}
 
 CLEAN=false
 FIX_PERMISSIONS=false
 
-OTBR_IMAGE=false
+OTBR=false
 OT_NRF528XX_ENVIRONMENT_IMAGE=false
 NRF52840_DONGLE_OT_RCP=false
 OT_COMMISSIONER_IMAGE=false
@@ -97,12 +94,11 @@ NRFCONNECT_CHIP_ENVIRONMENT_IMAGE=false
 NRF52840_DONGLE_THREAD_LIGHTING_APP=false
 CHIP_ENVIRONMENT_IMAGE=false
 CHIP_DEVICE_CTRL=false
-AVAHI_UTILS_IMAGE=false
 NRFUTIL_IMAGE=false
 
 while [ $# -gt 0 ]; do
   case $1 in
-    --otbr-image) OTBR_IMAGE=true ;;
+    --otbr) OTBR=true ;;
     --ot-nrf528xx-environment-image) OT_NRF528XX_ENVIRONMENT_IMAGE=true ;;
     --nrf52840-dongle-ot-rcp) NRF52840_DONGLE_OT_RCP=true ;;
     --ot-commissioner-image) OT_COMMISSIONER_IMAGE=true ;;
@@ -111,10 +107,8 @@ while [ $# -gt 0 ]; do
     --nrf52840-dongle-thread-lighting-app) NRF52840_DONGLE_THREAD_LIGHTING_APP=true ;;
     --chip-environment-image) CHIP_ENVIRONMENT_IMAGE=true ;;
     --chip-device-ctrl) CHIP_DEVICE_CTRL=true ;;
-    --avahi-utils-image) AVAHI_UTILS_IMAGE=true ;;
     --nrfutil-image) NRFUTIL_IMAGE=true ;;
     -a | --all)
-        OTBR_IMAGE=true
         OT_NRF528XX_ENVIRONMENT_IMAGE=true
         NRF52840_DONGLE_OT_RCP=true
         OT_COMMISSIONER_IMAGE=true
@@ -123,7 +117,6 @@ while [ $# -gt 0 ]; do
         NRF52840_DONGLE_THREAD_LIGHTING_APP=true
         CHIP_ENVIRONMENT_IMAGE=true
         CHIP_DEVICE_CTRL=true
-        AVAHI_UTILS_IMAGE=true
         NRFUTIL_IMAGE=true
         ;;
     -c | --clean) CLEAN=true ;;
@@ -174,10 +167,10 @@ fi
 
 mkdir -p build/Release
 
-if [[ "$OTBR_IMAGE" = true ]]; then
-  echo "==> Building 'otbr-image'..."
+if [[ "$OTBR" = true ]]; then
+  echo "==> Setting up 'otbr-image'..."
   (cd third_party/ot-br-posix \
-    && set -x && $DOCKER_BUILD --build-arg INFRA_IF_NAME=eth1 -t "${IMAGE_PREFIX}otbr:$VERSION" -f etc/docker/Dockerfile .)
+   && set-x && INFRA_IF_NAME=eth0 ./script/setup)
 fi
 
 if [[ "$OT_NRF528XX_ENVIRONMENT_IMAGE" = true ]]; then
@@ -192,12 +185,12 @@ if [[ "$OT_NRF528XX_ENVIRONMENT_IMAGE" = true ]]; then
     third_party/ot-nrf528xx/openthread/etc/docker/environment/Dockerfile
 
   (cd third_party/ot-nrf528xx/openthread \
-    && set -x && $DOCKER_BUILD -t "${IMAGE_PREFIX}ot-nrf528xx-environment:$VERSION" -f etc/docker/environment/Dockerfile .)
+    && set -x && $DOCKER_BUILD -t "${DOCKER_IMAGE_PREFIX}ot-nrf528xx-environment:$DOCKER_IMAGE_VERSION" -f etc/docker/environment/Dockerfile .)
 fi
 
 if [[ "$NRFUTIL_IMAGE" = true ]]; then
   echo "==> Building 'nrfutil-image'..."
-  (set -x && $DOCKER_BUILD -t "${IMAGE_PREFIX}nrfutil:$VERSION" etc/docker/nordicsemi/nrfutil)
+  (set -x && $DOCKER_BUILD -t "${DOCKER_IMAGE_PREFIX}nrfutil:$DOCKER_IMAGE_VERSION" etc/docker/nordicsemi/nrfutil)
 fi
 
 if [[ "$NRF52840_DONGLE_OT_RCP" = true ]]; then
@@ -207,11 +200,11 @@ if [[ "$NRF52840_DONGLE_OT_RCP" = true ]]; then
     -v "$PWD"/third_party/ot-nrf528xx:/ot-nrf528xx \
     -v "$PWD"/build/ot-nrf528xx:/ot-nrf528xx/build \
     -w /ot-nrf528xx \
-    "${IMAGE_PREFIX}ot-nrf528xx-environment:${VERSION}" /bin/bash -c \
-    'script/bootstrap && script/build nrf52840 USB_trans -DOT_BOOTLOADER=USB -DOT_THREAD_VERSION=1.2 && arm-none-eabi-objcopy -O ihex build/bin/ot-rcp build/bin/nrf52840-dongle-ot-rcp.hex'
+    "${DOCKER_IMAGE_PREFIX}ot-nrf528xx-environment:${DOCKER_IMAGE_VERSION}" /bin/bash -c \
+    'script/bootstrap && script/build nrf52840 USB_trans -DOT_BOOTLOADER=USB -DOT_THREAD_DOCKER_IMAGE_VERSION=1.2 && arm-none-eabi-objcopy -O ihex build/bin/ot-rcp build/bin/nrf52840-dongle-ot-rcp.hex'
   docker run --rm  \
     -v "$PWD"/build/ot-nrf528xx/bin:/root \
-    "${IMAGE_PREFIX}nrfutil:${VERSION}" pkg generate --hw-version 52 --sd-req=0x00 \
+    "${DOCKER_IMAGE_PREFIX}nrfutil:${DOCKER_IMAGE_VERSION}" pkg generate --hw-version 52 --sd-req=0x00 \
     --application nrf52840-dongle-ot-rcp.hex --application-version 1 nrf52840-dongle-ot-rcp.zip
   echo "==> Fixing permissions..."
   docker run --rm \
@@ -225,7 +218,7 @@ fi
 if [[ "$OT_COMMISSIONER_IMAGE" = true ]]; then
   echo "==> Building 'ot-commissioner-image'..."
   (cd third_party/ot-commissioner && set -x && $DOCKER_BUILD \
-    -t "${IMAGE_PREFIX}ot-commissioner:$VERSION" -f ../../etc/docker/openthread/ot-commissioner/Dockerfile .)
+    -t "${DOCKER_IMAGE_PREFIX}ot-commissioner:$DOCKER_IMAGE_VERSION" -f ../../etc/docker/openthread/ot-commissioner/Dockerfile .)
 fi
 
 if [[ "$NRFCONNECT_TOOLCHAIN_IMAGE" = true ]]; then
@@ -242,7 +235,7 @@ if [[ "$NRFCONNECT_TOOLCHAIN_IMAGE" = true ]]; then
     third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile
 
   (cd third_party/nrfconnect-chip-docker/nrfconnect-toolchain \
-    && set -x && $DOCKER_BUILD -t "${IMAGE_PREFIX}nrfconnect-toolchain:$VERSION" .)
+    && set -x && $DOCKER_BUILD -t "${DOCKER_IMAGE_PREFIX}nrfconnect-toolchain:$DOCKER_IMAGE_VERSION" .)
 fi
 
 if [[ "$NRFCONNECT_CHIP_ENVIRONMENT_IMAGE" = true ]]; then
@@ -262,7 +255,7 @@ if [[ "$NRFCONNECT_CHIP_ENVIRONMENT_IMAGE" = true ]]; then
   # shellcheck disable=SC2086
   (cd third_party/nrfconnect-chip-docker/nrfconnect-chip \
     && set -x && $DOCKER_BUILD $FLAGS \
-    --build-arg "BASE=${IMAGE_PREFIX}nrfconnect-toolchain:$VERSION" -t "${IMAGE_PREFIX}nrfconnect-chip-environment:$VERSION" .)
+    --build-arg "BASE=${DOCKER_IMAGE_PREFIX}nrfconnect-toolchain:$DOCKER_IMAGE_VERSION" -t "${DOCKER_IMAGE_PREFIX}nrfconnect-chip-environment:$DOCKER_IMAGE_VERSION" .)
 fi
 
 if [[ "$NRF52840_DONGLE_THREAD_LIGHTING_APP" = true ]]; then
@@ -275,11 +268,11 @@ if [[ "$NRF52840_DONGLE_THREAD_LIGHTING_APP" = true ]]; then
     -v "$PWD"/third_party/connectedhomeip:/var/chip \
     -v "$PWD"/build/nrf-sdk:/var/ncs \
     -v "$PWD"/build/nrf52840-dongle-thread-lighting-app/nrfconnect:/var/chip/examples/lighting-app/nrfconnect/build \
-    "${IMAGE_PREFIX}nrfconnect-chip-environment:$VERSION" \
+    "${DOCKER_IMAGE_PREFIX}nrfconnect-chip-environment:$DOCKER_IMAGE_VERSION" \
     'setup -y && python3 scripts/setup/nrfconnect/update_ncs.py --update && cd examples/lighting-app/nrfconnect && west build -b nrf52840dongle_nrf52840'
   docker run --rm \
     -v "$PWD"/build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr:/root \
-    "${IMAGE_PREFIX}nrfutil:$VERSION" pkg generate --hw-version 52 --sd-req=0x00 \
+    "${DOCKER_IMAGE_PREFIX}nrfutil:$DOCKER_IMAGE_VERSION" pkg generate --hw-version 52 --sd-req=0x00 \
     --application zephyr.hex --application-version 1 "nrf52840-dongle-thread-lighting-app.zip"
   echo "==> Fixing permissions (may take a couple minutes)..."
   docker run --rm \
@@ -310,9 +303,4 @@ if [[ "$CHIP_DEVICE_CTRL" = true ]]; then
     -v "$PWD"/third_party/connectedhomeip:/var/chip \
     -v "$PWD"/build/Release/chip-device-ctrl:/var/chip/out \
     ubuntu:21.04 /bin/bash -c "chown -R $(id -u):$(id -g) /var/chip"
-fi
-
-if [[ "$AVAHI_UTILS_IMAGE" = true ]]; then
-  echo "==> Building 'avahi-utils-image'..."
-  (set -x && $DOCKER_BUILD -t "${IMAGE_PREFIX}avahi-utils:$VERSION" etc/docker/avahi/avahi-utils)
 fi

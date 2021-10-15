@@ -13,4 +13,4 @@ RUN mkdir /var/chip
 
 WORKDIR /var/chip
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash"]

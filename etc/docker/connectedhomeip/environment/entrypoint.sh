@@ -1,5 +1,5 @@
 #!/bin/sh
-
+# TODO REMOVE ME
 service dbus start 1> /dev/null
 
 service avahi-daemon start 1> /dev/null
