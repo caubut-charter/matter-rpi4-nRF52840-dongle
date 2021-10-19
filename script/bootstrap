@@ -22,7 +22,6 @@ usage () {
   echo -e ' \t--ot-commissioner       \t OpenThread Commissioner'
   echo -e ' \t--nrfconnect-chip       \t nRF Connect / Matter build environment'
   echo -e ' \t--chip                  \t Matter (Connected Home IP a.k.a CHIP)'
-  echo -e ' \t--chip-device-ctrl      \t Matter python controller'
   echo -e ' \t-a, --all               \t all targets\n'
   echo -e ' Options:'
   echo -e ' \t-f, --fix-permissions\t fix permission errors'
@@ -36,7 +35,6 @@ NRF52840_DONGLE_OT_RCP=false
 OT_COMMISSIONER=false
 NRFCONNECT_CHIP=false
 CONNECTEDHOMEIP=false
-CHIP_DEVICE_CTRL=false
 
 declare -A repos
 repos=()
@@ -69,6 +67,13 @@ nrfconnect_chip() {
   repos['https://github.com/NordicPlayground/nrfconnect-chip-docker.git']="$checkout"
 }
 
+# shellcheck disable=SC2120
+connectedhomeip() {
+  NRFCONNECT_CHIP=true
+  checkout=${1:-master}
+  repos['https://github.com/project-chip/connectedhomeip.git']="$checkout"
+}
+
 all() {
   # shellcheck disable=SC2119
   [ "$OTBR" = true ] || otbr
@@ -80,7 +85,6 @@ all() {
   [ "$NRFCONNECT_CHIP" = true ] || nrfconnect_chip
   # shellcheck disable=SC2119
   [ "$CONNECTEDHOMEIP" = true ] || connectedhomeip
-  CHIP_DEVICE_CTRL=true
 }
 
 args=("$@")
@@ -106,7 +110,6 @@ while [ ${#args[@]} -gt 0 ]; do
     --ot-commissioner) process_source ot_commissioner ;;
     --nrfconnect-chip) process_source nrfconnect_chip ;;
     --chip) process_source connectedhomeip ;;
-    --chip-device-ctrl) CHIP_DEVICE_CTRL=true ;;
     -a | --all) all ;;
     -f | --fix-permissions) FIX_PERMISSIONS=true ;;
     -h | --help) usage; exit;;
@@ -157,8 +160,4 @@ done
 
 if [[ "$OTBR" = true ]]; then
   (set -x && cd third_party/ot-br-posix && ./script/bootstrap)
-fi
-
-if [[ "$CHIP_DEVICE_CTRL" = true ]]; then
-  (cd third_party/connectedhomeip && bash -c 'source ./scripts/bootstrap.sh')
 fi

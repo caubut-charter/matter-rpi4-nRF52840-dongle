@@ -24,7 +24,6 @@ usage() {
   echo -e ' \t--nrf52840-dongle-thread-lighting-app'
   echo -e ' \t                               \t nRF52840 dongle Thread light'
   echo -e ' \t                               \t firmware'
-  echo -e ' \t--chip-environment-image       \t Matter build and environment'
   echo -e ' \t--chip-device-ctrl             \t Python Matter controller DNS-SD'
   echo -e ' \t--nrfutil-image                \t nRF52840 dongle flashing utility'
   echo -e ' \t                               \t container image'
@@ -284,23 +283,8 @@ if [[ "$NRF52840_DONGLE_THREAD_LIGHTING_APP" = true ]]; then
   mv "build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr/nrf52840-dongle-thread-lighting-app.zip" build/Release
 fi
 
-if [[ "$CHIP_ENVIRONMENT_IMAGE" = true ]]; then
-  echo "==> Building 'chip-environment-image'..."
-  (set -x && $DOCKER_BUILD -t "${IMAGE_PREFIX}chip-environment:$VERSION" etc/docker/connectedhomeip/environment)
-fi
-
 if [[ "$CHIP_DEVICE_CTRL" = true ]]; then
   echo "==> Building 'chip-device-ctrl'..."
-  mkdir -p build/Release/chip-device-ctrl
-  mkdir -p third_party/connectedhomeip/out
-  docker run --rm --entrypoint /bin/bash \
-    -v "$PWD"/third_party/connectedhomeip:/var/chip \
-    -v "$PWD"/build/Release/chip-device-ctrl:/var/chip/out \
-    "${IMAGE_PREFIX}chip-environment:$VERSION" -c \
-    'scripts/build_python.sh -m platform'
-  echo "==> Fixing permissions (may take a couple minutes)..."
-  docker run --rm \
-    -v "$PWD"/third_party/connectedhomeip:/var/chip \
-    -v "$PWD"/build/Release/chip-device-ctrl:/var/chip/out \
-    ubuntu:21.04 /bin/bash -c "chown -R $(id -u):$(id -g) /var/chip"
+  (cd third_party/connectedhomeip \
+   && set -x && scripts/build_python.sh -m platform)
 fi
