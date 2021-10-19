@@ -159,5 +159,5 @@ for repo in "${!repos[@]}"; do
 done
 
 if [[ "$OTBR" = true ]]; then
-  (set -x && cd third_party/ot-br-posix && NAT64=1 DNS64=1 WEB_GUI=1 ./script/bootstrap)
+  (set -x && cd third_party/ot-br-posix && WEB_GUI=1 ./script/bootstrap)
 fi

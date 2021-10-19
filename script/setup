@@ -167,16 +167,8 @@ mkdir -p build/Release
 if [[ "$OTBR" = true ]]; then
   echo "==> Setting up 'otbr-image'..."
 
-  # shellcheck disable=SC2016
-  sed -i 's/PLATFORM=\$(.*)/PLATFORM=raspbian/' third_party/ot-br-posix/script/_initrc
-
   (cd third_party/ot-br-posix \
-   && set -x && INFRA_IF_NAME=eth0 WEB_GUI=1 NAT64=1 DNS64=1 ./script/setup)
-
-  RADIO_URL='spinel+hdlc+uart:///dev/ttyACM0'
-
-  echo "OTBR_AGENT_OPTS=\"-I wpan0 -B eth0 -d7 $RADIO_URL\"" | sudo tee /etc/default/otbr-agent
-  echo "OTBR_WEB_OPTS=\"-I wpan0 -d7 -p 80\"" | sudo tee /etc/default/otbr-web
+   && set -x && INFRA_IF_NAME=eth0 WEB_GUI=1 ./script/setup)
 fi
 
 if [[ "$OT_NRF528XX_ENVIRONMENT_IMAGE" = true ]]; then
