@@ -49,11 +49,3 @@ Other Components
 +----------------------------------+-----------------------------------------------------------------------------+
 | nRF52840 Dongle Flashing Utility | A utility to upload firmware to nRF52840 dongles.  :code:`nrfutil` is used. |
 +----------------------------------+-----------------------------------------------------------------------------+
-
-Networking
-----------
-
-In order for service discovery to work, containers need to be attached to the same Local Area Network.  This project does this by attaching containers to the host's network using a macvlan.  Below is an example logical topology that allows containers to run on different hosts by using this method.  Should a test environment derived from this project outgrow a single host, it should still function the same when split over several hosts.
-
-.. image:: ../_static/logical_diagram.png
-   :align: center

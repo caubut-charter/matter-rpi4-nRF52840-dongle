@@ -19,16 +19,3 @@ jobs:
           scandir: 'script'
         env:
           SHELLCHECK_OPTS: -e SC1008 -e SC2096 -s bash
-
-  shellcheck-docker-scripts:
-    runs-on: ubuntu-latest
-    steps:
-      - name: 🔃 Checkout
-        uses: actions/checkout@v2
-
-      - name: ⚙ Shellcheck docker scripts
-        uses: ludeeus/action-shellcheck@master
-        with:
-          scandir: 'etc/docker'
-        env:
-          SHELLCHECK_OPTS: -e SC1008 -e SC2096 -s bash

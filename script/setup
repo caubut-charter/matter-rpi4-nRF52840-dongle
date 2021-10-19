@@ -91,7 +91,6 @@ OT_COMMISSIONER_IMAGE=false
 NRFCONNECT_TOOLCHAIN_IMAGE=false
 NRFCONNECT_CHIP_ENVIRONMENT_IMAGE=false
 NRF52840_DONGLE_THREAD_LIGHTING_APP=false
-CHIP_ENVIRONMENT_IMAGE=false
 CHIP_DEVICE_CTRL=false
 NRFUTIL_IMAGE=false
 
@@ -104,17 +103,16 @@ while [ $# -gt 0 ]; do
     --nrfconnect-toolchain-image) NRFCONNECT_TOOLCHAIN_IMAGE=true ;;
     --nrfconnect-chip-environment-image) NRFCONNECT_CHIP_ENVIRONMENT_IMAGE=true ;;
     --nrf52840-dongle-thread-lighting-app) NRF52840_DONGLE_THREAD_LIGHTING_APP=true ;;
-    --chip-environment-image) CHIP_ENVIRONMENT_IMAGE=true ;;
     --chip-device-ctrl) CHIP_DEVICE_CTRL=true ;;
     --nrfutil-image) NRFUTIL_IMAGE=true ;;
     -a | --all)
+        OTBR=true
         OT_NRF528XX_ENVIRONMENT_IMAGE=true
         NRF52840_DONGLE_OT_RCP=true
         OT_COMMISSIONER_IMAGE=true
         NRFCONNECT_TOOLCHAIN_IMAGE=true
         NRFCONNECT_CHIP_ENVIRONMENT_IMAGE=true
         NRF52840_DONGLE_THREAD_LIGHTING_APP=true
-        CHIP_ENVIRONMENT_IMAGE=true
         CHIP_DEVICE_CTRL=true
         NRFUTIL_IMAGE=true
         ;;
@@ -168,8 +166,17 @@ mkdir -p build/Release
 
 if [[ "$OTBR" = true ]]; then
   echo "==> Setting up 'otbr-image'..."
+
+  # shellcheck disable=SC2016
+  sed -i 's/PLATFORM=\$(.*)/PLATFORM=raspbian/' third_party/ot-br-posix/script/_initrc
+
   (cd third_party/ot-br-posix \
-   && set-x && INFRA_IF_NAME=eth0 ./script/setup)
+   && set -x && INFRA_IF_NAME=eth0 WEB_GUI=1 NAT64=1 DNS64=1 ./script/setup)
+
+  RADIO_URL='spinel+hdlc+uart:///dev/ttyACM0'
+
+  echo "OTBR_AGENT_OPTS=\"-I wpan0 -B eth0 -d7 $RADIO_URL\"" | sudo tee /etc/default/otbr-agent
+  echo "OTBR_WEB_OPTS=\"-I wpan0 -d7 -p 80\"" | sudo tee /etc/default/otbr-web
 fi
 
 if [[ "$OT_NRF528XX_ENVIRONMENT_IMAGE" = true ]]; then

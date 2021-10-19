@@ -14,7 +14,7 @@ This section covers flashing a Matter Thread light accessory on an nRF52840 dong
 Flashing the Accessory
 ----------------------
 
-#. Select an nRF52840 dongle for OTBR, note its MAC address, and plug it into an open USB port on the build system.
+#. Select an nRF52840 dongle for OTBR, note its MAC address, and plug it into an open USB port on the RPi.
 
    .. image:: ../_static/nRF52840_dongle_mac.png
       :align: center

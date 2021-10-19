@@ -228,11 +228,27 @@ Preparing the RPi
 
    ::
 
-      sudo apt-get install -y avahi-utils build-essential git libbz2-dev \
-       libexpat-dev libffi-dev libgdbm-compat-dev libgdbm-dev liblzma-dev \
-       libncurses-dev libreadline-dev libsqlite3-dev libssl-dev uuid-dev
+      sudo apt-get install -y \
+       avahi-utils \
+       build-essential \
+       git \
+       libbz2-dev \
+       libcairo2-dev \
+       libexpat-dev \
+       libffi-dev \
+       libgdbm-compat-dev \
+       libgdbm-dev \
+       libgirepository1.0-dev \
+       libglib2 \
+       liblzma-dev \
+       libncurses-dev \
+       libreadline-dev \
+       libsqlite3-dev \
+       libssl-dev \
+       uuid-dev
+      sudo apt autoremove
 
-#. Build and install Matter compatible python version.
+#. Build and install Matter compatible version of python.
 
    ::
 
@@ -271,7 +287,6 @@ Preparing the RPi
             # fetch changes from the upstream repository
             git fetch
             # reset any changes
-            git reset --hard
             # update local main to origin main
             git checkout -B main origin/main
 
@@ -296,6 +311,10 @@ Preparing the RPi
             DOCKER_IMAGE_PREFIX=caubutcharter script/setup --clean --all
 
       .. tab:: Download
+
+         .. note::
+
+            OpenThread Border Router and :code:`chip-device-ctrl` still need to be built locally.
 
          ::
 

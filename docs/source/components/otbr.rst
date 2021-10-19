@@ -14,7 +14,7 @@ This section covers building a Thread `Radio Co-Processor`_ (RPC) and setting up
 Flashing the RCP
 ----------------
 
-#. Select an nRF52840 dongle for OTBR, note its MAC address, and plug it into an open USB port on the build system.
+#. Select an nRF52840 dongle for OTBR, note its MAC address, and plug it into an open USB port on the RPi.
 
    .. image:: ../_static/nRF52840_dongle_mac.png
       :align: center
@@ -40,7 +40,7 @@ Flashing the RCP
 
       docker run -it --rm \
        -v $PWD/build/Release:/root \
-       --device $(readlink -f $RCP_TTY):$(readlink -f $RCP_TTY) \
+       --device $(readlink -f $RCP_TTY) \
        caubutcharter/nrfutil:latest dfu usb-serial -pkg nrf52840-dongle-ot-rcp.zip -p $(readlink -f $RCP_TTY)
 
 .. _Setting Up OTBR:
@@ -48,13 +48,11 @@ Flashing the RCP
 Setting Up OTBR
 ---------------
 
-#. If the build system is not the RPi, move the RPC to an open USB port on the RPi where the following commands will be executed.
-
 #. Capture the absolute path to the static symlink of this dongle by matching the MAC address (all caps no delimiters) with the following command.
 
    .. warning::
 
-      This step is required even if the build system is the RPi as the device name may have changed since flashing.
+      This step is required  as the device name may have changed since flashing.
 
    ::
 
@@ -62,7 +60,22 @@ Setting Up OTBR
       export RCP_TTY=$(find /dev/serial/by-id -type l | grep <mac>)
       echo $RCP_TTY
 
-#. Run the OTBR service.
+#. Set the RCP for OTBR using the captured symlink.
+
+   ::
+
+      sudo sed -i 's@\/dev\/ttyACM0@'"$RCP_TTY"'@' /etc/default/otbr-agent
+
+#. Reboot the RPi.
+
+   ::
+
+      sudo reboot
+
+#. Verify OTBR is running
+
+TODO reboot... verify
+
 
    .. warning::
 
@@ -121,7 +134,7 @@ Setting Up OTBR
 Verifying OTBR
 --------------
 
-#. On the build system, verify the mesh commissioning protocol (MeshCoP) advertisement from OTBR.  Capture the **address** and **port** to test the commissioning process.
+#. Verify the mesh commissioning protocol (MeshCoP) advertisement from OTBR.  Capture the **address** and **port** to test the commissioning process.
 
    .. warning:: The chosen IPv4 address must be unique from other containers on the host's broadcast domain to ensure a unique MAC address is generated.
 
