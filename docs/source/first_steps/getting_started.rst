@@ -239,14 +239,14 @@ Preparing the RPi
        libgdbm-compat-dev \
        libgdbm-dev \
        libgirepository1.0-dev \
-       libglib2 \
+       libglib2.0-dev \
        liblzma-dev \
        libncurses-dev \
        libreadline-dev \
        libsqlite3-dev \
        libssl-dev \
        uuid-dev
-      sudo apt autoremove
+      sudo apt autoremove -y
 
 #. Build and install Matter compatible version of python.
 
@@ -290,16 +290,6 @@ Preparing the RPi
             # update local main to origin main
             git checkout -B main origin/main
 
-#. Download dependencies.
-
-   ::
-
-      # CHIP latest
-      script/bootstrap -f --all
-
-      # CHIP test event
-      script/bootstrap -f --chip test_event_6 --all
-
 #. Build/download artifacts and install.
 
    .. tabs::
@@ -307,6 +297,12 @@ Preparing the RPi
       .. tab:: Build
 
          ::
+
+            # CHIP latest
+            script/bootstrap -f --all
+
+            # CHIP test event
+            script/bootstrap -f --chip test_event_6 --all
 
             DOCKER_IMAGE_PREFIX=caubutcharter script/setup --clean --all
 
@@ -318,10 +314,18 @@ Preparing the RPi
 
          ::
 
-            export BASE_URL=https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/releases/download/nightly
+            # CHIP latest
+            script/bootstrap -f --otbr --chip
+
+            # CHIP test event
+            script/bootstrap -f --otbr --chip test_event_6
+
             docker pull caubutcharter/ot-commissioner:latest
             docker pull caubutcharter/nrfutil:latest
+
             script/setup --clean --otbr --chip-device-ctrl
+
+            export BASE_URL=https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/releases/download/nightly
             wget -c $BASE_URL/nrf52840-dongle-ot-rcp.zip -P build/Release
 
             # CHIP latest
@@ -330,7 +334,7 @@ Preparing the RPi
             # CHIP test event
             wget -c $BASE_URL/nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip -P build/Release
 
-#. Optionally, remove remove old container images and build layers to recover disk space.
+#. Optionally, remove old container images and build layers to recover disk space.
 
    .. warning::
 
@@ -339,6 +343,14 @@ Preparing the RPi
    ::
 
       docker image prune
+
+#. Reboot the RPi and reconnect to it.
+
+   ::
+
+      sudo reboot
+      ssh pi@matter-demo.local
+      cd matter-rpi4-nRF52840-dongle
 
 References
 ----------

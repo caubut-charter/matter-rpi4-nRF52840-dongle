@@ -36,19 +36,32 @@ Flashing the Accessory
 
 #. Flash the nRF52840 firmware package onto the dongle.
 
-   ::
+   .. tabs::
 
-      # latest
-      docker run -it --rm \
-       -v $PWD/build/Release:/root \
-       --device $(readlink -f $LIGHT_TTY):$(readlink -f $LIGHT_TTY) \
-       caubutcharter/nrfutil:latest dfu usb-serial -pkg nrf52840-dongle-thread-lighting-app-LATEST.zip -p $(readlink -f $LIGHT_TTY)
+      .. tab:: Built
 
-      # test event
-      docker run -it --rm \
-       -v $PWD/build/Release:/root \
-       --device $(readlink -f $LIGHT_TTY):$(readlink -f $LIGHT_TTY) \
-       caubutcharter/nrfutil:latest dfu usb-serial -pkg nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip -p $(readlink -f $LIGHT_TTY)
+         ::
+
+            docker run -it --rm \
+             -v $PWD/build/Release:/root \
+             --device $(readlink -f $LIGHT_TTY) \
+             caubutcharter/nrfutil:latest dfu usb-serial -pkg nrf52840-dongle-thread-lighting-app.zip -p $(readlink -f $LIGHT_TTY)
+
+      .. tab:: Downloaded
+
+         ::
+
+            # latest
+            docker run -it --rm \
+             -v $PWD/build/Release:/root \
+             --device $(readlink -f $LIGHT_TTY) \
+             caubutcharter/nrfutil:latest dfu usb-serial -pkg nrf52840-dongle-thread-lighting-app-LATEST.zip -p $(readlink -f $LIGHT_TTY)
+
+            # test event
+            docker run -it --rm \
+             -v $PWD/build/Release:/root \
+             --device $(readlink -f $LIGHT_TTY) \
+             caubutcharter/nrfutil:latest dfu usb-serial -pkg nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip -p $(readlink -f $LIGHT_TTY)
 
 Commissioning the Device
 ------------------------
@@ -61,28 +74,14 @@ Commissioning the Device
 
    ::
 
-      docker exec -it otbr sh -c "sudo ot-ctl dataset active -x"
-      sudo docker exec -it otbr sh -c "sudo ot-ctl dataset extpanid"
-
-#. Run the :code:`chip-device-ctrl` container.
-
-   ::
-
-      docker run -it --rm --net=host --privileged \
-       -v "$PWD"/third_party/connectedhomeip:/var/chip \
-       -v "$PWD"/build/Release/chip-device-ctrl:/var/chip/out \
-       caubutcharter/chip-environment:latest /bin/bash
-
-#. In the container, make sure the Bluetooth service is running.  If it is not, see :ref:`Container HCI Issues`.
-
-   ::
-
-      ps aux | grep bluetoothd
+      sudo ot-ctl dataset active -x
+      sudo ot-ctl dataset extpanid
 
 #. Run :code:`chip-device-ctrl`.
 
    ::
 
+      cd third_party/connectedhomeip
       source out/python_env/bin/activate
       out/python_env/bin/chip-device-ctrl --bluetooth-adapter=hci0
 

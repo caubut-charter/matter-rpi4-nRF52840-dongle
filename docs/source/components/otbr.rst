@@ -60,37 +60,14 @@ Setting Up OTBR
       export RCP_TTY=$(find /dev/serial/by-id -type l | grep <mac>)
       echo $RCP_TTY
 
-#. Set the RCP for OTBR using the captured symlink.
+#. Set the RCP for OTBR using the captured symlink and restart the OTBR service.
 
    ::
 
       sudo sed -i 's@\/dev\/ttyACM0@'"$RCP_TTY"'@' /etc/default/otbr-agent
+      sudo systemctl restart otbr-agent
 
-#. Reboot the RPi.
-
-   ::
-
-      sudo reboot
-
-#. Verify OTBR is running
-
-TODO reboot... verify
-
-
-   .. warning::
-
-      This OTBR service container will automatically be removed if stopped.  This was a design decision as the dongle's :code:`ttyACM` index is not guaranteed in certain situations (e.g. host restart).
-
-   ::
-
-      docker create --rm --name otbr --hostname otbr -p 8080:80 --privileged \
-       --sysctl "net.ipv6.conf.eth1.disable_ipv6=0 net.ipv6.conf.eth1.forwarding=1" \
-       caubutcharter/otbr:latest --radio-url spinel+hdlc+uart://$(readlink -f $RCP_TTY)
-      docker network connect matter-bridge --ip 169.254.100.0 otbr
-      docker start otbr
-      docker exec -it otbr ip address del 169.254.100.0/16 dev eth1
-
-#. Navigate to http://matter-demo.local:8080/ from any device on the LAN and click on **Form** on the side menu to setup a Thread network.
+#. Navigate to http://matter-demo.local/ from any device on the LAN and click on **Form** on the side menu to setup a Thread network.
 
 #. Adjust the settings and click the **Form** button to create the Thread network.
 
@@ -127,7 +104,7 @@ TODO reboot... verify
 
    ::
 
-      docker exec -it otbr ot-ctl pskc
+      sudo ot-ctl pskc
 
 .. _Verifying OTBR:
 
@@ -136,18 +113,16 @@ Verifying OTBR
 
 #. Verify the mesh commissioning protocol (MeshCoP) advertisement from OTBR.  Capture the **address** and **port** to test the commissioning process.
 
-   .. warning:: The chosen IPv4 address must be unique from other containers on the host's broadcast domain to ensure a unique MAC address is generated.
-
    .. note::
 
       This command continually scans.  Hit :code:`CTRL-C` to exit.
 
    ::
 
-      docker run -it --rm \
-       --network matter-bridge --ip 169.254.200.0 \
-       --sysctl "net.ipv6.conf.all.disable_ipv6=0" \
-       caubutcharter/avahi-utils:latest avahi-browse -lr _meshcop._udp
+      avahi-browse -lr _meshcop._udp
+
+      # (optional) force resolve the IPv6 address
+      avahi-resolve -6 --name matter-demo.local
 
 #. Run the ot-commissioner.
 
@@ -155,9 +130,7 @@ Verifying OTBR
 
    ::
 
-       docker run -it --rm \
-        --network=matter-bridge --ip 169.254.100.10 \
-        --sysctl "net.ipv6.conf.all.disable_ipv6=0" \
+       docker run -it --rm --net host \
         caubutcharter/ot-commissioner:latest
 
 #. Set the PSKc key to the one captured while setting up OTBR.
@@ -170,7 +143,9 @@ Verifying OTBR
 
    ::
 
-      # link-local IPv6 address (starts with fe80)
+      start <address> <port>
+
+      # (optional) link-local IPv6 address (starts with fe80)
       start <address>%eth0 <port>
 
 #. Stop the commissioning process to end the test.
