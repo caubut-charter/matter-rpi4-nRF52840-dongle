@@ -151,5 +151,5 @@ for repo in "${!repos[@]}"; do
 done
 
 if [[ "$OTBR" = true ]]; then
-  (set -x && cd third_party/connectedhomeip/third_party/ot-br-posix && WEB_GUI=1 ./script/bootstrap)
+  (set -x && cd third_party/connectedhomeip/third_party/ot-br-posix/repo && WEB_GUI=1 ./script/bootstrap)
 fi

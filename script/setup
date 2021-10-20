@@ -167,7 +167,7 @@ mkdir -p build/Release
 if [[ "$OTBR" = true ]]; then
   echo "==> Setting up 'otbr-image'..."
 
-  (cd third_party/ot-br-posix \
+  (cd third_party/connectedhomeip/third_party/ot-br-posix/repo \
    && set -x && INFRA_IF_NAME=eth0 WEB_GUI=1 ./script/setup)
 fi
 
