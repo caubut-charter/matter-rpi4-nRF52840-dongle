@@ -287,6 +287,7 @@ Preparing the RPi
             # fetch changes from the upstream repository
             git fetch
             # reset any changes
+            git reset --hard
             # update local main to origin main
             git checkout -B main origin/main
 

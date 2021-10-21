@@ -77,13 +77,13 @@ Commissioning the Device
       sudo ot-ctl dataset active -x
       sudo ot-ctl dataset extpanid
 
-#. Run :code:`chip-device-ctrl`.
+#. Start the :code:`chip-device-ctrl` Matter controller.
 
    ::
 
       cd third_party/connectedhomeip
       source out/python_env/bin/activate
-      out/python_env/bin/chip-device-ctrl --bluetooth-adapter=hci0
+      sudo out/python_env/bin/chip-device-ctrl --bluetooth-adapter=hci0
 
 #. Reseat the dongle.  BLE advertisements are only enabled for 15 minutes after boot.  The LED should show a *Short Flash On (50 ms on/950 ms off)*.
 
@@ -102,15 +102,10 @@ Commissioning the Device
 
 #. Using the output above, connect to the Matter Thread Light over BLE.  The pin code should be hard coded to :code:`20202021`.  The LED should show a *Rapid Even Flashing (100 ms on/100 ms off)*.  See :ref:`BLE Connection Failures` for troubleshooting if the connection fails.
 
-   .. warning::
-
-      This step is currently failing.  Watching https://github.com/project-chip/connectedhomeip/issues/9948 to see if it resolves.
-
    ::
 
       # example: connect -ble 3840 20202021 123456
       connect -ble <discriminator> <pin_code> <temp_id>
-
 
 #. Inject the previously obtained Active Operational Dataset as hex-encoded value using ZCL Network Commissioning cluster.
 
@@ -140,7 +135,16 @@ Commissioning the Device
 
    ::
 
-      resolve 5544332211 1234
+      resolve 123456
+
+#. Control the light.
+
+   ::
+
+      zcl OnOff On 135246 1 0
+      zcl OnOff Off 135246 1 0
+
+#. TODO - Clean up additional info.
 
    Getting :code:`CHIP Error 0x000000AC: Internal error`.  Possible issue with Fabric ID.  Also getting an error about the temp ID format during BLE connection.  Device LED does have a "Short Flash Off".
 

@@ -11,7 +11,7 @@ This document is for issues with Bluetooth using :code:`chip-device-ctrl`.
 Container HCI Issues
 --------------------
 
-For the following errors, the container is unable to control the RPi's Bluetooth Host Controller Interface (HCI).
+For the following errors, the process is unable to control the RPi's Bluetooth Host Controller Interface (HCI).
 
 ::
 
@@ -36,50 +36,51 @@ For the following errors, the container is unable to control the RPi's Bluetooth
    [1631898604.446415][34:34] CHIP:DL: Inet Layer shutdown
    Aborted (core dumped)
 
-In the container, the Bluetooth service is most likely not running.
+Verify the Bluetooth service is running.
 
 ::
 
-   container$ ps aux | grep bluetoothd
+   sudo systemctl status bluetooth
 
-Make sure Bluetooth management is disabled on the RPi under :ref:`Preparing the RPi`.  A reboot is required after making this change.  The Bluetooth service should not be running on the host after the reboot.
+Try starting/restarting the Bluetooth service.
 
 ::
 
-   rpi$ ps aux | grep bluetoothd
+   # starting
+   sudo systemctl start bluetooth
 
-If this issue occurred after these steps have been taken, stop the container, restart the HCI from the host, and recreate the :code:`chip-device-ctrl` container.
+   # restarting
+   sudo systemctl restart bluetooth
+
+Try resetting the Bluetooth interface.
 
 ::
 
    # make sure the interface is present
-   rpi$ sudo hciconfig hci0
+   hciconfig hci0 -a
+
    # restart the interface
-   rpi$ sudo hciconfig hci0 reset
+   sudo hciconfig hci0 reset
 
-In the container, Bluetooth management should now be running.
-
-::
-
-   container$ ps aux | grep bluetoothd
-
-If issues persist, check that the HCI is present in the container and run :code:`bluetoothd` in debug mode to look for additional errors.
+Finally, try rebooting the RPi.
 
 ::
 
-   container$ hciconfig hci0
-   container$ bluetoothd -d -n
+   sudo reboot
+   ssh pi@matter-demo.local
+   cd matter-rpi4-nRF52840-dongle
+
 
 .. _BLE Connection Failures:
 
 BLE Connection Failures
 -----------------------
 
-In the container, make sure BLE connections work outside of :code:`chip-device-ctrl` by testing with :code:`bluetoothctl`.
+Verify connecting works with :code:`bluetoothctl`.
 
 ::
 
-   container$ bluetoothctl
+   sudo bluetoothctl
    [bluetooth]# scan on
    ...
    [NEW] Device <mac_address> MatterLight
@@ -94,12 +95,13 @@ In the container, make sure BLE connections work outside of :code:`chip-device-c
 Additional Steps
 """"""""""""""""
 
-If issues still persist, try stopping the container, disabling WiFi and/or setting the HCI to BLE only, and recreating the :code:`chip-device-ctrl` container.
+If issues still persist, try disabling WiFi and/or setting the HCI to BLE only.
 
 ::
 
    # disable WiFi
    rpi$ sudo rfkill block wifi
+
    # set HCI to BLE only
    rpi$ sudo btmgmt -i hci0 power off;sudo btmgmt -i hci0 bredr off;sudo btmgmt -i hci0 power on
 
