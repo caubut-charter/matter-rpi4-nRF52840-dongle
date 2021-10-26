@@ -1,0 +1,21 @@
+name: ✅ shellcheck
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  shellcheck-scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔃 Checkout
+        uses: actions/checkout@v2
+
+      - name: ⚙ Shellcheck scripts
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: 'script'
+        env:
+          SHELLCHECK_OPTS: -e SC1008 -e SC2096 -s bash

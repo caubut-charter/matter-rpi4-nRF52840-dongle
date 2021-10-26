@@ -32,8 +32,6 @@ This project is a walk-through of `building with Matter`_!
    :maxdepth: 2
    :caption: Troubleshooting
 
-   troubleshooting/nrfutil
-   troubleshooting/dns_sd
    troubleshooting/bluetooth
 
 .. toctree::

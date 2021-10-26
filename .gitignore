@@ -1,4 +1,8 @@
-.husky
+nginx.conf
+.husky/
+third_party/
+certs/
+
 
 ##
 # https://github.com/github/gitignore/blob/master/Global/Vim.gitignore

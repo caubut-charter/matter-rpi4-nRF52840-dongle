@@ -1,4 +1,3 @@
-.. _CHIP nRF Connect Lighting Example Application: https://github.com/project-chip/connectedhomeip/tree/master/examples/lighting-app/nrfconnect#setting-up-the-environment
 .. _Zephyr Project Documentation\: nRF52840 Dongle: https://docs.zephyrproject.org/latest/boards/arm/nrf52840dongle_nrf52840/doc/index.html#programming-and-debugging
 .. _Accessing Bluetooth dongle from inside Docker?: https://stackoverflow.com/questions/28868393/accessing-bluetooth-dongle-from-inside-docker
 .. _Bluetooth socket can't be opened inside container: https://github.com/moby/moby/issues/16208#issuecomment-161770118
@@ -10,74 +9,12 @@
 Matter Thread Light
 ===================
 
-This section covers building a Matter Thread light accessory on an nRF52840 dongle and commissioning it onto the OTBR Thread network.
-
-Building the Accessory Image
-----------------------------
-
-#. From the build system, run the nRF Connect Matter build environment.
-
-   .. note::
-
-      Building will occur in the :code:`build/lighting-app/nrfconnect` directory.  Remove this directory first if a fresh build is desired.
-
-      ::
-
-         sudo rm -rf build/lighting-app/nrfconnect
-
-   .. note::
-
-      The nRF Connect SDK is cached in the :code:`build/nrf-sdk` directory so it can be reused for other builds.  Remove this directory first if a fresh build is desired.
-
-      ::
-
-         sudo rm -rf build/nrf-sdk
-
-   ::
-
-      docker run -it --rm \
-       -v $PWD/build/nrf-sdk:/var/ncs \
-       -v $PWD/third_party/connectedhomeip:/var/chip \
-       -v $PWD/build/lighting-app/nrfconnect:/var/chip/examples/lighting-app/nrfconnect/build \
-       nordicsemi/nrfconnect-chip:latest
-
-#. Install nRF Connect and Matter dependencies.
-
-   ::
-
-       # bootstrap if build/nrf-sdk is empty
-       setup
-
-       # update build/nrf-sdk
-       python3 scripts/setup/nrfconnect/update_ncs.py --update
-
-#. Build the lighting example for the nRF52840 dongle which creates a :code:`.hex` format image at :code:`build/zephyr/zephyr.hex`.
-
-   ::
-
-       cd examples/lighting-app/nrfconnect
-       west build -b nrf52840dongle_nrf52840
-
-#. Exit the container which will stop and automatically remove it.
-
-   ::
-
-      exit
-
+This section covers flashing a Matter Thread light accessory on an nRF52840 dongle and commissioning it onto the OTBR Thread network.
 
 Flashing the Accessory
 ----------------------
 
-#. From the build system, generate the nRF52840 dongle firmware package.
-
-   ::
-
-      docker run --rm \
-       -v $PWD/build/lighting-app/nrfconnect/zephyr:/root \
-       nordicsemi/nrfutil:latest pkg generate --hw-version 52 --sd-req=0x00 \
-       --application zephyr.hex --application-version 1 matter-thread-light.zip
-
-#. Select an nRF52840 dongle for OTBR, note its MAC address, and plug it into an open USB port on the build system.
+#. Select an nRF52840 dongle for OTBR, note its MAC address, and plug it into an open USB port on the RPi.
 
    .. image:: ../_static/nRF52840_dongle_mac.png
       :align: center
@@ -99,45 +36,50 @@ Flashing the Accessory
 
 #. Flash the nRF52840 firmware package onto the dongle.
 
-   ::
+   .. tabs::
 
-      docker run -it --rm \
-       -v $PWD/build/lighting-app/nrfconnect/zephyr:/root \
-       --device $(readlink -f $LIGHT_TTY):$(readlink -f $LIGHT_TTY) \
-       nordicsemi/nrfutil:latest dfu usb-serial -pkg matter-thread-light.zip -p $(readlink -f $LIGHT_TTY)
+      .. tab:: Built
+
+         ::
+
+            docker run -it --rm \
+             -v $PWD/build/Release:/root \
+             --device $(readlink -f $LIGHT_TTY) \
+             caubutcharter/nrfutil:latest dfu usb-serial -pkg nrf52840-dongle-thread-lighting-app.zip -p $(readlink -f $LIGHT_TTY)
+
+      .. tab:: Downloaded
+
+         ::
+
+            # latest
+            docker run -it --rm \
+             -v $PWD/build/Release:/root \
+             --device $(readlink -f $LIGHT_TTY) \
+             caubutcharter/nrfutil:latest dfu usb-serial -pkg nrf52840-dongle-thread-lighting-app-LATEST.zip -p $(readlink -f $LIGHT_TTY)
+
+            # test event
+            docker run -it --rm \
+             -v $PWD/build/Release:/root \
+             --device $(readlink -f $LIGHT_TTY) \
+             caubutcharter/nrfutil:latest dfu usb-serial -pkg nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip -p $(readlink -f $LIGHT_TTY)
 
 Commissioning the Device
 ------------------------
 
-.. warning::
-
-   This section is a work in progress.
-
-#. From the RPi, capture the current Active Operational Dataset and Extended PAN ID from the OTBR service.
+#. Capture the current Active Operational Dataset and Extended PAN ID from the OTBR service.
 
    ::
 
-      docker exec -it otbr sh -c "sudo ot-ctl dataset active -x"
-      sudo docker exec -it otbr sh -c "sudo ot-ctl dataset extpanid"
+      sudo ot-ctl dataset active -x
+      sudo ot-ctl dataset extpanid
 
-#. Run the :code:`chip-device-ctrl` container.
-
-   ::
-
-      docker run -it --rm --net=host --privileged matter/chip-device-ctrl:latest /bin/bash
-
-#. In the container, make sure the Bluetooth service is running.  If it is not, see :ref:`Docker Container HCI Issues`.
+#. Start the :code:`chip-device-ctrl` Matter controller.
 
    ::
 
-      ps aux | grep bluetoothd
-
-#. Run :code:`chip-device-ctrl`.
-
-   ::
-
+      cd third_party/connectedhomeip
       source out/python_env/bin/activate
-      out/python_env/bin/chip-device-ctrl --bluetooth-adapter=hci0
+      sudo out/python_env/bin/chip-device-ctrl --bluetooth-adapter=hci0
 
 #. Reseat the dongle.  BLE advertisements are only enabled for 15 minutes after boot.  The LED should show a *Short Flash On (50 ms on/950 ms off)*.
 
@@ -145,7 +87,6 @@ Commissioning the Device
 
       If the dongle was previously commissioned, even unsuccessfully, the settings may still exist on the dongle even after flashing.  This can be observed by the light pattern not matching the above statement.  To clear the settings, hold the :code:`SW1` button (different from the button used to flash the dongle) until the following sequence of LED patterns completes (about 6 seconds):
 
-      - :code:`LD2` will light up blue and start blinking
       - :code:`LD1` and :code:`LD2` will start blinking in unison
       - both LEDs will stop blinking
 
@@ -157,15 +98,10 @@ Commissioning the Device
 
 #. Using the output above, connect to the Matter Thread Light over BLE.  The pin code should be hard coded to :code:`20202021`.  The LED should show a *Rapid Even Flashing (100 ms on/100 ms off)*.  See :ref:`BLE Connection Failures` for troubleshooting if the connection fails.
 
-   .. warning::
-
-      This step is currently failing.  Watching https://github.com/project-chip/connectedhomeip/issues/9948 to see if it resolves.
-
    ::
 
       # example: connect -ble 3840 20202021 123456
-      connect -ble <steup> discriminator> <pin_code> <temp_id>
-
+      connect -ble <discriminator> <pin_code> <temp_id>
 
 #. Inject the previously obtained Active Operational Dataset as hex-encoded value using ZCL Network Commissioning cluster.
 
@@ -174,7 +110,7 @@ Commissioning the Device
       # example: zcl NetworkCommissioning AddThreadNetwork 123456 0 0 operationalDataset=hex:0e080000000000010000000300000f35060004001fffe0020811111111222222220708fdc0ab06bb38fa61051000112233445566778899aabbccddeeff030b6d61747465722d64656d6f0102123404104260acc85ec98f24df213dd31e58e7e00c0402a0fff8 breadcrumb=0 timeoutMs=3000
       zcl NetworkCommissioning AddThreadNetwork 123456 0 0 operationalDataset=hex:<active_operational_dataset> breadcrumb=0 timeoutMs=3000
 
-#. Enable the Thread interface on the device by executing the following command with :code:`networkID` equal to Extended PAN ID of the Thread network.  The LED should show a *Short Flash Off (950ms on/50ms off)*.
+#. Enable the Thread interface on the device by executing the following command with :code:`networkID` equal to the Extended PAN ID of the Thread network.  The LED should show a *Short Flash Off (950ms on/50ms off)*.
 
    ::
 
@@ -189,55 +125,19 @@ Commissioning the Device
 
 #. Discover IPv6 address of the Matter Thread Light.
 
-   .. note::
+   ::
 
-      This section is a WIP.
+      resolve 123456
+
+#. Control the light.
 
    ::
 
-      resolve 5544332211 1234
-
-   Getting :code:`CHIP Error 0x000000AC: Internal error`.  Possible issue with Fabric ID.  Also getting an error about the temp ID format during BLE connection.  Device LED does have a "Short Flash Off".
-
-   Device is possibly seen over DNS-SD.
-
-   ::
-
-      $ docker run -it --rm \
-       --network matter-bridge --ip 169.254.200.0 \
-       --sysctl "net.ipv6.conf.all.disable_ipv6=0" \
-       avahi/avahi-utils:latest avahi-browse --all | grep matter
-      +   eth0 IPv6 0A3DC266752DF2DB                              _matterc._udp        local
-      +   eth0 IPv6 C8E944D0D1FA50DC-00000000000004D2             _matter._tcp         local
-      +   eth0 IPv6 DCBC16980E4F73F3                              _matterc._udp        local
-
-     $ docker run -it --rm \
-      --network matter-bridge --ip 169.254.200.0 \
-      --sysctl "net.ipv6.conf.all.disable_ipv6=0" \
-      avahi/avahi-utils:latest avahi-browse -lr _matter._tcp.
-     Avahi mDNS/DNS-SD Daemon is running
-     +   eth0 IPv6 C8E944D0D1FA50DC-00000000000004D2             _matter._tcp         local
-     =   eth0 IPv6 C8E944D0D1FA50DC-00000000000004D2             _matter._tcp         local
-        hostname = [5AB0CD5DEE054C38.local]
-        address = [fd11:22::a085:a340:fc5e:c74b]
-        port = [5540]
-        txt = ["T=0" "CRA=300" "CRI=5000"]
-
-   This extended error is showing when exiting the tool.
-
-   ::
-
-      [1631993184.884151][588:596] CHIP:DIS: mDNS error: ../../src/platform/Linux/MdnsImpl.cpp:397: CHIP Error 0x000000AC: Internal error
-
-   https://github.com/project-chip/connectedhomeip/issues/9264
+      zcl OnOff On 123456 1 0
+      zcl OnOff Off 123456 1 0
+      zcl OnOff Off 123456 1 0
 
 #. Exit :code:`chip-device-ctrl`.
-
-   ::
-
-      exit
-
-#. Exit the :code:`chip-device-ctrl` container which will stop and automatically remove it.
 
    ::
 
@@ -246,7 +146,6 @@ Commissioning the Device
 References
 ----------
 
-- `CHIP nRF Connect Lighting Example Application`_
 - `Zephyr Project Documentation: nRF52840 Dongle`_
 - `Accessing Bluetooth dongle from inside Docker?`_
 - `Bluetooth socket can't be opened inside container`_

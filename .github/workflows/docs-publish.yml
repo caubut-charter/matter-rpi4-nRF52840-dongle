@@ -1,4 +1,4 @@
-name: DOCS-PUBLISH
+name: 🚀 docs-publish
 
 on:
   push:
@@ -8,32 +8,47 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - uses: snok/install-poetry@v1
+      - name: 🔃 Checkout
+        uses: actions/checkout@v2
+
+      - name: ⚙ Setup python
+        uses: actions/setup-python@v2
+
+      - name: ⚙ Setup poetry
+        uses: snok/install-poetry@v1
         with:
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
-      - uses: actions/cache@v2
+
+      - name: ⬇ Download cache
+        uses: actions/cache@v2
         id: cached-poetry-dependencies
         with:
           path: .venv
           key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
-      - run: poetry install --no-interaction --no-root
+
+      - name: ⚙ Setup builder
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      - run: poetry run make -C docs html
-      - run: |
-         git config --local user.email "action@github.com"
-         git config --local user.name "GitHub Action"
+        run: poetry install --no-interaction --no-root
+
+      - name: 🛠 Build docs
+        run: poetry run make -C docs html
+
+      - name: 📌 Setup docs branch
+        run: |
+         git config --local user.email 'action@github.com'
+         git config --local user.name 'GitHub Action'
          git checkout --orphan gh-pages
          git reset
          touch .nojekyll
          git add .nojekyll
          git add docs/build/html/* -f
          git mv docs/build/html/* ./ -k
-         git commit -m "docs: update hosted version"
-      - uses: ad-m/github-push-action@master
+         git commit -m 'docs: update hosted version'
+
+      - name: 🚀 Publish docs
+        uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           force: true

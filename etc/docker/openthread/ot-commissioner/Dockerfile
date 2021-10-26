@@ -1,9 +1,15 @@
-FROM openthread/environment:latest AS builder
+FROM ubuntu:18.04 AS builder
+
+COPY . /ot-commissioner
 
 RUN set -x \
-    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
-    && echo $TZ > /etc/timezone \
-    && git clone https://github.com/openthread/ot-commissioner \
+    && apt-get update && apt-get upgrade -y \
+    && echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections \
+    && apt-get --no-install-recommends install -fy \
+        git \
+        python3 \
+        python3-pip \
+        sudo \
     && (cd ot-commissioner \
     && ./script/bootstrap.sh \
     && mkdir build \
