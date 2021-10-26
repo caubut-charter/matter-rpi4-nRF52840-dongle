@@ -30,6 +30,12 @@ This project is a walk-through of `building with Matter`_!
 
 .. toctree::
    :maxdepth: 2
+   :caption: Advanced
+
+   advanced/bootstrap_setup_scripts
+
+.. toctree::
+   :maxdepth: 2
    :caption: Troubleshooting
 
    troubleshooting/bluetooth
