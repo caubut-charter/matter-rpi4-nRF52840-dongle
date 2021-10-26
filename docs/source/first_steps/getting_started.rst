@@ -283,47 +283,78 @@ Preparing the RPi
 
 #. Build/download artifacts and install.
 
+   .. warning::
+
+       The following instructions are for a full clean and build/download.  For fine-grained control, see the :ref:`Bootstrap / Setup Usage Guide`
+
+
+   .. note::
+
+      Choose to either build/download from CHIP master (latest features/fixes) or the latest test event (greater stability).
+
    .. tabs::
 
-      .. tab:: Build
+      .. tab:: Master
 
-         ::
+         .. tabs::
 
-            # CHIP latest
-            script/bootstrap -f --all
+            .. tab:: Build
 
-            # CHIP test event
-            script/bootstrap -f --chip test_event_6 --all
+               ::
 
-            DOCKER_IMAGE_PREFIX=caubutcharter script/setup --clean --all
+                  script/bootstrap -f --all
 
-      .. tab:: Download
+                  DOCKER_IMAGE_PREFIX=caubutcharter script/setup --clean --all
 
-         .. note::
+            .. tab:: Download
 
-            OpenThread Border Router and :code:`chip-device-ctrl` still need to be built locally.
+               .. note::
 
-         ::
+                  OpenThread Border Router and :code:`chip-device-ctrl` still need to be built locally.
 
-            # CHIP latest
-            script/bootstrap -f --otbr --chip
+               ::
 
-            # CHIP test event
-            script/bootstrap -f --otbr --chip test_event_6
+                  script/bootstrap -f --otbr --chip
 
-            docker pull caubutcharter/ot-commissioner:latest
-            docker pull caubutcharter/nrfutil:latest
+                  docker pull caubutcharter/ot-commissioner:latest
+                  docker pull caubutcharter/nrfutil:latest
 
-            script/setup --clean --otbr --chip-device-ctrl
+                  script/setup --clean --otbr --chip-device-ctrl
 
-            export BASE_URL=https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/releases/download/nightly
-            wget -c $BASE_URL/nrf52840-dongle-ot-rcp.zip -P build/Release
+                  export BASE_URL=https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/releases/download/nightly
+                  wget -c $BASE_URL/nrf52840-dongle-ot-rcp.zip -P build/Release
+                  wget -c $BASE_URL/nrf52840-dongle-thread-lighting-app-LATEST.zip -P build/Release
 
-            # CHIP latest
-            wget -c $BASE_URL/nrf52840-dongle-thread-lighting-app-LATEST.zip -P build/Release
+      .. tab:: Test Event
 
-            # CHIP test event
-            wget -c $BASE_URL/nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip -P build/Release
+         .. tabs::
+
+            .. tab:: Build
+
+               ::
+
+                  script/bootstrap -f --chip test_event_6 --all
+
+                  DOCKER_IMAGE_PREFIX=caubutcharter script/setup --clean --all
+
+            .. tab:: Download
+
+               .. note::
+
+                  OpenThread Border Router and :code:`chip-device-ctrl` still need to be built locally.
+
+               ::
+
+                  script/bootstrap -f --otbr --chip test_event_6
+
+                  docker pull caubutcharter/ot-commissioner:latest
+                  docker pull caubutcharter/nrfutil:latest
+
+                  script/setup --clean --otbr --chip-device-ctrl
+
+                  export BASE_URL=https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/releases/download/nightly
+                  wget -c $BASE_URL/nrf52840-dongle-ot-rcp.zip -P build/Release
+                  wget -c $BASE_URL/nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip -P build/Release
 
 #. Optionally, remove old container images and build layers to recover disk space.
 
