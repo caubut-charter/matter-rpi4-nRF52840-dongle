@@ -66,11 +66,7 @@ Flashing the Accessory
 Commissioning the Device
 ------------------------
 
-.. warning::
-
-   This section is a work in progress.
-
-#. From the RPi, capture the current Active Operational Dataset and Extended PAN ID from the OTBR service.
+#. Capture the current Active Operational Dataset and Extended PAN ID from the OTBR service.
 
    ::
 
@@ -114,7 +110,7 @@ Commissioning the Device
       # example: zcl NetworkCommissioning AddThreadNetwork 123456 0 0 operationalDataset=hex:0e080000000000010000000300000f35060004001fffe0020811111111222222220708fdc0ab06bb38fa61051000112233445566778899aabbccddeeff030b6d61747465722d64656d6f0102123404104260acc85ec98f24df213dd31e58e7e00c0402a0fff8 breadcrumb=0 timeoutMs=3000
       zcl NetworkCommissioning AddThreadNetwork 123456 0 0 operationalDataset=hex:<active_operational_dataset> breadcrumb=0 timeoutMs=3000
 
-#. Enable the Thread interface on the device by executing the following command with :code:`networkID` equal to Extended PAN ID of the Thread network.  The LED should show a *Short Flash Off (950ms on/50ms off)*.
+#. Enable the Thread interface on the device by executing the following command with :code:`networkID` equal to the Extended PAN ID of the Thread network.  The LED should show a *Short Flash Off (950ms on/50ms off)*.
 
    ::
 
@@ -129,10 +125,6 @@ Commissioning the Device
 
 #. Discover IPv6 address of the Matter Thread Light.
 
-   .. note::
-
-      This section is a WIP.
-
    ::
 
       resolve 123456
@@ -141,52 +133,11 @@ Commissioning the Device
 
    ::
 
-      zcl OnOff On 135246 1 0
-      zcl OnOff Off 135246 1 0
-
-#. TODO - Clean up additional info.
-
-   Getting :code:`CHIP Error 0x000000AC: Internal error`.  Possible issue with Fabric ID.  Also getting an error about the temp ID format during BLE connection.  Device LED does have a "Short Flash Off".
-
-   Device is possibly seen over DNS-SD.
-
-   ::
-
-      $ docker run -it --rm \
-       --network matter-bridge --ip 169.254.200.0 \
-       --sysctl "net.ipv6.conf.all.disable_ipv6=0" \
-       caubutcharter/avahi-utils:latest avahi-browse --all | grep matter
-      +   eth0 IPv6 0A3DC266752DF2DB                              _matterc._udp        local
-      +   eth0 IPv6 C8E944D0D1FA50DC-00000000000004D2             _matter._tcp         local
-      +   eth0 IPv6 DCBC16980E4F73F3                              _matterc._udp        local
-
-     $ docker run -it --rm \
-      --network matter-bridge --ip 169.254.200.0 \
-      --sysctl "net.ipv6.conf.all.disable_ipv6=0" \
-      caubutcharter/avahi-utils:latest avahi-browse -lr _matter._tcp.
-     Avahi mDNS/DNS-SD Daemon is running
-     +   eth0 IPv6 C8E944D0D1FA50DC-00000000000004D2             _matter._tcp         local
-     =   eth0 IPv6 C8E944D0D1FA50DC-00000000000004D2             _matter._tcp         local
-        hostname = [5AB0CD5DEE054C38.local]
-        address = [fd11:22::a085:a340:fc5e:c74b]
-        port = [5540]
-        txt = ["T=0" "CRA=300" "CRI=5000"]
-
-   This extended error is showing when exiting the tool.
-
-   ::
-
-      [1631993184.884151][588:596] CHIP:DIS: mDNS error: ../../src/platform/Linux/MdnsImpl.cpp:397: CHIP Error 0x000000AC: Internal error
-
-   https://github.com/project-chip/connectedhomeip/issues/9264
+      zcl OnOff On 123456 1 0
+      zcl OnOff Off 123456 1 0
+      zcl OnOff Off 123456 1 0
 
 #. Exit :code:`chip-device-ctrl`.
-
-   ::
-
-      exit
-
-#. Exit the :code:`chip-device-ctrl` container which will stop and automatically remove it.
 
    ::
 

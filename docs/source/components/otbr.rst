@@ -52,7 +52,7 @@ Setting Up OTBR
 
    .. warning::
 
-      This step is required  as the device name may have changed since flashing.
+      This step is required  as the device name will have changed since flashing.
 
    ::
 
@@ -125,8 +125,6 @@ Verifying OTBR
       avahi-resolve -6 --name matter-demo.local
 
 #. Run the ot-commissioner.
-
-   .. warning:: The chosen IPv4 address must be unique from other containers on the host's broadcast domain to ensure a unique MAC address is generated.
 
    ::
 

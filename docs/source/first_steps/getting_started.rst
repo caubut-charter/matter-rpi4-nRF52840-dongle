@@ -29,11 +29,11 @@ Project Requirements
 Preparing the RPi Boot Medium
 -----------------------------
 
-#. On the Linux Desktop/Desktop PC, download and extract the `ARM64 Raspberry Pi OS Lite`_ image.
+#. On the Desktop PC, download and extract the `ARM64 Raspberry Pi OS Lite`_ image.
 
    .. note::
 
-      The 64-bit version is *required* for the **RPi Only** or **RPi + SSD** configurations to run the OpenThread build toolchain.
+      The 64-bit version is *required* to run the OpenThread build toolchain.
 
    .. tabs::
 
@@ -84,16 +84,6 @@ Preparing the RPi Boot Medium
 #. Install the OS onto the RPi's boot medium.
 
    .. tabs::
-
-      .. group-tab:: RPi + Linux Desktop
-
-         #. Click **Choose OS** > **Use custom**  and select the :code:`YYYY-MM-DD-raspios-buster-arm64-lite.img`.
-
-         #. Plug the microSD card reader and SD card into the Linux Desktop.
-
-         #. Click **Choose Storage** and select the SD card.
-
-         #. Click **Write**.
 
       .. group-tab:: RPi Only
 
@@ -166,15 +156,15 @@ Preparing the RPi Boot Medium
 
 #. Safely eject the RPi's boot medium and remove it from the Linux Desktop/Desktop PC.
 
-#. For the **RPi + SSD** configuration, update the bootloader for USB boot.  The SD card should already be plugged into the RPi.  Power the RPi to update the bootloader from the SD card.  The green activity light will blink a steady pattern once the update has been completed.  If an HDMI monitor is attached to the RPi, the screen will go green once the update is complete. Allow 10 seconds or more for the update to complete.  Do not remove the SD card until the update is complete.  Power off the RPi and remove the SD card.
+#. For an **RPi + SSD** configuration, update the bootloader for USB boot.  The SD card should already be plugged into the RPi.  Power the RPi to update the bootloader from the SD card.  The green activity light will blink a steady pattern once the update has been completed.  If an HDMI monitor is attached to the RPi, the screen will go green once the update is complete. Allow 10 seconds or more for the update to complete.  Do not remove the SD card until the update is complete.  Power off the RPi and remove the SD card.
 
 #. Plug the boot medium into the RPi, connect the RPi to the LAN via Ethernet, and power it on.
 
    .. warning::
 
-      If the boot medium is an external USB 3.0 SSD, make sure to plug it in through the powered USB 3.0 hub to a USB 3.0 (blue) port on the RPi.  This ensures the nRF52840 dongles have enough power and the USB SSD has maximum throughput.  Briefly disconnect the hub from the RPi when first powering it on to ensure it doesn't use the hub for power.  Restore the hub's connection to the RPi a couple seconds after powering the RPi so it can boot off the external USB 3.0 SSD.  **Software initiated reboots do not have this requirement.**
+      If the boot medium is an external USB 3.0 SSD, make sure to plug it in through a powered USB 3.0 hub to a USB 3.0 (blue) port on the RPi.  This ensures the nRF52840 dongles have enough power and the USB SSD has maximum throughput.  Briefly disconnect the hub from the RPi when first powering it on to ensure it doesn't use the hub for power.  Restore the hub's connection to the RPi a couple seconds after powering the RPi so it can boot off the external USB 3.0 SSD.  **Software initiated reboots do not have this requirement.**
 
-#. Once booted, SSH into the RPi from the Linux Desktop/Desktop PC.  If the hostname was changed, the RPi can be reached via :code:`<hostname>.local`, otherwise, it should be reachable via :code:`raspberrypi.local`.  If multiple RPis are on the LAN, check the LAN's router for the correct IP address.
+#. Once booted, SSH into the RPi from the Desktop PC.  If the hostname was changed, the RPi can be reached via :code:`<hostname>.local`, otherwise, it should be reachable via :code:`raspberrypi.local`.  If multiple RPis are on the LAN, check the LAN's router for the correct IP address.
 
    ::
 
