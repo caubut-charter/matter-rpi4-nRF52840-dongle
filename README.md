@@ -1,10 +1,4 @@
-<p align="center">
-[![🚀 docs-publish](https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/actions/workflows/docs-publish.yml/badge.svg)](https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/actions/workflows/docs-publish.yml)
-
-[![🌠 nightly](https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/actions/workflows/nightly.yml/badge.svg)](https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/actions/workflows/nightly.yml)
-
-[![✅ shellcheck](https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/actions/workflows/shellcheck.yml)
-</p>
+[![🚀 docs-publish](https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/actions/workflows/docs-publish.yml/badge.svg)](https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/actions/workflows/docs-publish.yml) [![🌠 nightly](https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/actions/workflows/nightly.yml/badge.svg)](https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/actions/workflows/nightly.yml) [![✅ shellcheck](https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/actions/workflows/shellcheck.yml)
 
 # matter-rpi4-nRF52840-dongle
 
