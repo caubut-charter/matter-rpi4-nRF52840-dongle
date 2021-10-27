@@ -77,7 +77,9 @@ fi
 DOCKER_BUILDKIT=${DOCKER_BUILDKIT-}
 
 DOCKER_IMAGE_PREFIX=${DOCKER_IMAGE_PREFIX:-}
-if [[ -n $DOCKER_IMAGE_PREFIX ]]; then DOCKER_IMAGE_PREFIX="$DOCKER_IMAGE_PREFIX/"; fi
+if [[ -n $DOCKER_IMAGE_PREFIX && ! $DOCKER_IMAGE_PREFIX =~ \/$ ]]; then
+  DOCKER_IMAGE_PREFIX="$DOCKER_IMAGE_PREFIX/"
+fi
 DOCKER_BUILD=${DOCKER_BUILD:-docker build}
 DOCKER_IMAGE_VERSION=${DOCKER_IMAGE_VERSION:-latest}
 
@@ -168,7 +170,7 @@ if [[ "$OTBR" = true ]]; then
   echo "==> Setting up 'otbr-image'..."
 
   (cd third_party/connectedhomeip/third_party/ot-br-posix/repo \
-   && set -x && INFRA_IF_NAME=eth0 WEB_GUI=1 ./script/setup)
+    && set -x && INFRA_IF_NAME=eth0 WEB_GUI=1 ./script/setup)
 fi
 
 if [[ "$OT_NRF528XX_ENVIRONMENT_IMAGE" = true ]]; then
@@ -183,7 +185,8 @@ if [[ "$OT_NRF528XX_ENVIRONMENT_IMAGE" = true ]]; then
     third_party/ot-nrf528xx/openthread/etc/docker/environment/Dockerfile
 
   (cd third_party/ot-nrf528xx/openthread \
-    && set -x && $DOCKER_BUILD -t "${DOCKER_IMAGE_PREFIX}ot-nrf528xx-environment:$DOCKER_IMAGE_VERSION" -f etc/docker/environment/Dockerfile .)
+    && set -x && $DOCKER_BUILD -t "${DOCKER_IMAGE_PREFIX}ot-nrf528xx-environment:$DOCKER_IMAGE_VERSION" \
+    -f etc/docker/environment/Dockerfile .)
 fi
 
 if [[ "$NRFUTIL_IMAGE" = true ]]; then
@@ -216,13 +219,14 @@ fi
 if [[ "$OT_COMMISSIONER_IMAGE" = true ]]; then
   echo "==> Building 'ot-commissioner-image'..."
   (cd third_party/ot-commissioner && set -x && $DOCKER_BUILD \
-    -t "${DOCKER_IMAGE_PREFIX}ot-commissioner:$DOCKER_IMAGE_VERSION" -f ../../etc/docker/openthread/ot-commissioner/Dockerfile .)
+    -t "${DOCKER_IMAGE_PREFIX}ot-commissioner:$DOCKER_IMAGE_VERSION" \
+    -f ../../etc/docker/openthread/ot-commissioner/Dockerfile .)
 fi
 
 if [[ "$NRFCONNECT_TOOLCHAIN_IMAGE" = true ]]; then
   echo "==> Building 'nrfconnect-toolchain-image'..."
   (cd third_party/nrfconnect-chip-docker && git reset --hard)
-  check_hash 'third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile'
+    check_hash 'third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile'
 
   # shellcheck disable=SC2016
   sed -i \
@@ -233,13 +237,14 @@ if [[ "$NRFCONNECT_TOOLCHAIN_IMAGE" = true ]]; then
     third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile
 
   (cd third_party/nrfconnect-chip-docker/nrfconnect-toolchain \
-    && set -x && $DOCKER_BUILD -t "${DOCKER_IMAGE_PREFIX}nrfconnect-toolchain:$DOCKER_IMAGE_VERSION" .)
+    && set -x && $DOCKER_BUILD --build-arg NCS_REVISION=main \
+    -t "${DOCKER_IMAGE_PREFIX}nrfconnect-toolchain:$DOCKER_IMAGE_VERSION" .)
 fi
 
 if [[ "$NRFCONNECT_CHIP_ENVIRONMENT_IMAGE" = true ]]; then
   echo "==> Building 'nrfconnect-chip-environment-image'..."
   (cd third_party/nrfconnect-chip-docker && git reset --hard)
-  check_hash 'third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile'
+    check_hash 'third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile'
 
   [[ -z "$DOCKER_BUILDKIT" ]] && FLAGS="--build-arg TARGETARCH=$TARGETARCH" || FLAGS=''
 
@@ -253,7 +258,9 @@ if [[ "$NRFCONNECT_CHIP_ENVIRONMENT_IMAGE" = true ]]; then
   # shellcheck disable=SC2086
   (cd third_party/nrfconnect-chip-docker/nrfconnect-chip \
     && set -x && $DOCKER_BUILD $FLAGS \
-    --build-arg "BASE=${DOCKER_IMAGE_PREFIX}nrfconnect-toolchain:$DOCKER_IMAGE_VERSION" -t "${DOCKER_IMAGE_PREFIX}nrfconnect-chip-environment:$DOCKER_IMAGE_VERSION" .)
+    --build-arg NCS_REVISION=main \
+    --build-arg "BASE=${DOCKER_IMAGE_PREFIX}nrfconnect-toolchain:$DOCKER_IMAGE_VERSION" \
+    -t "${DOCKER_IMAGE_PREFIX}nrfconnect-chip-environment:$DOCKER_IMAGE_VERSION" .)
 fi
 
 if [[ "$NRF52840_DONGLE_THREAD_LIGHTING_APP" = true ]]; then
@@ -285,5 +292,5 @@ fi
 if [[ "$CHIP_DEVICE_CTRL" = true ]]; then
   echo "==> Building 'chip-device-ctrl'..."
   (cd third_party/connectedhomeip \
-   && set -x && scripts/build_python.sh -m platform)
+    && set -x && scripts/build_python.sh -m platform)
 fi
