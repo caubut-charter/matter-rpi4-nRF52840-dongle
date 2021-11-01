@@ -128,8 +128,8 @@ done
 
 declare -A HASHES=(
   ['third_party/ot-nrf528xx/openthread/etc/docker/environment/Dockerfile']='14ca28d53cfbbf8c99d33fd31d3c7511'
-  ['third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile']='0dceb02b0e528798bc54209547baefb5'
-  ['third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile']='4878612ae4cebb9d69deabe46cc234d9'
+  ['third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile']='c587b9d1e614ac14f984a7e7389d8b70'
+  ['third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile']='43ab1f0e627ea27ef9eb78be232d088d'
 )
 
 declare -A HASH_CHECKS=(
@@ -237,8 +237,7 @@ if [[ "$NRFCONNECT_TOOLCHAIN_IMAGE" = true ]]; then
     third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile
 
   (cd third_party/nrfconnect-chip-docker/nrfconnect-toolchain \
-    && set -x && $DOCKER_BUILD --build-arg NCS_REVISION=main \
-    -t "${DOCKER_IMAGE_PREFIX}nrfconnect-toolchain:$DOCKER_IMAGE_VERSION" .)
+    && set -x && $DOCKER_BUILD -t "${DOCKER_IMAGE_PREFIX}nrfconnect-toolchain:$DOCKER_IMAGE_VERSION" .)
 fi
 
 if [[ "$NRFCONNECT_CHIP_ENVIRONMENT_IMAGE" = true ]]; then
@@ -258,7 +257,6 @@ if [[ "$NRFCONNECT_CHIP_ENVIRONMENT_IMAGE" = true ]]; then
   # shellcheck disable=SC2086
   (cd third_party/nrfconnect-chip-docker/nrfconnect-chip \
     && set -x && $DOCKER_BUILD $FLAGS \
-    --build-arg NCS_REVISION=main \
     --build-arg "BASE=${DOCKER_IMAGE_PREFIX}nrfconnect-toolchain:$DOCKER_IMAGE_VERSION" \
     -t "${DOCKER_IMAGE_PREFIX}nrfconnect-chip-environment:$DOCKER_IMAGE_VERSION" .)
 fi
