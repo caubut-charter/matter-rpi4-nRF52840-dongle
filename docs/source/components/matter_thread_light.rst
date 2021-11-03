@@ -136,6 +136,7 @@ Commissioning the Device
       zcl OnOff On 123456 1 0
       zcl OnOff Off 123456 1 0
       zcl OnOff Toggle 123456 1 0
+      zcl LevelControl MoveToLevel 123456 1 0 level=10 transitionTime=0 optionMask=0 optionOverride=0
 
 #. Exit :code:`chip-device-ctrl`.
 
