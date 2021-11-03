@@ -161,15 +161,15 @@ if [ "$FIX_PERMISSIONS" = true ]; then
 fi
 
 if [ "$CLEAN" = true ]; then
+  DOCKER_BUILD="${DOCKER_BUILD} --no-cache"
   clean
 fi
 
 mkdir -p build/Release
 
 if [[ "$OTBR" = true ]]; then
-  echo "==> Setting up 'otbr-image'..."
-
-  (cd third_party/connectedhomeip/third_party/ot-br-posix/repo \
+  echo "==> Setting up 'otbr'..."
+  (cd third_party/ot-br-posix \
     && set -x && INFRA_IF_NAME=eth0 WEB_GUI=1 ./script/setup)
 fi
 
