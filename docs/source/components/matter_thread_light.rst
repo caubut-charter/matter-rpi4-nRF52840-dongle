@@ -135,7 +135,7 @@ Commissioning the Device
 
       zcl OnOff On 123456 1 0
       zcl OnOff Off 123456 1 0
-      zcl OnOff Off 123456 1 0
+      zcl OnOff Toggle 123456 1 0
 
 #. Exit :code:`chip-device-ctrl`.
 

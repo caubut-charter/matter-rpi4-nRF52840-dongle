@@ -40,6 +40,13 @@ declare -A repos
 repos=()
 
 # shellcheck disable=SC2120
+otbr() {
+  OTBR=true
+  checkout=${1:-main}
+  repos['https://github.com/openthread/ot-br-posix']="$checkout"
+}
+
+# shellcheck disable=SC2120
 nrf52840_dongle_ot_rcp() {
   NRF52840_DONGLE_OT_RCP=true
   checkout=${1:-main}
@@ -68,7 +75,8 @@ connectedhomeip() {
 }
 
 all() {
-  OTBR=true
+  # shellcheck disable=SC2119
+  [ "$OTBR" = true ] || otbr
   # shellcheck disable=SC2119
   [ "$NRF52840_DONGLE_OT_RCP" = true ] || nrf52840_dongle_ot_rcp
   # shellcheck disable=SC2119
@@ -97,7 +105,7 @@ process_source() {
 
 while [ ${#args[@]} -gt 0 ]; do
   case ${args[0]} in
-    --otbr) OTBR=true ;;
+    --otbr) process_source otbr ;;
     --nrf52840-dongle-ot-rcp) process_source nrf52840_dongle_ot_rcp ;;
     --ot-commissioner) process_source ot_commissioner ;;
     --nrfconnect-chip) process_source nrfconnect_chip ;;
@@ -151,5 +159,5 @@ for repo in "${!repos[@]}"; do
 done
 
 if [[ "$OTBR" = true ]]; then
-  (set -x && cd third_party/connectedhomeip/third_party/ot-br-posix/repo && WEB_GUI=1 ./script/bootstrap)
+  (set -x && cd third_party/ot-br-posix && WEB_GUI=1 ./script/bootstrap)
 fi
