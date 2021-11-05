@@ -61,7 +61,7 @@ Flashing the Accessory
             docker run -it --rm \
              -v $PWD/build/Release:/root \
              --device $(readlink -f $LIGHT_TTY) \
-             caubutcharter/nrfutil:latest dfu usb-serial -pkg nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip -p $(readlink -f $LIGHT_TTY)
+             caubutcharter/nrfutil:latest dfu usb-serial -pkg nrf52840-dongle-thread-lighting-app-TEST_EVENT_7.zip -p $(readlink -f $LIGHT_TTY)
 
 Commissioning the Device
 ------------------------

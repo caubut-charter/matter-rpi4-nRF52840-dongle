@@ -333,7 +333,7 @@ Preparing the RPi
 
                ::
 
-                  script/bootstrap -f --chip test_event_6 --all
+                  script/bootstrap -f --chip test_event_7 --all
 
                   DOCKER_IMAGE_PREFIX=caubutcharter script/setup --clean --all
 
@@ -345,7 +345,7 @@ Preparing the RPi
 
                ::
 
-                  script/bootstrap -f --otbr --chip test_event_6
+                  script/bootstrap -f --otbr --chip test_event_7
 
                   docker pull caubutcharter/ot-commissioner:latest
                   docker pull caubutcharter/nrfutil:latest
@@ -354,7 +354,7 @@ Preparing the RPi
 
                   export BASE_URL=https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/releases/download/nightly
                   wget -c $BASE_URL/nrf52840-dongle-ot-rcp.zip -P build/Release
-                  wget -c $BASE_URL/nrf52840-dongle-thread-lighting-app-TEST_EVENT_6.zip -P build/Release
+                  wget -c $BASE_URL/nrf52840-dongle-thread-lighting-app-TEST_EVENT_7.zip -P build/Release
 
 #. Optionally, remove old container images and build layers to recover disk space.
 
