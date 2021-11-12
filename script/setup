@@ -65,14 +65,14 @@ clean() (
 )
 
 ARCH=$(uname -m)
-if [[ $ARCH = "x86_64" ]]; then
-  TARGETARCH='amd64'
-elif [[ $ARCH = "aarch64" ]]; then
-  TARGETARCH='arm64'
-else
+case $ARCH in
+  x86_64) TARGETARCH='amd64' ;;
+  aarch64 | armv8*) TARGETARCH='arm64' ;;
+  *)
   echo "Unsupported architecture: $ARCH"
-  exit 1;
-fi
+  exit 1
+  ;;
+esac
 
 DOCKER_BUILDKIT=${DOCKER_BUILDKIT-}
 
