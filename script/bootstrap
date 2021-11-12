@@ -3,6 +3,8 @@
 set -euETo pipefail
 shopt -s inherit_errexit
 
+source "$(dirname "$0")/_common"
+
 cd "$(dirname "$0")/.."
 
 usage () {
@@ -24,10 +26,12 @@ usage () {
   echo -e ' \t--chip                  \t Matter (Connected Home IP a.k.a CHIP)'
   echo -e ' \t-a, --all               \t all targets\n'
   echo -e ' Options:'
+  echo -e ' \t-c, --clean             \t clean build artifacts'
   echo -e ' \t-f, --fix-permissions\t fix permission errors'
   echo -e ' \t-h, --help           \t print this help list'
 }
 
+CLEAN=false
 FIX_PERMISSIONS=false
 
 OTBR=false
@@ -111,6 +115,7 @@ while [ ${#args[@]} -gt 0 ]; do
     --nrfconnect-chip) process_source nrfconnect_chip ;;
     --chip) process_source connectedhomeip ;;
     -a | --all) all ;;
+    -c | --clean) CLEAN=true ;;
     -f | --fix-permissions) FIX_PERMISSIONS=true ;;
     -h | --help) usage; exit;;
     *) usage; exit 1 ;;
@@ -118,13 +123,8 @@ while [ ${#args[@]} -gt 0 ]; do
   args=("${args[@]:1}");
 done
 
-if [ "$FIX_PERMISSIONS" = true ]; then
-  echo "==> Fixing permissions (may take a couple minutes)..."
-  docker run --rm \
-    -v "$PWD":/root \
-    -w /root \
-    ubuntu:21.04 /bin/bash -c "chown -R $(id -u):$(id -g) ."
-fi
+[ "$FIX_PERMISSIONS" = true ] && fix_permissions .
+[ "$CLEAN" = true ] && clean
 
 mkdir -p third_party
 
@@ -160,4 +160,15 @@ done
 
 if [[ "$OTBR" = true ]]; then
   (set -x && cd third_party/ot-br-posix && WEB_GUI=1 ./script/bootstrap)
+fi
+
+if [[ "$CONNECTEDHOMEIP" = true ]]; then
+  (set -x && sudo apt-get update && sudo apt-get install -y \
+    python \
+    python3.8-venv \
+    libssl-dev \
+    libglib2.0-dev \
+    libcairo2-dev \
+    libgirepository1.0-dev
+)
 fi

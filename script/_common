@@ -1,0 +1,54 @@
+#!/bin/bash
+
+set -euETo pipefail
+shopt -s inherit_errexit
+
+CLEAN=false
+FIX_PERMISSIONS=false
+
+fix_permissions() (
+  if command -v docker &> /dev/null; then
+    while [ $# -gt 0 ]; do
+      echo "==> Fixing permissions '$1'"
+      docker run --rm \
+        -v "$(realpath $1)":/root/fs \
+        -w /root/fs \
+        ubuntu:21.04 /bin/bash -c "chown -R $(id -u):$(id -g) ."
+      shift
+    done
+  elif command -v sudo &> /dev/null; then
+    while [ $# -gt 0 ]; do
+      echo "==> Fixing permissions '$1'"
+      sudo /bin/bash -c "chown -R $(id -u):$(id -g) $(realpath $1)"
+      shift
+    done
+  else
+    while [ $# -gt 0 ]; do
+      echo "==> Fixing permissions '$1'"
+      /bin/bash -c "chown -R $(id -u):$(id -g) $(realpath $1)"
+      shift
+    done
+  fi
+)
+
+clean() (
+  echo "==> Removing 'build'..."
+  rm -rf build
+  cd third_party
+  readarray -t _repos < <(
+    shopt -s dotglob
+    shopt -s nullglob
+    _repos=(*/)
+    printf '%s\n' "${_repos[@]}"
+  )
+  for _repo in "${_repos[@]}"; do
+    (
+      (cd "$_repo" && echo "==> Resetting '$(git config --get remote.origin.url)'...") \
+      && set -x \
+      && cd "$_repo" \
+      && git reset --hard && git clean -fdx \
+      && git submodule foreach --recursive git reset --hard \
+      && git submodule foreach --recursive git clean -fdx
+    )
+  done
+)
