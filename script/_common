@@ -35,17 +35,18 @@ clean() (
   echo "==> Removing 'build'..."
   rm -rf build
   cd third_party
-  readarray -t _repos < <(
+  local repos
+  readarray -t repos < <(
     shopt -s dotglob
     shopt -s nullglob
-    _repos=(*/)
-    printf '%s\n' "${_repos[@]}"
+    repos=(*/)
+    printf '%s\n' "${repos[@]}"
   )
-  for _repo in "${_repos[@]}"; do
+  for repo in "${repos[@]}"; do
     (
-      (cd "$_repo" && echo "==> Resetting '$(git config --get remote.origin.url)'...") \
+      (cd "$repo" && echo "==> Resetting '$(git config --get remote.origin.url)'...") \
       && set -x \
-      && cd "$_repo" \
+      && cd "$repo" \
       && git reset --hard && git clean -fdx \
       && git submodule foreach --recursive git reset --hard \
       && git submodule foreach --recursive git clean -fdx
