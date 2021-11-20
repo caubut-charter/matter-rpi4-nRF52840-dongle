@@ -3,6 +3,9 @@
 set -euETo pipefail
 shopt -s inherit_errexit
 
+# shellcheck disable=SC1091
+source _common
+
 cd "$(dirname "$0")/.."
 
 usage() {
@@ -42,37 +45,18 @@ usage() {
   echo -e ' \t-h, --help                     \t print this help list'
 }
 
-clean() (
-  echo "==> Removing 'build'..."
-  rm -rf build
-  cd third_party
-  readarray -t repos < <(
-    shopt -s dotglob
-    shopt -s nullglob
-    repos=(*/)
-    printf '%s\n' "${repos[@]}"
-  )
-  for repo in "${repos[@]}"; do
-    (
-      (cd "$repo" && echo "==> Resetting '$(git config --get remote.origin.url)'...") \
-      && set -x \
-      && cd "$repo" \
-      && git reset --hard && git clean -fdx \
-      && git submodule foreach --recursive git reset --hard \
-      && git submodule foreach --recursive git clean -fdx
-    )
-  done
-)
+CLEAN=false
+FIX_PERMISSIONS=false
 
 ARCH=$(uname -m)
-if [[ $ARCH = "x86_64" ]]; then
-  TARGETARCH='amd64'
-elif [[ $ARCH = "aarch64" ]]; then
-  TARGETARCH='arm64'
-else
+case $ARCH in
+  x86_64) TARGETARCH='amd64' ;;
+  aarch64 | armv8*) TARGETARCH='arm64' ;;
+  *)
   echo "Unsupported architecture: $ARCH"
-  exit 1;
-fi
+  exit 1
+  ;;
+esac
 
 DOCKER_BUILDKIT=${DOCKER_BUILDKIT-}
 
@@ -82,9 +66,6 @@ if [[ -n $DOCKER_IMAGE_PREFIX && ! $DOCKER_IMAGE_PREFIX =~ \/$ ]]; then
 fi
 DOCKER_BUILD=${DOCKER_BUILD:-docker build}
 DOCKER_IMAGE_VERSION=${DOCKER_IMAGE_VERSION:-latest}
-
-CLEAN=false
-FIX_PERMISSIONS=false
 
 OTBR=false
 OT_NRF528XX_ENVIRONMENT_IMAGE=false
@@ -126,6 +107,12 @@ while [ $# -gt 0 ]; do
   shift
 done
 
+[ "$FIX_PERMISSIONS" = true ] && fix_permissions .
+if [ "$CLEAN" = true ]; then
+  DOCKER_BUILD="${DOCKER_BUILD} --no-cache"
+  clean
+fi
+
 declare -A HASHES=(
   ['third_party/ot-nrf528xx/openthread/etc/docker/environment/Dockerfile']='14ca28d53cfbbf8c99d33fd31d3c7511'
   ['third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile']='c587b9d1e614ac14f984a7e7389d8b70'
@@ -151,19 +138,6 @@ check_hash () {
     exit 1;
   fi
 }
-
-if [ "$FIX_PERMISSIONS" = true ]; then
-  echo "==> Fixing permissions (may take a couple minutes)..."
-  docker run --rm \
-    -v "$PWD":/root \
-    -w /root \
-    ubuntu:21.04 /bin/bash -c "chown -R $(id -u):$(id -g) ."
-fi
-
-if [ "$CLEAN" = true ]; then
-  DOCKER_BUILD="${DOCKER_BUILD} --no-cache"
-  clean
-fi
 
 mkdir -p build/Release
 
@@ -208,10 +182,9 @@ if [[ "$NRF52840_DONGLE_OT_RCP" = true ]]; then
     "${DOCKER_IMAGE_PREFIX}nrfutil:${DOCKER_IMAGE_VERSION}" pkg generate --hw-version 52 --sd-req=0x00 \
     --application nrf52840-dongle-ot-rcp.hex --application-version 1 nrf52840-dongle-ot-rcp.zip
   echo "==> Fixing permissions..."
-  docker run --rm \
-    -v "$PWD"/third_party/ot-nrf528xx:/ot-nrf528xx \
-    -v "$PWD"/build/ot-nrf528xx:/ot-nrf528xx/build \
-    ubuntu:21.04 /bin/bash -c "chown -R $(id -u):$(id -g) /ot-nrf528xx"
+  fix_permissions \
+    third_party/ot-nrf528xx \
+    build/ot-nrf528xx
   echo "==> Generating release artifact..."
   mv build/ot-nrf528xx/bin/nrf52840-dongle-ot-rcp.zip build/Release
 fi
@@ -278,11 +251,10 @@ if [[ "$NRF52840_DONGLE_THREAD_LIGHTING_APP" = true ]]; then
     "${DOCKER_IMAGE_PREFIX}nrfutil:$DOCKER_IMAGE_VERSION" pkg generate --hw-version 52 --sd-req=0x00 \
     --application zephyr.hex --application-version 1 "nrf52840-dongle-thread-lighting-app.zip"
   echo "==> Fixing permissions (may take a couple minutes)..."
-  docker run --rm \
-    -v "$PWD"/third_party/connectedhomeip:/var/chip \
-    -v "$PWD"/build/nrf-sdk:/var/ncs \
-    -v "$PWD"/build/nrf52840-dongle-thread-lighting-app/nrfconnect:/var/chip/examples/lighting-app/nrfconnect/build \
-    ubuntu:21.04 /bin/bash -c "chown -R $(id -u):$(id -g) /var/chip /var/ncs"
+  fix_permissions \
+    third_party/connectedhomeip \
+    build/nrf-sdk \
+    build/nrf52840-dongle-thread-lighting-app/nrfconnect
   echo "==> Generating release artifact..."
   mv "build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr/nrf52840-dongle-thread-lighting-app.zip" build/Release
 fi

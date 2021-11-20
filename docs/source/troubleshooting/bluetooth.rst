@@ -8,8 +8,8 @@ This document is for issues with Bluetooth using :code:`chip-device-ctrl`.
 
 .. _Container HCI Issues:
 
-Container HCI Issues
---------------------
+HCI Issues
+----------
 
 For the following errors, the process is unable to control the RPi's Bluetooth Host Controller Interface (HCI).
 
