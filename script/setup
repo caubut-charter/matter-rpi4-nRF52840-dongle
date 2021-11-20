@@ -3,10 +3,10 @@
 set -euETo pipefail
 shopt -s inherit_errexit
 
-# shellcheck disable=SC1091
-source _common
-
 cd "$(dirname "$0")/.."
+
+# shellcheck disable=SC1091
+source script/_common
 
 usage() {
   echo -e 'Usage: setup [OPTIONS] [ARTIFACT ...]\n'
