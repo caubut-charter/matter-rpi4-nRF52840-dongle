@@ -3,15 +3,15 @@
 set -euETo pipefail
 shopt -s inherit_errexit
 
-CLEAN=false
-FIX_PERMISSIONS=false
+export CLEAN=false
+export FIX_PERMISSIONS=false
 
 fix_permissions() (
   if command -v docker &> /dev/null; then
     while [ $# -gt 0 ]; do
       echo "==> Fixing permissions '$1'"
       docker run --rm \
-        -v "$(realpath $1)":/root/fs \
+        -v "$(realpath "$1")":/root/fs \
         -w /root/fs \
         ubuntu:21.04 /bin/bash -c "chown -R $(id -u):$(id -g) ."
       shift
@@ -19,13 +19,13 @@ fix_permissions() (
   elif command -v sudo &> /dev/null; then
     while [ $# -gt 0 ]; do
       echo "==> Fixing permissions '$1'"
-      sudo /bin/bash -c "chown -R $(id -u):$(id -g) $(realpath $1)"
+      sudo /bin/bash -c "chown -R $(id -u):$(id -g) $(realpath "$1")"
       shift
     done
   else
     while [ $# -gt 0 ]; do
       echo "==> Fixing permissions '$1'"
-      /bin/bash -c "chown -R $(id -u):$(id -g) $(realpath $1)"
+      /bin/bash -c "chown -R $(id -u):$(id -g) $(realpath "$1")"
       shift
     done
   fi
