@@ -115,8 +115,8 @@ fi
 
 declare -A HASHES=(
   ['third_party/ot-nrf528xx/openthread/etc/docker/environment/Dockerfile']='14ca28d53cfbbf8c99d33fd31d3c7511'
-  ['third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile']='c587b9d1e614ac14f984a7e7389d8b70'
-  ['third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile']='43ab1f0e627ea27ef9eb78be232d088d'
+  ['third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile']='2474158efebd0b3fe4894ddf7b5cc75c'
+  ['third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile']='4b8b5de05b8b0d2d498e939989735e86'
 )
 
 declare -A HASH_CHECKS=(
@@ -203,9 +203,10 @@ if [[ "$NRFCONNECT_TOOLCHAIN_IMAGE" = true ]]; then
 
   # shellcheck disable=SC2016
   sed -i \
-    -e '44,52d' \
+    -e '46,55d' \
+    -e 's/fe0029de4f4ec43cf7008944e34ff8cc/000b0888cbe7b171e2225b29be1c327c/' \
     -e 's/\${TOOLCHAIN_URL}/https:\/\/developer.arm.com\/-\/media\/Files\/downloads\/gnu-rm\/9-2020q2\/gcc-arm-none-eabi-9-2020-q2-update-$(uname -m)-linux.tar.bz2/' \
-    -e 's/\(libpython3-dev\) \\/\1 make \\/' \
+    -e 's/\(libsm6\) \\/\1 make \\/' \
     -e 's/gcc-arm-none-eabi-9-2019-q4-major/gcc-arm-none-eabi-9-2020-q2-update/' \
     third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile
 
@@ -222,6 +223,7 @@ if [[ "$NRFCONNECT_CHIP_ENVIRONMENT_IMAGE" = true ]]; then
 
   # shellcheck disable=SC2016
   sed -i \
+    -e '62,65d' \
     -e '/^ARG NCS_REVISION/i \ARG TARGETARCH' \
     -e 's/amd64/${TARGETARCH}/' \
     -e 's/g++-multilib //' \
