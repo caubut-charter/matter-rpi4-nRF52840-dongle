@@ -203,9 +203,8 @@ if [[ "$NRFCONNECT_TOOLCHAIN_IMAGE" = true ]]; then
 
   # shellcheck disable=SC2016
   sed -i \
-    -e '46,55d' \
-    -e 's/fe0029de4f4ec43cf7008944e34ff8cc/000b0888cbe7b171e2225b29be1c327c/' \
-    -e 's/\${TOOLCHAIN_URL}/https:\/\/developer.arm.com\/-\/media\/Files\/downloads\/gnu-rm\/9-2020q2\/gcc-arm-none-eabi-9-2020-q2-update-$(uname -m)-linux.tar.bz2/' \
+    -e '46,55d;60d;62d' \
+    -e 's@\${TOOLCHAIN_URL}@https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2020q2/gcc-arm-none-eabi-9-2020-q2-update-$(uname -m)-linux.tar.bz2@' \
     -e 's/\(libsm6\) \\/\1 make \\/' \
     -e 's/gcc-arm-none-eabi-9-2019-q4-major/gcc-arm-none-eabi-9-2020-q2-update/' \
     third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile
