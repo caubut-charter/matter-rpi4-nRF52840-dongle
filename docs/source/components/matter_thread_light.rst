@@ -107,15 +107,15 @@ Commissioning the Device
 
    ::
 
-      # example: zcl NetworkCommissioning AddThreadNetwork 123456 0 0 operationalDataset=hex:0e080000000000010000000300000f35060004001fffe0020811111111222222220708fdc0ab06bb38fa61051000112233445566778899aabbccddeeff030b6d61747465722d64656d6f0102123404104260acc85ec98f24df213dd31e58e7e00c0402a0fff8 breadcrumb=0 timeoutMs=3000
-      zcl NetworkCommissioning AddThreadNetwork 123456 0 0 operationalDataset=hex:<active_operational_dataset> breadcrumb=0 timeoutMs=3000
+      # example: zcl NetworkCommissioning AddOrUpdateThreadNetwork 123456 0 0 operationalDataset=hex:0e080000000000010000000300000f35060004001fffe0020811111111222222220708fdc0ab06bb38fa61051000112233445566778899aabbccddeeff030b6d61747465722d64656d6f0102123404104260acc85ec98f24df213dd31e58e7e00c0402a0fff8 breadcrumb=0
+      zcl NetworkCommissioning AddOrUpdateThreadNetwork 123456 0 0 operationalDataset=hex:<active_operational_dataset> breadcrumb=0
 
 #. Enable the Thread interface on the device by executing the following command with :code:`networkID` equal to the Extended PAN ID of the Thread network.  The LED should show a *Short Flash Off (950ms on/50ms off)*.
 
    ::
 
-      # example: zcl NetworkCommissioning EnableNetwork 123456 0 0 networkID=hex:1111111122222222 breadcrumb=0 timeoutMs=3000
-      zcl NetworkCommissioning EnableNetwork 123456 0 0 networkID=hex:<extended_pan_id> breadcrumb=0 timeoutMs=3000
+      # example: zcl NetworkCommissioning ConnectNetwork 123456 0 0 networkID=hex:1111111122222222 breadcrumb=0
+      zcl NetworkCommissioning ConnectNetwork 123456 0 0 networkID=hex:<extended_pan_id> breadcrumb=0
 
 #. Close the BLE connection.
 
