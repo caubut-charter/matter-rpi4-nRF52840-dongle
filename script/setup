@@ -1,4 +1,4 @@
-#!/bin/bash
+#!b/in/bash
 
 set -euETo pipefail
 shopt -s inherit_errexit
@@ -114,7 +114,7 @@ if [ "$CLEAN" = true ]; then
 fi
 
 declare -A HASHES=(
-  ['third_party/ot-nrf528xx/openthread/etc/docker/environment/Dockerfile']='14ca28d53cfbbf8c99d33fd31d3c7511'
+  ['third_party/ot-nrf528xx/openthread/etc/docker/environment/Dockerfile']='e27fe8f81bd3475d0675b04ba2dddd90'
   ['third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile']='2474158efebd0b3fe4894ddf7b5cc75c'
   ['third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile']='4b8b5de05b8b0d2d498e939989735e86'
 )
@@ -154,7 +154,7 @@ if [[ "$OT_NRF528XX_ENVIRONMENT_IMAGE" = true ]]; then
 
   # shellcheck disable=SC1003
   sed -i \
-    -e '21,$d' \
+    -e '25,$d' \
     -e '/python3 -m pip install -U cmake/i \    && python3 -m pip install --upgrade pip \\' \
     third_party/ot-nrf528xx/openthread/etc/docker/environment/Dockerfile
 
