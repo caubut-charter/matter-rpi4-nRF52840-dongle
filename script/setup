@@ -199,7 +199,7 @@ fi
 if [[ "$NRFCONNECT_TOOLCHAIN_IMAGE" = true ]]; then
   echo "==> Building 'nrfconnect-toolchain-image'..."
   (cd third_party/nrfconnect-chip-docker && git reset --hard)
-    check_hash 'third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile'
+  check_hash 'third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile'
 
   # shellcheck disable=SC2016
   sed -i \
@@ -216,7 +216,7 @@ fi
 if [[ "$NRFCONNECT_CHIP_ENVIRONMENT_IMAGE" = true ]]; then
   echo "==> Building 'nrfconnect-chip-environment-image'..."
   (cd third_party/nrfconnect-chip-docker && git reset --hard)
-    check_hash 'third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile'
+  check_hash 'third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile'
 
   [[ -z "$DOCKER_BUILDKIT" ]] && FLAGS="--build-arg TARGETARCH=$TARGETARCH" || FLAGS=''
 
@@ -237,6 +237,8 @@ fi
 
 if [[ "$NRF52840_DONGLE_THREAD_LIGHTING_APP" = true ]]; then
   echo "==> Building 'nrf52840-dongle-thread-lighting-app'..."
+  (cd third_party/nrfconnect-chip-docker && git reset --hard)
+  echo "CONFIG_CHIP_LIB_SHELL=y" >> third_party/connectedhomeip/examples/lighting-app/nrfconnect/prj.conf
   mkdir -p build/nrf-sdk
   mkdir -p build/nrf52840-dongle-thread-lighting-app/nrfconnect
   mkdir -p third_party/connectedhomeip/examples/lighting-app/nrfconnect/build
