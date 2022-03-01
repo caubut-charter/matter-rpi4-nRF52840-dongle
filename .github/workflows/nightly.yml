@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🔃 Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: ⚙ Setup QEMU
         uses: docker/setup-qemu-action@v1
@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🔃 Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: ⚙ Setup QEMU
         uses: docker/setup-qemu-action@v1
@@ -71,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🔃 Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: ⚙ Setup QEMU
         uses: docker/setup-qemu-action@v1
@@ -103,7 +103,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🔃 Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: ⚙ Setup QEMU
         uses: docker/setup-qemu-action@v1
@@ -133,7 +133,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🔃 Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: 🥾 Bootstrap
         run: script/bootstrap --nrf52840-dongle-ot-rcp
@@ -154,7 +154,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🔃 Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: 🥾 Bootstrap
         run: script/bootstrap --chip
@@ -179,7 +179,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🔃 Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: 🥾 Bootstrap
         run: script/bootstrap --chip test_event_7
