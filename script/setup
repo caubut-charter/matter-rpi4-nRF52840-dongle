@@ -237,7 +237,7 @@ fi
 
 if [[ "$NRF52840_DONGLE_THREAD_LIGHTING_APP" = true ]]; then
   echo "==> Building 'nrf52840-dongle-thread-lighting-app'..."
-  (cd third_party/nrfconnect-chip-docker && git reset --hard)
+  (cd third_party/connectedhomeip && git reset --hard)
   echo "CONFIG_CHIP_LIB_SHELL=y" >> third_party/connectedhomeip/examples/lighting-app/nrfconnect/prj.conf
   mkdir -p build/nrf-sdk
   mkdir -p build/nrf52840-dongle-thread-lighting-app/nrfconnect
