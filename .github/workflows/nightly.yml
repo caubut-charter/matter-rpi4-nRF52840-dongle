@@ -172,6 +172,31 @@ jobs:
           name: nrf52840-dongle-thread-lighting-app-latest
           path: build/Release/nrf52840-dongle-thread-lighting-app-LATEST.zip
 
+  build-nrf52840-dongle-thread-lighting-app-with-cli-latest:
+    needs:
+      - build-nrfconnect-chip-environment-image
+      - build-nrfutil-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔃 Checkout
+        uses: actions/checkout@v3
+
+      - name: 🥾 Bootstrap
+        run: script/bootstrap --chip
+
+      - name: 🛠 Build artifact
+        run: DOCKER_IMAGE_PREFIX="${{ secrets.DOCKERHUB_USERNAME }}" script/setup --nrf52840-dongle-thread-lighting-app-with-cli
+
+      - name: 🔖 Rename artifact
+        run: mv nrf52840-dongle-thread-lighting-app-with-cli.zip nrf52840-dongle-thread-lighting-app-with-cli-LATEST.zip
+        working-directory: build/Release
+
+      - name: ⬆ Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: nrf52840-dongle-thread-lighting-app-with-cli-latest
+          path: build/Release/nrf52840-dongle-thread-lighting-app-with-cli-LATEST.zip
+
   build-nrf52840-dongle-thread-lighting-app-test_event:
     needs:
       - build-nrfconnect-chip-environment-image
@@ -197,11 +222,38 @@ jobs:
           name: nrf52840-dongle-thread-lighting-app-test_event
           path: build/Release/nrf52840-dongle-thread-lighting-app-TEST_EVENT_7.zip
 
+  build-nrf52840-dongle-thread-lighting-app-with-cli-test_event:
+    needs:
+      - build-nrfconnect-chip-environment-image
+      - build-nrfutil-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔃 Checkout
+        uses: actions/checkout@v3
+
+      - name: 🥾 Bootstrap
+        run: script/bootstrap --chip test_event_7
+
+      - name: 🛠 Build artifact
+        run: DOCKER_IMAGE_PREFIX="${{ secrets.DOCKERHUB_USERNAME }}" script/setup --nrf52840-dongle-thread-lighting-app-with-cli
+
+      - name: 🔖 Rename artifact
+        run: mv nrf52840-dongle-thread-lighting-app-with-cli.zip nrf52840-dongle-thread-lighting-app-with-cli-TEST_EVENT_7.zip
+        working-directory: build/Release
+
+      - name: ⬆ Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: nrf52840-dongle-thread-lighting-app-with-cli-test_event
+          path: build/Release/nrf52840-dongle-thread-lighting-app-with-cli-TEST_EVENT_7.zip
+
   publish-release:
     needs:
       - build-nrf52840-dongle-ot-rcp
       - build-nrf52840-dongle-thread-lighting-app-latest
+      - build-nrf52840-dongle-thread-lighting-app-with-cli-latest
       - build-nrf52840-dongle-thread-lighting-app-test_event
+      - build-nrf52840-dongle-thread-lighting-app-with-cli-test_event
     runs-on: ubuntu-latest
     steps:
       - name: 📆 Get date
