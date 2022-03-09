@@ -172,7 +172,7 @@ jobs:
           name: nrf52840-dongle-thread-lighting-app-latest
           path: build/Release/nrf52840-dongle-thread-lighting-app-LATEST.zip
 
-  build-nrf52840-dongle-thread-lighting-app-latest-release:
+  build-nrf52840-dongle-thread-lighting-app-release-latest:
     needs:
       - build-nrfconnect-chip-environment-image
       - build-nrfutil-image
