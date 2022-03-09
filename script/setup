@@ -27,6 +27,9 @@ usage() {
   echo -e ' \t--nrf52840-dongle-thread-lighting-app'
   echo -e ' \t                               \t nRF52840 dongle Thread light'
   echo -e ' \t                               \t firmware'
+  echo -e ' \t--nrf52840-dongle-thread-lighting-app-release'
+  echo -e ' \t                               \t nRF52840 dongle Thread light'
+  echo -e ' \t                               \t release firmware'
   echo -e ' \t--nrf52840-dongle-thread-lighting-app-with-cli'
   echo -e ' \t                               \t nRF52840 dongle Thread light'
   echo -e ' \t                               \t firmware with Matter CLI'
@@ -77,6 +80,7 @@ OT_COMMISSIONER_IMAGE=false
 NRFCONNECT_TOOLCHAIN_IMAGE=false
 NRFCONNECT_CHIP_ENVIRONMENT_IMAGE=false
 NRF52840_DONGLE_THREAD_LIGHTING_APP=false
+NRF52840_DONGLE_THREAD_LIGHTING_APP_RELEASE=false
 NRF52840_DONGLE_THREAD_LIGHTING_APP_WITH_CLI=false
 CHIP_DEVICE_CTRL=false
 NRFUTIL_IMAGE=false
@@ -90,6 +94,7 @@ while [ $# -gt 0 ]; do
     --nrfconnect-toolchain-image) NRFCONNECT_TOOLCHAIN_IMAGE=true ;;
     --nrfconnect-chip-environment-image) NRFCONNECT_CHIP_ENVIRONMENT_IMAGE=true ;;
     --nrf52840-dongle-thread-lighting-app) NRF52840_DONGLE_THREAD_LIGHTING_APP=true ;;
+    --nrf52840-dongle-thread-lighting-app-release) NRF52840_DONGLE_THREAD_LIGHTING_APP_RELEASE=true ;;
     --nrf52840-dongle-thread-lighting-app-with-cli) NRF52840_DONGLE_THREAD_LIGHTING_APP_WITH_CLI=true ;;
     --chip-device-ctrl) CHIP_DEVICE_CTRL=true ;;
     --nrfutil-image) NRFUTIL_IMAGE=true ;;
@@ -243,6 +248,7 @@ fi
 
 if [[ "$NRF52840_DONGLE_THREAD_LIGHTING_APP" = true ]]; then
   echo "==> Building 'nrf52840-dongle-thread-lighting-app'..."
+  (cd third_party/connectedhomeip && git reset --hard)
   mkdir -p build/nrf-sdk
   mkdir -p build/nrf52840-dongle-thread-lighting-app/nrfconnect
   mkdir -p third_party/connectedhomeip/examples/lighting-app/nrfconnect/build
@@ -252,7 +258,7 @@ if [[ "$NRF52840_DONGLE_THREAD_LIGHTING_APP" = true ]]; then
     -v "$PWD"/build/nrf-sdk:/var/ncs \
     -v "$PWD"/build/nrf52840-dongle-thread-lighting-app/nrfconnect:/var/chip/examples/lighting-app/nrfconnect/build \
     "${DOCKER_IMAGE_PREFIX}nrfconnect-chip-environment:$DOCKER_IMAGE_VERSION" \
-    'setup -y && python3 scripts/setup/nrfconnect/update_ncs.py --update && cd examples/lighting-app/nrfconnect && west build -b nrf52840dongle_nrf52840 -- -DBUILD_WITH_DFU=OFF'
+    'setup -y && python3 scripts/setup/nrfconnect/update_ncs.py --update && cd examples/lighting-app/nrfconnect && west build -b nrf52840dongle_nrf52840'
   docker run --rm \
     -v "$PWD"/build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr:/root \
     "${DOCKER_IMAGE_PREFIX}nrfutil:$DOCKER_IMAGE_VERSION" pkg generate --hw-version 52 --sd-req=0x00 \
@@ -264,6 +270,32 @@ if [[ "$NRF52840_DONGLE_THREAD_LIGHTING_APP" = true ]]; then
     build/nrf52840-dongle-thread-lighting-app/nrfconnect
   echo "==> Generating release artifact..."
   mv "build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr/nrf52840-dongle-thread-lighting-app.zip" build/Release
+fi
+
+if [[ "$NRF52840_DONGLE_THREAD_LIGHTING_APP_RELEASE" = true ]]; then
+  echo "==> Building 'nrf52840-dongle-thread-lighting-app-release'..."
+  (cd third_party/connectedhomeip && git reset --hard)
+  mkdir -p build/nrf-sdk
+  mkdir -p build/nrf52840-dongle-thread-lighting-app-release/nrfconnect
+  mkdir -p third_party/connectedhomeip/examples/lighting-app-release/nrfconnect/build
+  docker run --rm \
+    -e CHIP_REVISION="$(cd third_party/connectedhomeip && git rev-parse --short HEAD)" \
+    -v "$PWD"/third_party/connectedhomeip:/var/chip \
+    -v "$PWD"/build/nrf-sdk:/var/ncs \
+    -v "$PWD"/build/nrf52840-dongle-thread-lighting-app-release/nrfconnect:/var/chip/examples/lighting-app-release/nrfconnect/build \
+    "${DOCKER_IMAGE_PREFIX}nrfconnect-chip-environment:$DOCKER_IMAGE_VERSION" \
+    'setup -y && python3 scripts/setup/nrfconnect/update_ncs.py --update && cd examples/lighting-app-release/nrfconnect && west build -b nrf52840dongle_nrf52840 -- -DOVERLAY_CONFIG=third_party/connectedhomeip/config/nrfconnect/app/release.conf'
+  docker run --rm \
+    -v "$PWD"/build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr:/root \
+    "${DOCKER_IMAGE_PREFIX}nrfutil:$DOCKER_IMAGE_VERSION" pkg generate --hw-version 52 --sd-req=0x00 \
+    --application zephyr.hex --application-version 1 "nrf52840-dongle-thread-lighting-app-release.zip"
+  echo "==> Fixing permissions (may take a couple minutes)..."
+  fix_permissions \
+    third_party/connectedhomeip \
+    build/nrf-sdk \
+    build/nrf52840-dongle-thread-lighting-app-release/nrfconnect
+  echo "==> Generating release artifact..."
+  mv "build/nrf52840-dongle-thread-lighting-app-release/nrfconnect/zephyr/nrf52840-dongle-thread-lighting-app-release.zip" build/Release
 fi
 
 if [[ "$NRF52840_DONGLE_THREAD_LIGHTING_APP_WITH_CLI" = true ]]; then
@@ -279,7 +311,7 @@ if [[ "$NRF52840_DONGLE_THREAD_LIGHTING_APP_WITH_CLI" = true ]]; then
     -v "$PWD"/build/nrf-sdk:/var/ncs \
     -v "$PWD"/build/nrf52840-dongle-thread-lighting-app-with-cli/nrfconnect:/var/chip/examples/lighting-app/nrfconnect/build \
     "${DOCKER_IMAGE_PREFIX}nrfconnect-chip-environment:$DOCKER_IMAGE_VERSION" \
-    'setup -y && python3 scripts/setup/nrfconnect/update_ncs.py --update && cd examples/lighting-app/nrfconnect && west build -b nrf52840dongle_nrf52840 -- -DBUILD_WITH_DFU=OFF'
+    'setup -y && python3 scripts/setup/nrfconnect/update_ncs.py --update && cd examples/lighting-app/nrfconnect && west build -b nrf52840dongle_nrf52840'
   docker run --rm \
     -v "$PWD"/build/nrf52840-dongle-thread-lighting-app-with-cli/nrfconnect/zephyr:/root \
     "${DOCKER_IMAGE_PREFIX}nrfutil:$DOCKER_IMAGE_VERSION" pkg generate --hw-version 52 --sd-req=0x00 \
