@@ -281,10 +281,11 @@ if [[ "$NRF52840_DONGLE_THREAD_LIGHTING_APP_RELEASE" = true ]]; then
     -v "$PWD"/third_party/connectedhomeip:/var/chip \
     -v "$PWD"/build/nrf-sdk:/var/ncs \
     -v "$PWD"/build/nrf52840-dongle-thread-lighting-app-release/nrfconnect:/var/chip/examples/lighting-app/nrfconnect/build \
+    -v "$PWD"/etc/overlays:/root/overlays \
     "${DOCKER_IMAGE_PREFIX}nrfconnect-chip-environment:$DOCKER_IMAGE_VERSION" \
-    'setup -y && python3 scripts/setup/nrfconnect/update_ncs.py --update && cd examples/lighting-app/nrfconnect && west build -b nrf52840dongle_nrf52840 -- -DOVERLAY_CONFIG=third_party/connectedhomeip/config/nrfconnect/app/release.conf'
+    'setup -y && python3 scripts/setup/nrfconnect/update_ncs.py --update && cd examples/lighting-app/nrfconnect && west build -b nrf52840dongle_nrf52840 -- -DBUILD_WITH_DFU=OFF -DOVERLAY_CONFIG=/root/overlays/nrfconnect/app/release.conf'
   docker run --rm \
-    -v "$PWD"/build/nrf52840-dongle-thread-lighting-app/nrfconnect/zephyr:/root \
+    -v "$PWD"/build/nrf52840-dongle-thread-lighting-app-release/nrfconnect/zephyr:/root \
     "${DOCKER_IMAGE_PREFIX}nrfutil:$DOCKER_IMAGE_VERSION" pkg generate --hw-version 52 --sd-req=0x00 \
     --application zephyr.hex --application-version 1 "nrf52840-dongle-thread-lighting-app-release.zip"
   echo "==> Fixing permissions (may take a couple minutes)..."
