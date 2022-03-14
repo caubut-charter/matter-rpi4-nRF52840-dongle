@@ -71,7 +71,6 @@ Commissioning the Device
    ::
 
       sudo ot-ctl dataset active -x
-      sudo ot-ctl dataset extpanid
 
 #. Start the :code:`chip-device-ctrl` Matter controller.
 
@@ -90,44 +89,24 @@ Commissioning the Device
       - :code:`LD1` and :code:`LD2` will start blinking in unison
       - both LEDs will stop blinking
 
-#. Discovery the Matter Thread Light over BLE.
+#. Discovery the Matter Thread Light over BLE and capture the discriminator.  It will usually be hard coded to :code:`3840`.
 
    ::
 
       ble-scan
 
-#. Using the output above, connect to the Matter Thread Light over BLE.  The pin code should be hard coded to :code:`20202021`.  The LED should show a *Rapid Even Flashing (100 ms on/100 ms off)*.  See :ref:`BLE Connection Failures` for troubleshooting if the connection fails.
+#. Set the pairing credentials to the previously obtained Active Operational Dataset as a hex-encoded value.
+
+   ::
+
+       set-pairing-thread-credential <active_operational_dataset>
+
+#. Using the output above, connect to the Matter Thread Light over BLE.  The pin code should be hard coded to :code:`20202021`.  The LED should show a *Rapid Even Flashing (100 ms on/100 ms off)*.  See :ref:`BLE Connection Failures` for troubleshooting if the connection fails.  This will automatically commission the device.
 
    ::
 
       # example: connect -ble 3840 20202021 123456
       connect -ble <discriminator> <pin_code> <temp_id>
-
-#. Inject the previously obtained Active Operational Dataset as hex-encoded value using ZCL Network Commissioning cluster.
-
-   ::
-
-      # example: zcl NetworkCommissioning AddOrUpdateThreadNetwork 123456 0 0 operationalDataset=hex:0e080000000000010000000300000f35060004001fffe0020811111111222222220708fdc0ab06bb38fa61051000112233445566778899aabbccddeeff030b6d61747465722d64656d6f0102123404104260acc85ec98f24df213dd31e58e7e00c0402a0fff8 breadcrumb=0
-      zcl NetworkCommissioning AddOrUpdateThreadNetwork 123456 0 0 operationalDataset=hex:<active_operational_dataset> breadcrumb=0
-
-#. Enable the Thread interface on the device by executing the following command with :code:`networkID` equal to the Extended PAN ID of the Thread network.  The LED should show a *Short Flash Off (950ms on/50ms off)*.
-
-   ::
-
-      # example: zcl NetworkCommissioning ConnectNetwork 123456 0 0 networkID=hex:1111111122222222 breadcrumb=0
-      zcl NetworkCommissioning ConnectNetwork 123456 0 0 networkID=hex:<extended_pan_id> breadcrumb=0
-
-#. Close the BLE connection.
-
-   ::
-
-      close-ble
-
-#. Discover IPv6 address of the Matter Thread Light.
-
-   ::
-
-      resolve 123456
 
 #. Control the light.
 
