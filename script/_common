@@ -34,22 +34,24 @@ fix_permissions() (
 clean() (
   echo "==> Removing 'build'..."
   rm -rf build
-  cd third_party
-  local repos
-  readarray -t repos < <(
-    shopt -s dotglob
-    shopt -s nullglob
-    repos=(*/)
-    printf '%s\n' "${repos[@]}"
-  )
-  for repo in "${repos[@]}"; do
-    (
-      (cd "$repo" && echo "==> Resetting '$(git config --get remote.origin.url)'...") \
-      && set -x \
-      && cd "$repo" \
-      && git reset --hard && git clean -fdx \
-      && git submodule foreach --recursive git reset --hard \
-      && git submodule foreach --recursive git clean -fdx
+  if [[ -d third_party ]]; then
+    cd third_party
+    local repos
+    readarray -t repos < <(
+      shopt -s dotglob
+      shopt -s nullglob
+      repos=(*/)
+      printf '%s\n' "${repos[@]}"
     )
-  done
+    for repo in "${repos[@]}"; do
+      (
+        (cd "$repo" && echo "==> Resetting '$(git config --get remote.origin.url)'...") \
+        && set -x \
+        && cd "$repo" \
+        && git reset --hard && git clean -fdx \
+        && git submodule foreach --recursive git reset --hard \
+        && git submodule foreach --recursive git clean -fdx
+      )
+    done
+  fi
 )
