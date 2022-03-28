@@ -326,5 +326,5 @@ fi
 if [[ "$CHIP_DEVICE_CTRL" = true ]]; then
   echo "==> Building 'chip-device-ctrl'..."
   (cd third_party/connectedhomeip \
-    && set -x && scripts/build_python.sh -m platform)
+    && set -x && scripts/build_python.sh -m platform -i separate)
 fi
