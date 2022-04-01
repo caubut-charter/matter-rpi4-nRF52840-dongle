@@ -28,6 +28,6 @@
     }
   },
   "devDependencies": {
-    "npm-check-updates": "^12.5.4"
+    "npm-check-updates": "^12.5.5"
   }
 }
