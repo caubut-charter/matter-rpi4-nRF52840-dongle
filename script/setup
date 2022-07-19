@@ -126,7 +126,7 @@ fi
 
 declare -A HASHES=(
   ['third_party/ot-nrf528xx/openthread/etc/docker/environment/Dockerfile']='e27fe8f81bd3475d0675b04ba2dddd90'
-  ['third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile']='c7b8a59e64c82b3c3f42da885e35900d'
+  ['third_party/nrfconnect-chip-docker/nrfconnect-toolchain/Dockerfile']='6d6526f45e4ba7bb710d9719f799b067'
   ['third_party/nrfconnect-chip-docker/nrfconnect-chip/Dockerfile']='4b8b5de05b8b0d2d498e939989735e86'
 )
 
