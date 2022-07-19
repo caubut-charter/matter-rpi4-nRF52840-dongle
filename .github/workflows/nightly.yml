@@ -142,7 +142,7 @@ jobs:
         run: DOCKER_IMAGE_PREFIX="${{ secrets.DOCKERHUB_USERNAME }}" script/setup --nrf52840-dongle-ot-rcp
 
       - name: ⬆ Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: nrf52840-dongle-ot-rcp
           path: build/Release/nrf52840-dongle-ot-rcp.zip
@@ -167,7 +167,7 @@ jobs:
         working-directory: build/Release
 
       - name: ⬆ Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: nrf52840-dongle-thread-lighting-app-latest
           path: build/Release/nrf52840-dongle-thread-lighting-app-LATEST.zip
@@ -192,7 +192,7 @@ jobs:
         working-directory: build/Release
 
       - name: ⬆ Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: nrf52840-dongle-thread-lighting-app-release-latest
           path: build/Release/nrf52840-dongle-thread-lighting-app-release-LATEST.zip
@@ -217,7 +217,7 @@ jobs:
         working-directory: build/Release
 
       - name: ⬆ Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: nrf52840-dongle-thread-lighting-app-with-cli-latest
           path: build/Release/nrf52840-dongle-thread-lighting-app-with-cli-LATEST.zip
@@ -242,7 +242,7 @@ jobs:
         working-directory: build/Release
 
       - name: ⬆ Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: nrf52840-dongle-thread-lighting-app-test_event
           path: build/Release/nrf52840-dongle-thread-lighting-app-TEST_EVENT_7.zip
@@ -267,7 +267,7 @@ jobs:
         working-directory: build/Release
 
       - name: ⬆ Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: nrf52840-dongle-thread-lighting-app-with-cli-test_event
           path: build/Release/nrf52840-dongle-thread-lighting-app-with-cli-TEST_EVENT_7.zip
