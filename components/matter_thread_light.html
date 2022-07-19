@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Matter Thread Light &mdash; matter-rpi4-nRF52840-dongle 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/my_theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/tabs.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Bootstrap / Setup Usage Guide" href="../advanced/bootstrap_setup_scripts.html" />
+    <link rel="prev" title="OpenThread Border Router" href="otbr.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> matter-rpi4-nRF52840-dongle
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">First steps</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../first_steps/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../first_steps/getting_started.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Components</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="otbr.html">OpenThread Border Router</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Matter Thread Light</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#flashing-the-accessory">Flashing the Accessory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#commissioning-the-device">Commissioning the Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/bootstrap_setup_scripts.html">Bootstrap / Setup Usage Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Troubleshooting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting/bluetooth.html">Bluetooth Troubleshooting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/conventional_commits.html">Conventional Commits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/documentation.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/updating_dependencies.html">Updating Dependencies</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">matter-rpi4-nRF52840-dongle</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Matter Thread Light</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/blob/main/docs/source/components/matter_thread_light.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="matter-thread-light">
+<h1>Matter Thread Light<a class="headerlink" href="#matter-thread-light" title="Permalink to this headline"></a></h1>
+<p>This section covers flashing a Matter Thread light accessory on an nRF52840 dongle and commissioning it onto the OTBR Thread network.</p>
+<div class="section" id="flashing-the-accessory">
+<h2>Flashing the Accessory<a class="headerlink" href="#flashing-the-accessory" title="Permalink to this headline"></a></h2>
+<ol class="arabic">
+<li><p>Select an nRF52840 dongle for OTBR, note its MAC address, and plug it into an open USB port on the RPi.</p>
+<img alt="../_images/nRF52840_dongle_mac.png" class="align-center" src="../_images/nRF52840_dongle_mac.png" />
+</li>
+<li><p>Press the reset button on the dongle to put it into DFU mode.  A red LED on the dongle will start blinking.  The reset button is on the far side of the board from the USB connector.  Note that the button does not face up. It will have to push it from the outside in, towards the USB connector.</p>
+<img alt="../_images/nRF52840_dongle_press_reset.svg" class="align-center" src="../_images/nRF52840_dongle_press_reset.svg" /><p>Source: <a class="reference external" href="https://docs.zephyrproject.org/latest/boards/arm/nrf52840dongle_nrf52840/doc/index.html#programming-and-debugging">https://docs.zephyrproject.org/latest/boards/arm/nrf52840dongle_nrf52840/doc/index.html#programming-and-debugging</a></p>
+</li>
+<li><p>Capture the absolute path to the static symlink of this dongle by matching the MAC address (all caps no delimiters) with the following command.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># example: export LIGHT_TTY=$(find /dev/serial/by-id -type l | grep C794EB8363FA)</span>
+<span class="nb">export</span> <span class="nv">LIGHT_TTY</span><span class="o">=</span><span class="k">$(</span>find /dev/serial/by-id -type l <span class="p">|</span> grep &lt;mac&gt;<span class="k">)</span>
+<span class="nb">echo</span> <span class="nv">$LIGHT_TTY</span>
+</pre></div>
+</div>
+</li>
+<li><p>Flash the nRF52840 firmware package onto the dongle.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">Built</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">Downloaded</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run -it --rm <span class="se">\</span>
+ -v <span class="nv">$PWD</span>/build/Release:/root <span class="se">\</span>
+ --device <span class="k">$(</span>readlink -f <span class="nv">$LIGHT_TTY</span><span class="k">)</span> <span class="se">\</span>
+ caubutcharter/nrfutil:latest dfu usb-serial -pkg nrf52840-dongle-thread-lighting-app.zip -p <span class="k">$(</span>readlink -f <span class="nv">$LIGHT_TTY</span><span class="k">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># latest</span>
+docker run -it --rm <span class="se">\</span>
+ -v <span class="nv">$PWD</span>/build/Release:/root <span class="se">\</span>
+ --device <span class="k">$(</span>readlink -f <span class="nv">$LIGHT_TTY</span><span class="k">)</span> <span class="se">\</span>
+ caubutcharter/nrfutil:latest dfu usb-serial -pkg nrf52840-dongle-thread-lighting-app-LATEST.zip -p <span class="k">$(</span>readlink -f <span class="nv">$LIGHT_TTY</span><span class="k">)</span>
+
+<span class="c1"># test event</span>
+docker run -it --rm <span class="se">\</span>
+ -v <span class="nv">$PWD</span>/build/Release:/root <span class="se">\</span>
+ --device <span class="k">$(</span>readlink -f <span class="nv">$LIGHT_TTY</span><span class="k">)</span> <span class="se">\</span>
+ caubutcharter/nrfutil:latest dfu usb-serial -pkg nrf52840-dongle-thread-lighting-app-TEST_EVENT_7.zip -p <span class="k">$(</span>readlink -f <span class="nv">$LIGHT_TTY</span><span class="k">)</span>
+</pre></div>
+</div>
+</div></div>
+</li>
+</ol>
+</div>
+<div class="section" id="commissioning-the-device">
+<h2>Commissioning the Device<a class="headerlink" href="#commissioning-the-device" title="Permalink to this headline"></a></h2>
+<ol class="arabic">
+<li><p>Capture the current Active Operational Dataset and Extended PAN ID from the OTBR service.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo ot-ctl dataset active -x
+</pre></div>
+</div>
+</li>
+<li><p>Start the <code class="code docutils literal notranslate"><span class="pre">chip-device-ctrl</span></code> Matter controller.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> third_party/connectedhomeip
+<span class="nb">source</span> out/python_env/bin/activate
+sudo out/python_env/bin/chip-device-ctrl --bluetooth-adapter<span class="o">=</span>hci0
+</pre></div>
+</div>
+</li>
+<li><p>Reseat the dongle.  BLE advertisements are only enabled for 15 minutes after boot.  The LED should show a <em>Short Flash On (50 ms on/950 ms off)</em>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the dongle was previously commissioned, even unsuccessfully, the settings may still exist on the dongle even after flashing.  This can be observed by the light pattern not matching the above statement.  To clear the settings, hold the <code class="code docutils literal notranslate"><span class="pre">SW1</span></code> button (different from the button used to flash the dongle) until the following sequence of LED patterns completes (about 6 seconds):</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">LD1</span></code> and <code class="code docutils literal notranslate"><span class="pre">LD2</span></code> will start blinking in unison</p></li>
+<li><p>both LEDs will stop blinking</p></li>
+</ul>
+</div>
+</li>
+<li><p>Discovery the Matter Thread Light over BLE and capture the discriminator.  It will usually be hard coded to <code class="code docutils literal notranslate"><span class="pre">3840</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ble-scan
+</pre></div>
+</div>
+</li>
+<li><p>Set the pairing credentials to the previously obtained Active Operational Dataset as a hex-encoded value.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>set-pairing-thread-credential &lt;active_operational_dataset&gt;
+</pre></div>
+</div>
+</li>
+<li><p>Using the output above, connect to the Matter Thread Light over BLE.  The pin code should be hard coded to <code class="code docutils literal notranslate"><span class="pre">20202021</span></code>.  The LED should show a <em>Rapid Even Flashing (100 ms on/100 ms off)</em>.  See <a class="reference internal" href="../troubleshooting/bluetooth.html#ble-connection-failures"><span class="std std-ref">BLE Connection Failures</span></a> for troubleshooting if the connection fails.  This will automatically commission the device.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># example: connect -ble 3840 20202021 123456</span>
+connect -ble &lt;discriminator&gt; &lt;pin_code&gt; &lt;temp_id&gt;
+</pre></div>
+</div>
+</li>
+<li><p>Control the light.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>zcl OnOff On <span class="m">123456</span> <span class="m">1</span> <span class="m">0</span>
+zcl OnOff Off <span class="m">123456</span> <span class="m">1</span> <span class="m">0</span>
+zcl OnOff Toggle <span class="m">123456</span> <span class="m">1</span> <span class="m">0</span>
+zcl LevelControl MoveToLevel <span class="m">123456</span> <span class="m">1</span> <span class="m">0</span> <span class="nv">level</span><span class="o">=</span><span class="m">10</span> <span class="nv">transitionTime</span><span class="o">=</span><span class="m">0</span> <span class="nv">optionMask</span><span class="o">=</span><span class="m">0</span> <span class="nv">optionOverride</span><span class="o">=</span><span class="m">0</span>
+</pre></div>
+</div>
+</li>
+<li><p>Exit <code class="code docutils literal notranslate"><span class="pre">chip-device-ctrl</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">exit</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.zephyrproject.org/latest/boards/arm/nrf52840dongle_nrf52840/doc/index.html#programming-and-debugging">Zephyr Project Documentation: nRF52840 Dongle</a></p></li>
+<li><p><a class="reference external" href="https://stackoverflow.com/questions/28868393/accessing-bluetooth-dongle-from-inside-docker">Accessing Bluetooth dongle from inside Docker?</a></p></li>
+<li><p><a class="reference external" href="https://github.com/moby/moby/issues/16208#issuecomment-161770118">Bluetooth socket can’t be opened inside container</a></p></li>
+<li><p><a class="reference external" href="https://github.com/project-chip/connectedhomeip/blob/master/docs/guides/python_chip_controller_building.md">Working with Python CHIP Controller</a></p></li>
+<li><p><a class="reference external" href="https://github.com/project-chip/connectedhomeip/blob/master/docs/guides/nrfconnect_examples_cli.md">Using CLI in nRF Connect examples</a></p></li>
+<li><p><a class="reference external" href="https://openthread.io/guides/border-router/external-commissioning?comm=ot-commissionn">External Thread Commissioning</a></p></li>
+<li><p><a class="reference external" href="https://github.com/project-chip/connectedhomeip/tree/master/examples/lock-app/esp32">CHIP ESP32 Lock Example</a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="otbr.html" class="btn btn-neutral float-left" title="OpenThread Border Router" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../advanced/bootstrap_setup_scripts.html" class="btn btn-neutral float-right" title="Bootstrap / Setup Usage Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Christopher Aubut &lt;christopher.aubut@charter.com&gt;.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

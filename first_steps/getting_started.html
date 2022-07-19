@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getting Started &mdash; matter-rpi4-nRF52840-dongle 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/my_theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/tabs.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="OpenThread Border Router" href="../components/otbr.html" />
+    <link rel="prev" title="Introduction" href="introduction.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> matter-rpi4-nRF52840-dongle
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">First steps</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#project-requirements">Project Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#preparing-the-rpi-boot-medium">Preparing the RPi Boot Medium</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#preparing-the-rpi">Preparing the RPi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Components</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../components/otbr.html">OpenThread Border Router</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/matter_thread_light.html">Matter Thread Light</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/bootstrap_setup_scripts.html">Bootstrap / Setup Usage Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Troubleshooting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting/bluetooth.html">Bluetooth Troubleshooting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/conventional_commits.html">Conventional Commits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/documentation.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/updating_dependencies.html">Updating Dependencies</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">matter-rpi4-nRF52840-dongle</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Getting Started</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/blob/main/docs/source/first_steps/getting_started.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline"></a></h1>
+<div class="section" id="project-requirements">
+<h2>Project Requirements<a class="headerlink" href="#project-requirements" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>Desktop PC</p></li>
+<li><p><a class="reference external" href="https://www.raspberrypi.org/products/">Raspberry Pi</a> 4B (“RPi” in this guide)</p></li>
+<li><p>3x <a class="reference external" href="https://www.nordicsemi.com/Products/Development-hardware/nRF52840-Dongle/GetStarted">nRF52840 Dongle</a></p></li>
+<li><p>External 5V AC RPi adapter (3.5A Used)</p></li>
+<li><p>32Gb+ microSD card (“SD card” in this guide)</p></li>
+<li><p>microSD card reader</p></li>
+<li><p>Ethernet cable</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The RPi must use an external AC adapter of the proper voltage.  Do not power from a USB hub or a computer’s USB port.</p>
+</div>
+</div>
+<div class="section" id="preparing-the-rpi-boot-medium">
+<h2>Preparing the RPi Boot Medium<a class="headerlink" href="#preparing-the-rpi-boot-medium" title="Permalink to this headline"></a></h2>
+<ol class="arabic">
+<li><p>On the Desktop PC, download and extract the <a class="reference external" href="https://downloads.raspberrypi.org/raspios_lite_arm64/images/raspios_lite_arm64-2021-05-28/">ARM64 Raspberry Pi OS Lite</a> image.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The 64-bit version is <em>required</em> to run the OpenThread build toolchain.</p>
+</div>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" role="tablist"><button aria-controls="panel-0-TGludXg=" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-0-TGludXg=" name="TGludXg=" role="tab" tabindex="0">Linux</button><button aria-controls="panel-0-bWFjT1M=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-0-bWFjT1M=" name="bWFjT1M=" role="tab" tabindex="-1">macOS</button><button aria-controls="panel-0-V2luZG93cw==" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-0-V2luZG93cw==" name="V2luZG93cw==" role="tab" tabindex="-1">Windows</button></div><div aria-labelledby="tab-0-TGludXg=" class="sphinx-tabs-panel group-tab" id="panel-0-TGludXg=" name="TGludXg=" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> ~/Downloads
+unzip YYYY-MM-DD-raspios-buster-arm64-lite.zip
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-bWFjT1M=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-0-bWFjT1M=" name="bWFjT1M=" role="tabpanel" tabindex="0"><p>Double click the <code class="code docutils literal notranslate"><span class="pre">.zip</span></code> archive to extract the <code class="code docutils literal notranslate"><span class="pre">.img</span></code> in the same folder.</p>
+</div><div aria-labelledby="tab-0-V2luZG93cw==" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-0-V2luZG93cw==" name="V2luZG93cw==" role="tabpanel" tabindex="0"><p>Double click the <code class="code docutils literal notranslate"><span class="pre">.zip</span></code> archive.  Drag the <code class="code docutils literal notranslate"><span class="pre">.img</span></code> file to a desired location.</p>
+</div></div>
+</li>
+<li><p>Download, install, and run <a class="reference external" href="https://www.raspberrypi.org/software/">Raspberry Pi Imager</a>.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" role="tablist"><button aria-controls="panel-1-TGludXg=" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-1-TGludXg=" name="TGludXg=" role="tab" tabindex="0">Linux</button><button aria-controls="panel-1-bWFjT1M=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-1-bWFjT1M=" name="bWFjT1M=" role="tab" tabindex="-1">macOS</button><button aria-controls="panel-1-V2luZG93cw==" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-1-V2luZG93cw==" name="V2luZG93cw==" role="tab" tabindex="-1">Windows</button></div><div aria-labelledby="tab-1-TGludXg=" class="sphinx-tabs-panel group-tab" id="panel-1-TGludXg=" name="TGludXg=" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># this will probably fail due to missing dependencies, that&#39;s okay</span>
+sudo dpkg -i imager_&lt;X.Y.Z&gt;_amd64.deb
+
+<span class="c1"># this fixes it</span>
+sudo apt-get install -f
+
+<span class="c1"># refresh binaries known to the shell</span>
+<span class="nb">hash</span> -r
+
+<span class="c1"># launch the app</span>
+rpi-imager
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-bWFjT1M=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-1-bWFjT1M=" name="bWFjT1M=" role="tabpanel" tabindex="0"><p>Install to <strong>Applications</strong> from the downloaded <code class="code docutils literal notranslate"><span class="pre">.dmg</span></code> file and run the app.</p>
+</div><div aria-labelledby="tab-1-V2luZG93cw==" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-1-V2luZG93cw==" name="V2luZG93cw==" role="tabpanel" tabindex="0"><p>Run the downloaded <code class="code docutils literal notranslate"><span class="pre">.exe</span></code> installer and run the app.</p>
+</div></div>
+</li>
+<li><p>Install the OS onto the RPi’s boot medium.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" role="tablist"><button aria-controls="panel-2-UlBpIE9ubHk=" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-2-UlBpIE9ubHk=" name="UlBpIE9ubHk=" role="tab" tabindex="0">RPi Only</button><button aria-controls="panel-2-UlBpICsgU1NE" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-2-UlBpICsgU1NE" name="UlBpICsgU1NE" role="tab" tabindex="-1">RPi + SSD</button></div><div aria-labelledby="tab-2-UlBpIE9ubHk=" class="sphinx-tabs-panel group-tab" id="panel-2-UlBpIE9ubHk=" name="UlBpIE9ubHk=" role="tabpanel" tabindex="0"><ol class="arabic simple">
+<li><p>Click <strong>Choose OS</strong> &gt; <strong>Use custom</strong>  and select the <code class="code docutils literal notranslate"><span class="pre">YYYY-MM-DD-raspios-buster-arm64-lite.img</span></code>.</p></li>
+<li><p>Plug the microSD card reader and SD card into the Desktop PC.</p></li>
+<li><p>Click <strong>Choose Storage</strong> and select the SD card.</p></li>
+<li><p>Click <strong>Write</strong>.</p></li>
+</ol>
+</div><div aria-labelledby="tab-2-UlBpICsgU1NE" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-2-UlBpICsgU1NE" name="UlBpICsgU1NE" role="tabpanel" tabindex="0"><ol class="arabic simple">
+<li><p>Click <strong>Choose OS</strong> &gt; <strong>Misc utility images</strong> &gt; <strong>Bootloader</strong> &gt; <strong>USB Boot</strong>.</p></li>
+<li><p>Plug the microSD card reader and SD card into the Desktop PC.</p></li>
+<li><p>Click <strong>Choose Storage</strong> and select the SD card.</p></li>
+<li><p>Click <strong>Write</strong>.</p></li>
+<li><p>Safely eject the SD card and plug it into the RPi.</p></li>
+<li><p>Click <strong>Choose OS</strong> &gt; <strong>Use custom</strong>  and select the <code class="code docutils literal notranslate"><span class="pre">YYYY-MM-DD-raspios-buster-arm64-lite.img</span></code>.</p></li>
+<li><p>Plug the external USB 3.0 SSD into the Desktop PC.</p></li>
+<li><p>Click <strong>Choose Storage</strong> and select the external USB 3.0 SSD.</p></li>
+<li><p>Click <strong>Write</strong>.</p></li>
+</ol>
+</div></div>
+</li>
+<li><p>Enable SSH on boot.  A FAT32 <code class="code docutils literal notranslate"><span class="pre">boot</span></code> partition should have mounted once the OS has been installed.  If it did not, check the system’s documentation for mounting the partition.  Reseat the boot medium if all else fails.  Add an empty file called <code class="code docutils literal notranslate"><span class="pre">ssh</span></code> into the root of the partition.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" role="tablist"><button aria-controls="panel-3-TGludXg=" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-3-TGludXg=" name="TGludXg=" role="tab" tabindex="0">Linux</button><button aria-controls="panel-3-bWFjT1M=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-3-bWFjT1M=" name="bWFjT1M=" role="tab" tabindex="-1">macOS</button><button aria-controls="panel-3-V2luZG93cw==" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-3-V2luZG93cw==" name="V2luZG93cw==" role="tab" tabindex="-1">Windows</button></div><div aria-labelledby="tab-3-TGludXg=" class="sphinx-tabs-panel group-tab" id="panel-3-TGludXg=" name="TGludXg=" role="tabpanel" tabindex="0"><p>Clicking on the volume in any modern File Manager will typically mount the partition.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>touch /media/<span class="nv">$USER</span>/boot/ssh
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-3-bWFjT1M=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-3-bWFjT1M=" name="bWFjT1M=" role="tabpanel" tabindex="0"><p>The volume can be mounted using <code class="code docutils literal notranslate"><span class="pre">Disk</span> <span class="pre">Utility</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>touch /Volumes/boot/ssh
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-3-V2luZG93cw==" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-3-V2luZG93cw==" name="V2luZG93cw==" role="tabpanel" tabindex="0"><p>From Windows Explorer, navigate to the mounted partition, right-click in the folder, and select <strong>New</strong> &gt; <strong>Text Document</strong>.  Name the file <code class="code docutils literal notranslate"><span class="pre">ssh</span></code> without any file extension.</p>
+</div></div>
+</li>
+<li><p>Optionally, change the RPi’s hostname (“matter-demo” in this guide) to avoid naming conflicts with other RPis on the LAN.  An EXT4 <code class="code docutils literal notranslate"><span class="pre">rootfs</span></code> partition should have mounted once the OS has been installed.  If it did not, check the system’s documentation for mounting the partition.  For systems that cannot mount writeable EXT4 partitions, this step can be performed later directly on the RPi.  The hostname will be used to connect to the RPi (e.g. <code class="code docutils literal notranslate"><span class="pre">matter-demo.local</span></code>).</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" role="tablist"><button aria-controls="panel-4-TGludXg=" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-4-TGludXg=" name="TGludXg=" role="tab" tabindex="0">Linux</button></div><div aria-labelledby="tab-4-TGludXg=" class="sphinx-tabs-panel group-tab" id="panel-4-TGludXg=" name="TGludXg=" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># verify the existing hostname (default is &quot;raspberrypi&quot;)</span>
+cat /media/<span class="nv">$USER</span>/rootfs/etc/hostname
+
+<span class="c1"># overwrite the hostname and verify</span>
+<span class="nb">echo</span> matter-demo <span class="p">|</span> sudo tee /media/<span class="nv">$USER</span>/rootfs/etc/hostname
+cat /media/<span class="nv">$USER</span>/rootfs/etc/hostname
+</pre></div>
+</div>
+</div></div>
+</li>
+<li><p>Safely eject the RPi’s boot medium and remove it from the Linux Desktop/Desktop PC.</p></li>
+<li><p>For an <strong>RPi + SSD</strong> configuration, update the bootloader for USB boot.  The SD card should already be plugged into the RPi.  Power the RPi to update the bootloader from the SD card.  The green activity light will blink a steady pattern once the update has been completed.  If an HDMI monitor is attached to the RPi, the screen will go green once the update is complete. Allow 10 seconds or more for the update to complete.  Do not remove the SD card until the update is complete.  Power off the RPi and remove the SD card.</p></li>
+<li><p>Plug the boot medium into the RPi, connect the RPi to the LAN via Ethernet, and power it on.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If the boot medium is an external USB 3.0 SSD, make sure to plug it in through a powered USB 3.0 hub to a USB 3.0 (blue) port on the RPi.  This ensures the nRF52840 dongles have enough power and the USB SSD has maximum throughput.  Briefly disconnect the hub from the RPi when first powering it on to ensure it doesn’t use the hub for power.  Restore the hub’s connection to the RPi a couple seconds after powering the RPi so it can boot off the external USB 3.0 SSD.  <strong>Software initiated reboots do not have this requirement.</strong></p>
+</div>
+</li>
+<li><p>Once booted, SSH into the RPi from the Desktop PC.  If the hostname was changed, the RPi can be reached via <code class="code docutils literal notranslate"><span class="pre">&lt;hostname&gt;.local</span></code>, otherwise, it should be reachable via <code class="code docutils literal notranslate"><span class="pre">raspberrypi.local</span></code>.  If multiple RPis are on the LAN, check the LAN’s router for the correct IP address.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># default password is &quot;raspberry&quot;</span>
+ssh pi@matter-demo.local
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="preparing-the-rpi">
+<span id="id1"></span><h2>Preparing the RPi<a class="headerlink" href="#preparing-the-rpi" title="Permalink to this headline"></a></h2>
+<ol class="arabic">
+<li><p>Optionally, if not already done, change the RPi’s hostname (“matter-demo” in this guide) to avoid naming conflicts with other RPis on the LAN.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># verify the existing hostname (default is &quot;raspberrypi&quot;)</span>
+cat /etc/hostname
+
+<span class="c1"># overwrite the hostname and verify</span>
+<span class="nb">echo</span> matter-demo <span class="p">|</span> sudo tee /etc/hostname
+cat /etc/hostname
+</pre></div>
+</div>
+</li>
+<li><p>Update the system.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo apt-get update <span class="o">&amp;&amp;</span> sudo apt-get upgrade -y
+</pre></div>
+</div>
+</li>
+<li><p>Reboot the RPi and reconnect to it.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo reboot
+ssh pi@matter-demo.local
+</pre></div>
+</div>
+</li>
+<li><p>Install docker.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -sSL https://get.docker.com <span class="p">|</span> sh
+sudo usermod -aG docker <span class="nv">$USER</span>
+</pre></div>
+</div>
+</li>
+<li><p>Log out and log back in so that group memberships are re-evaluated.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">exit</span>
+ssh pi@matter-demo.local
+</pre></div>
+</div>
+</li>
+<li><p>Install additional packages.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo apt-get install -y <span class="se">\</span>
+ avahi-utils <span class="se">\</span>
+ build-essential <span class="se">\</span>
+ git <span class="se">\</span>
+ libbz2-dev <span class="se">\</span>
+ libcairo2-dev <span class="se">\</span>
+ libexpat-dev <span class="se">\</span>
+ libffi-dev <span class="se">\</span>
+ libgdbm-compat-dev <span class="se">\</span>
+ libgdbm-dev <span class="se">\</span>
+ libgirepository1.0-dev <span class="se">\</span>
+ libglib2.0-dev <span class="se">\</span>
+ liblzma-dev <span class="se">\</span>
+ libncurses-dev <span class="se">\</span>
+ libreadline-dev <span class="se">\</span>
+ libsqlite3-dev <span class="se">\</span>
+ libssl-dev <span class="se">\</span>
+ uuid-dev
+sudo apt autoremove -y
+</pre></div>
+</div>
+</li>
+<li><p>Build and install Matter compatible version of python.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wget -c https://www.python.org/ftp/python/3.9.7/Python-3.9.7.tar.xz -O - <span class="p">|</span> tar -xJ
+<span class="nb">cd</span> Python-3.9.7
+
+./configure --enable-optimizations --enable-shared --with-system-expat
+make -j4
+sudo make install
+sudo ldconfig -v
+sudo pip3 install --upgrade pip
+
+<span class="nb">cd</span> ..
+sudo rm -rf Python-3.9.7*
+</pre></div>
+</div>
+</li>
+<li><p>Clone or update this project’s repository.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" role="tablist"><button aria-controls="panel-5-Q2xvbmU=" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-5-Q2xvbmU=" name="Q2xvbmU=" role="tab" tabindex="0">Clone</button><button aria-controls="panel-5-VXBkYXRl" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-5-VXBkYXRl" name="VXBkYXRl" role="tab" tabindex="-1">Update</button></div><div aria-labelledby="tab-5-Q2xvbmU=" class="sphinx-tabs-panel group-tab" id="panel-5-Q2xvbmU=" name="Q2xvbmU=" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># clone the repository</span>
+git clone https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle.git
+<span class="nb">cd</span> matter-rpi4-nRF52840-dongle
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-5-VXBkYXRl" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-5-VXBkYXRl" name="VXBkYXRl" role="tabpanel" tabindex="0"><div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Changes to the current branch will be reset.  If desired, stash or save in another branch or they will be lost.</p>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># fetch changes from the upstream repository</span>
+git fetch
+<span class="c1"># reset any changes</span>
+git reset --hard
+<span class="c1"># update local main to origin main</span>
+git checkout -B main origin/main
+</pre></div>
+</div>
+</div></div>
+</li>
+<li><p>Build/download artifacts and install.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The following instructions are for a full clean and build/download.  For fine-grained control, see the <a class="reference internal" href="../advanced/bootstrap_setup_scripts.html#bootstrap-setup-usage-guide"><span class="std std-ref">Bootstrap / Setup Usage Guide</span></a></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Choose to either build/download from CHIP master (latest features/fixes) or the latest test event (greater stability).</p>
+</div>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" role="tablist"><button aria-controls="panel-6-6-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-6-6-0" name="6-0" role="tab" tabindex="0">Master</button><button aria-controls="panel-6-6-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-6-6-1" name="6-1" role="tab" tabindex="-1">Test Event</button></div><div aria-labelledby="tab-6-6-0" class="sphinx-tabs-panel" id="panel-6-6-0" name="6-0" role="tabpanel" tabindex="0"><div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" role="tablist"><button aria-controls="panel-7-7-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-7-7-0" name="7-0" role="tab" tabindex="0">Build</button><button aria-controls="panel-7-7-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-7-7-1" name="7-1" role="tab" tabindex="-1">Download</button></div><div aria-labelledby="tab-7-7-0" class="sphinx-tabs-panel" id="panel-7-7-0" name="7-0" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>script/bootstrap -f --all
+
+<span class="nv">DOCKER_IMAGE_PREFIX</span><span class="o">=</span>caubutcharter script/setup --clean --all
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-7-7-1" class="sphinx-tabs-panel" hidden="true" id="panel-7-7-1" name="7-1" role="tabpanel" tabindex="0"><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>OpenThread Border Router and <code class="code docutils literal notranslate"><span class="pre">chip-device-ctrl</span></code> still need to be built locally.</p>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>script/bootstrap -f --otbr --chip
+
+docker pull caubutcharter/ot-commissioner:latest
+docker pull caubutcharter/nrfutil:latest
+
+script/setup --clean --otbr --chip-device-ctrl
+
+<span class="nb">export</span> <span class="nv">BASE_URL</span><span class="o">=</span>https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/releases/download/nightly
+wget -c <span class="nv">$BASE_URL</span>/nrf52840-dongle-ot-rcp.zip -P build/Release
+wget -c <span class="nv">$BASE_URL</span>/nrf52840-dongle-thread-lighting-app-LATEST.zip -P build/Release
+</pre></div>
+</div>
+</div></div>
+</div><div aria-labelledby="tab-6-6-1" class="sphinx-tabs-panel" hidden="true" id="panel-6-6-1" name="6-1" role="tabpanel" tabindex="0"><div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" role="tablist"><button aria-controls="panel-8-8-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-8-8-0" name="8-0" role="tab" tabindex="0">Build</button><button aria-controls="panel-8-8-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-8-8-1" name="8-1" role="tab" tabindex="-1">Download</button></div><div aria-labelledby="tab-8-8-0" class="sphinx-tabs-panel" id="panel-8-8-0" name="8-0" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>script/bootstrap -f --chip test_event_7 --all
+
+<span class="nv">DOCKER_IMAGE_PREFIX</span><span class="o">=</span>caubutcharter script/setup --clean --all
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-8-8-1" class="sphinx-tabs-panel" hidden="true" id="panel-8-8-1" name="8-1" role="tabpanel" tabindex="0"><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>OpenThread Border Router and <code class="code docutils literal notranslate"><span class="pre">chip-device-ctrl</span></code> still need to be built locally.</p>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>script/bootstrap -f --otbr --chip test_event_7
+
+docker pull caubutcharter/ot-commissioner:latest
+docker pull caubutcharter/nrfutil:latest
+
+script/setup --clean --otbr --chip-device-ctrl
+
+<span class="nb">export</span> <span class="nv">BASE_URL</span><span class="o">=</span>https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/releases/download/nightly
+wget -c <span class="nv">$BASE_URL</span>/nrf52840-dongle-ot-rcp.zip -P build/Release
+wget -c <span class="nv">$BASE_URL</span>/nrf52840-dongle-thread-lighting-app-TEST_EVENT_7.zip -P build/Release
+</pre></div>
+</div>
+</div></div>
+</div></div>
+</li>
+<li><p>Optionally, remove old container images and build layers to recover disk space.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This will remove any untagged container images and build layers not attached to a container on the entire system, even for other users or projects.</p>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker image prune
+</pre></div>
+</div>
+</li>
+<li><p>Reboot the RPi and reconnect to it.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo reboot
+ssh pi@matter-demo.local
+<span class="nb">cd</span> matter-rpi4-nRF52840-dongle
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/project-chip/connectedhomeip/blob/master/docs/guides/openthread_rcp_nrf_dongle.md">Configuring OpenThread Radio Co-processor on nRF52840 Dongle</a></p></li>
+<li><p><a class="reference external" href="https://openthread.io/guides/build">Build OpenThread</a></p></li>
+<li><p><a class="reference external" href="https://www.nordicsemi.com/Products/Development-tools/nrf-util">nRF Util</a></p></li>
+<li><p><a class="reference external" href="https://github.com/project-chip/connectedhomeip/tree/master/examples/lighting-app/nrfconnect#setting-up-the-environment">CHIP nRF Connect Lighting Example Application</a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="introduction.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../components/otbr.html" class="btn btn-neutral float-right" title="OpenThread Border Router" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Christopher Aubut &lt;christopher.aubut@charter.com&gt;.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

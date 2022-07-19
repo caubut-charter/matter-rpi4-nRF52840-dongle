@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenThread Border Router &mdash; matter-rpi4-nRF52840-dongle 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/my_theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Matter Thread Light" href="matter_thread_light.html" />
+    <link rel="prev" title="Getting Started" href="../first_steps/getting_started.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> matter-rpi4-nRF52840-dongle
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">First steps</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../first_steps/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../first_steps/getting_started.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Components</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">OpenThread Border Router</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#flashing-the-rcp">Flashing the RCP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setting-up-otbr">Setting Up OTBR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#verifying-otbr">Verifying OTBR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="matter_thread_light.html">Matter Thread Light</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/bootstrap_setup_scripts.html">Bootstrap / Setup Usage Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Troubleshooting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting/bluetooth.html">Bluetooth Troubleshooting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/conventional_commits.html">Conventional Commits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/documentation.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/updating_dependencies.html">Updating Dependencies</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">matter-rpi4-nRF52840-dongle</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>OpenThread Border Router</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/blob/main/docs/source/components/otbr.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="id1">
+<h1>OpenThread Border Router<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h1>
+<p>This section covers building a Thread <a class="reference external" href="https://openthread.io/platforms#radio-co-processor-rcp">Radio Co-Processor</a> (RPC) and setting up an <a class="reference external" href="https://openthread.io/guides/border-router">OpenThread Border Router</a> (OTBR) on an RPi.</p>
+<div class="section" id="flashing-the-rcp">
+<span id="id2"></span><h2>Flashing the RCP<a class="headerlink" href="#flashing-the-rcp" title="Permalink to this headline"></a></h2>
+<ol class="arabic">
+<li><p>Select an nRF52840 dongle for OTBR, note its MAC address, and plug it into an open USB port on the RPi.</p>
+<img alt="../_images/nRF52840_dongle_mac.png" class="align-center" src="../_images/nRF52840_dongle_mac.png" />
+</li>
+<li><p>Press the reset button on the dongle to put it into DFU mode.  A red LED on the dongle will start blinking.  The reset button is on the far side of the board from the USB connector.  Note that the button does not face up. It will have to push it from the outside in, towards the USB connector.</p>
+<img alt="../_images/nRF52840_dongle_press_reset.svg" class="align-center" src="../_images/nRF52840_dongle_press_reset.svg" /><p>Source: <a class="reference external" href="https://docs.zephyrproject.org/latest/boards/arm/nrf52840dongle_nrf52840/doc/index.html#programming-and-debugging">https://docs.zephyrproject.org/latest/boards/arm/nrf52840dongle_nrf52840/doc/index.html#programming-and-debugging</a></p>
+</li>
+<li><p>Capture the absolute path to the static symlink of this dongle by matching the MAC address (all caps no delimiters) with the following command.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># example: export RCP_TTY=$(find /dev/serial/by-id -type l | grep F415E25657B9)</span>
+<span class="nb">export</span> <span class="nv">RCP_TTY</span><span class="o">=</span><span class="k">$(</span>find /dev/serial/by-id -type l <span class="p">|</span> grep &lt;mac&gt;<span class="k">)</span>
+<span class="nb">echo</span> <span class="nv">$RCP_TTY</span>
+</pre></div>
+</div>
+</li>
+<li><p>Flash the RCP firmware package onto the dongle.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run -it --rm <span class="se">\</span>
+ -v <span class="nv">$PWD</span>/build/Release:/root <span class="se">\</span>
+ --device <span class="k">$(</span>readlink -f <span class="nv">$RCP_TTY</span><span class="k">)</span> <span class="se">\</span>
+ caubutcharter/nrfutil:latest dfu usb-serial -pkg nrf52840-dongle-ot-rcp.zip -p <span class="k">$(</span>readlink -f <span class="nv">$RCP_TTY</span><span class="k">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="setting-up-otbr">
+<span id="id3"></span><h2>Setting Up OTBR<a class="headerlink" href="#setting-up-otbr" title="Permalink to this headline"></a></h2>
+<ol class="arabic">
+<li><p>Capture the absolute path to the static symlink of this dongle by matching the MAC address (all caps no delimiters) with the following command.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This step is required  as the device name will have changed since flashing.</p>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># example: export RCP_TTY=$(find /dev/serial/by-id -type l | grep F415E25657B9)</span>
+<span class="nb">export</span> <span class="nv">RCP_TTY</span><span class="o">=</span><span class="k">$(</span>find /dev/serial/by-id -type l <span class="p">|</span> grep &lt;mac&gt;<span class="k">)</span>
+<span class="nb">echo</span> <span class="nv">$RCP_TTY</span>
+</pre></div>
+</div>
+</li>
+<li><p>Set the RCP for OTBR using the captured symlink and restart the OTBR service.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo sed -i <span class="s1">&#39;s@\/dev\/ttyACM0@&#39;</span><span class="s2">&quot;</span><span class="nv">$RCP_TTY</span><span class="s2">&quot;</span><span class="s1">&#39;@&#39;</span> /etc/default/otbr-agent
+sudo systemctl restart otbr-agent
+</pre></div>
+</div>
+</li>
+<li><p>Navigate to <a class="reference external" href="http://matter-demo.local/">http://matter-demo.local/</a> from any device on the LAN and click on <strong>Form</strong> on the side menu to setup a Thread network.</p></li>
+<li><p>Adjust the settings and click the <strong>Form</strong> button to create the Thread network.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is recommend to leave the default <strong>Channel</strong> and <strong>On-Mesh</strong> Prefix values.</p>
+</div>
+<p>The following settings are used in this guide.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Network Name</p></td>
+<td><p>matter-demo</p></td>
+</tr>
+<tr class="row-odd"><td><p>PAN ID</p></td>
+<td><p>0x1234</p></td>
+</tr>
+<tr class="row-even"><td><p>Network Key</p></td>
+<td><p>00112233445566778899aabbccddeeff</p></td>
+</tr>
+<tr class="row-odd"><td><p>Extended PAN ID</p></td>
+<td><p>1111111122222222</p></td>
+</tr>
+<tr class="row-even"><td><p>Passphrase</p></td>
+<td><p>123456</p></td>
+</tr>
+<tr class="row-odd"><td><p>Channel</p></td>
+<td><p>default</p></td>
+</tr>
+<tr class="row-even"><td><p>On-Mesh Prefix</p></td>
+<td><p>default</p></td>
+</tr>
+<tr class="row-odd"><td><p>Default Route</p></td>
+<td><p>On</p></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li><p>Additional details about the created OTBR can be viewed by clicking on <strong>Status</strong> on the side menu.</p></li>
+<li><p>On the RPi, capture the generated PSKc key for the Thread network.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo ot-ctl pskc
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="verifying-otbr">
+<span id="id4"></span><h2>Verifying OTBR<a class="headerlink" href="#verifying-otbr" title="Permalink to this headline"></a></h2>
+<ol class="arabic">
+<li><p>Verify the mesh commissioning protocol (MeshCoP) advertisement from OTBR.  Capture the <strong>address</strong> and <strong>port</strong> to test the commissioning process.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This command continually scans.  Hit <code class="code docutils literal notranslate"><span class="pre">CTRL-C</span></code> to exit.</p>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>avahi-browse -lr _meshcop._udp
+
+<span class="c1"># (optional) force resolve the IPv6 address</span>
+avahi-resolve -6 --name matter-demo.local
+</pre></div>
+</div>
+</li>
+<li><p>Run the ot-commissioner.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run -it --rm --net host <span class="se">\</span>
+ caubutcharter/ot-commissioner:latest
+</pre></div>
+</div>
+</li>
+<li><p>Set the PSKc key to the one captured while setting up OTBR.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>config <span class="nb">set</span> pskc &lt;PSKc&gt;
+</pre></div>
+</div>
+</li>
+<li><p>Start the commissioning process and verify there are no errors.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>start &lt;address&gt; &lt;port&gt;
+
+<span class="c1"># (optional) link-local IPv6 address (starts with fe80)</span>
+start &lt;address&gt;%eth0 &lt;port&gt;
+</pre></div>
+</div>
+</li>
+<li><p>Stop the commissioning process to end the test.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>stop
+</pre></div>
+</div>
+</li>
+<li><p>Exit the process which will stop the container and automatically remove it.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">exit</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://openthread.io/guides/border-router/docker/run">Run OTBR Docker</a></p></li>
+<li><p><a class="reference external" href="https://github.com/openthread/openthread/blob/main/src/cli/README.md">Thread CLI Documentation</a></p></li>
+<li><p><a class="reference external" href="https://github.com/openthread/ot-commissioner/tree/main/src/app/cli">ot-commissioner CLI Documentation</a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../first_steps/getting_started.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="matter_thread_light.html" class="btn btn-neutral float-right" title="Matter Thread Light" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Christopher Aubut &lt;christopher.aubut@charter.com&gt;.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

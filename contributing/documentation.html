@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Documentation &mdash; matter-rpi4-nRF52840-dongle 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/my_theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/tabs.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Updating Dependencies" href="updating_dependencies.html" />
+    <link rel="prev" title="Conventional Commits" href="conventional_commits.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> matter-rpi4-nRF52840-dongle
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">First steps</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../first_steps/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../first_steps/getting_started.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Components</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../components/otbr.html">OpenThread Border Router</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/matter_thread_light.html">Matter Thread Light</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/bootstrap_setup_scripts.html">Bootstrap / Setup Usage Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Troubleshooting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting/bluetooth.html">Bluetooth Troubleshooting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="conventional_commits.html">Conventional Commits</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#environment-setup">Environment Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building-the-documentation">Building the Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#starting-the-web-server">Starting the Web Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rebuilding-the-documentation">Rebuilding the Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stopping-the-web-server">Stopping the Web Server</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="updating_dependencies.html">Updating Dependencies</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">matter-rpi4-nRF52840-dongle</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/caubut-charter/matter-rpi4-nRF52840-dongle/blob/main/docs/source/contributing/documentation.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="documentation">
+<h1>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline"></a></h1>
+<p>Documentation for this project is built using <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> which requires <a class="reference external" href="https://www.python.org/">Python&gt;=3.6</a> and the <a class="reference external" href="https://python-poetry.org/">Poetry</a> package manager.  This process is handled by the CI/CD pipeline, but the documentation can be built locally and previewed at <a class="reference external" href="http://localhost:8888">http://localhost:8888</a> using a container.</p>
+<div class="section" id="environment-setup">
+<h2>Environment Setup<a class="headerlink" href="#environment-setup" title="Permalink to this headline"></a></h2>
+<p>The environment setup is tailored to Ubuntu Linux systems.  See the host system’s documentation for running on other system types.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># update system package sources</span>
+apt-get update
+<span class="c1"># install make for building the documentation</span>
+sudo apt-get install make
+<span class="c1"># (optional) install certbot for Let&#39;s Encrypts</span>
+sudo apt-get install certbot
+<span class="c1"># install python package dependencies</span>
+poetry install
+</pre></div>
+</div>
+</div>
+<div class="section" id="building-the-documentation">
+<h2>Building the Documentation<a class="headerlink" href="#building-the-documentation" title="Permalink to this headline"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry run make -C docs html
+</pre></div>
+</div>
+</div>
+<div class="section" id="starting-the-web-server">
+<h2>Starting the Web Server<a class="headerlink" href="#starting-the-web-server" title="Permalink to this headline"></a></h2>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">HTTP</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">HTTPS (Let’s Encrypt)</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run -it --rm --name<span class="o">=</span>matter-example-docs <span class="se">\</span>
+ -v <span class="nv">$PWD</span>/docs/build/html:/usr/share/nginx/html:ro <span class="se">\</span>
+ -p <span class="m">8888</span>:80 <span class="se">\</span>
+ -d nginx:alpine
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo certbot certonly --nginx
+
+<span class="nb">export</span> <span class="nv">MATTER_EXAMPLE_DOCS_FQDN</span><span class="o">=</span>&lt;fqdn&gt;
+
+cat <span class="s">&lt;&lt; EOF &gt; nginx.conf</span>
+<span class="s">server {</span>
+<span class="s">  listen 443 ssl;</span>
+<span class="s">  server_name ${MATTER_EXAMPLE_DOCS_FQDN};</span>
+<span class="s">  ssl_certificate /etc/nginx/certs/fullchain.pem;</span>
+<span class="s">  ssl_certificate_key /etc/nginx/certs/privkey.pem;</span>
+<span class="s">}</span>
+<span class="s">EOF</span>
+
+sudo cp -rL /etc/letsencrypt/live/<span class="si">${</span><span class="nv">MATTER_EXAMPLE_DOCS_FQDN</span><span class="si">}</span> certs
+
+docker run -it --rm --name<span class="o">=</span>matter-example-docs <span class="se">\</span>
+ -v <span class="nv">$PWD</span>/docs/build/html:/etc/nginx/html:ro <span class="se">\</span>
+ -v <span class="nv">$PWD</span>/nginx.conf:/etc/nginx/conf.d/nginx.conf <span class="se">\</span>
+ -v <span class="nv">$PWD</span>/certs:/etc/nginx/certs <span class="se">\</span>
+ -p <span class="m">8888</span>:443 <span class="se">\</span>
+ -d nginx:alpine
+</pre></div>
+</div>
+</div></div>
+</div>
+<div class="section" id="rebuilding-the-documentation">
+<h2>Rebuilding the Documentation<a class="headerlink" href="#rebuilding-the-documentation" title="Permalink to this headline"></a></h2>
+<p>Incremental updates can be built using the same command as generating the documentation.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry run make -C docs html
+</pre></div>
+</div>
+<p>Cleaning the build directory will break the container volume and requires restarting the web server container.  This step is necessary to rebuild the table of contents on every page when adding or removing new pages.  Incremental updates only rebuild pages that changed.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry run make clean -C docs <span class="o">&amp;&amp;</span> poetry run make -C docs html <span class="o">&amp;&amp;</span> docker restart matter-example-docs
+</pre></div>
+</div>
+</div>
+<div class="section" id="stopping-the-web-server">
+<h2>Stopping the Web Server<a class="headerlink" href="#stopping-the-web-server" title="Permalink to this headline"></a></h2>
+<p>Stopping the container will automatically remove it.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker container stop matter-example-docs
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="conventional_commits.html" class="btn btn-neutral float-left" title="Conventional Commits" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="updating_dependencies.html" class="btn btn-neutral float-right" title="Updating Dependencies" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Christopher Aubut &lt;christopher.aubut@charter.com&gt;.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
