@@ -12,7 +12,7 @@
   },
   "author": "Christopher Aubut <christopher.aubut@charter.com>",
   "dependencies": {
-    "@commitlint/cli": "^16.2.3",
+    "@commitlint/cli": "^17.0.3",
     "@commitlint/config-conventional": "^16.2.1",
     "cz-conventional-changelog": "^3.3.0",
     "husky": "^8.0.1"
